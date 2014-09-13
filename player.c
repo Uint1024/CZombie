@@ -7,17 +7,17 @@
 #include "weapon.h"
 #include "weapons_component.h"
 
-void Player_Move(Entity* p, Entity* map, int map_size, Entity* camera, List* bonus_list, int delta, List* mob_list)
+void Player_Move(Entity* p, Entity* map, int map_size, int delta, Vector* monsters_vector, Vector* bonus_vector)
 {
     if(p->weapons_component->reloading)
     {
         WeaponsComponent_Reload(p->weapons_component);
     }
 
-	camera->dx = 0;
-	camera->dy = 0;
+	p->camera->dx = 0;
+	p->camera->dy = 0;
     CalculateVelocity(p, map, map_size);
-    Player_CheckBonusCollision(p, bonus_list);
+    Player_CheckBonusCollision(p, bonus_vector);
     p->dx = floor(p->dx);
     p->dy = floor(p->dy);
     moveEntity(p, p->dx, p->dy);
@@ -41,16 +41,32 @@ Entity* Player_Create(float x, float y, int w, int h)
 
     p->weapons_component = WeaponsComponent_Create();
     WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(AutomaticRifle_w));
-    WeaponsComponent_ChangeWeapon(p->weapons_component, AutomaticRifle_w);
+    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(Handgun_w));
+    WeaponsComponent_ChangeWeapon(p->weapons_component, Handgun_w);
 
 	return p;
 }
 
-void Player_CheckBonusCollision(Entity* player, List* bonus_list)
+void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
 {
 	//Box* temp = BoundingBox_CreateTemp(player);
     Jbool collision = Jfalse;
-    ListNode *_nodeB = NULL;
+    for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
+    {
+        collision = Jfalse;
+        Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
+        collision = BoundingBox_CheckSimpleCollision(&player->box, &bonus->box);
+        if(collision)
+        {
+            if(bonus->t == Ammo)
+            {
+                WeaponsComponent_AddAmmo(player->weapons_component, AutomaticRifle_w, 50);
+                bonus->alive = Jfalse;
+            }
+        }
+    }
+
+    /*ListNode *_nodeB = NULL;
     for(_nodeB = bonus_list->first; _nodeB != NULL; _nodeB = _nodeB->next)
     {
         collision = Jfalse;
@@ -64,6 +80,6 @@ void Player_CheckBonusCollision(Entity* player, List* bonus_list)
                 bonus->alive = Jfalse;
             }
         }
-    }
+    }*/
 }
 

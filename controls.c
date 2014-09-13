@@ -19,14 +19,14 @@ Controls* CreateControls()
 	{
 		controls->pressedKeys[i] = Jfalse;
 	}
-
+    controls->mouseWheelPos = 0;
 	return controls;
 }
 
 
 Jbool PoolInputs(Controls* controls, Entity* camera)
 {
-
+    controls->mouseWheelPos = 0;
 	while (SDL_PollEvent(&controls->e))
 	{
 		if (controls->e.type == SDL_QUIT || controls->e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
@@ -62,6 +62,11 @@ Jbool PoolInputs(Controls* controls, Entity* camera)
 		{
 			controls->pressedMouseButtons[controls->e.button.button] = Jfalse;
 		}
+
+		if(controls->e.type == SDL_MOUSEWHEEL)
+        {
+            controls->mouseWheelPos += controls->e.wheel.y;
+        }
 	}
 
 	SDL_GetMouseState(&controls->mouseX, &controls->mouseY);
@@ -76,8 +81,9 @@ Jbool PoolInputs(Controls* controls, Entity* camera)
 	return Jtrue;
 }
 
-void ProcessInputs(Controls* controls, Entity* player, List* bullets,
-	Entity* map, int map_width, int map_height, List* monsters, int delta)
+void ProcessInputs(Controls* controls, Entity* player,
+	Entity* map, int map_width, int map_height, int delta, Vector* bullets_vector,
+	Vector* monsters_vector)
 {
 
     player->dx = 0;
@@ -120,15 +126,21 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
 	float angle_from_muzzle_to_mouse = atan2f(opposite, adjacent);
 
 
+    if(controls->mouseWheelPos > 0)
+    {
+        WeaponsComponent_ScrollWeapons(player->weapons_component, 1);
+    }
+
     if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
     {
         Weapon_TryToShoot(player->weapons_component->current_weapon,
                           player->muzzleX,
                           player->muzzleY,
                           angle_from_muzzle_to_mouse,
-                          bullets
+                          bullets_vector
                           );
     }
+
 
     if (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
     {
@@ -159,7 +171,8 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
         {
             Entity* zombie = (Entity*)malloc(sizeof(Entity));
             zombie = CreateZombie(controls->mousePositionInWorldX , controls->mousePositionInWorldY, 0.2);
-            List_push(monsters, zombie);
+            Vector_Push(monsters_vector, zombie);
+
         }
 
         player->last_creation = SDL_GetTicks();

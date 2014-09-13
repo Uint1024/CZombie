@@ -50,5 +50,34 @@ void WeaponsComponent_Reload(WeaponsComponent* wc)
         wc->bullets[wc->current_weapon->type] -= wc->current_weapon->magazine_max_bullets;
         wc->reloading = Jfalse;
     }
+}
 
+void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
+{
+    Jbool found_weapon = Jfalse;
+    Weapon_Type current_type = wc->current_weapon->type;
+    Weapon_Type next_type = current_type;
+
+    if(wheel_direction == 1)
+    {
+        while(!found_weapon)
+        {
+            next_type += 1;
+            if(next_type < NB_OF_WEAPONS)
+            {
+
+                printf("%d %d\n", NB_OF_WEAPONS, next_type);
+                if(wc->weapons_inventory[next_type] != NULL)
+                {
+                    wc->current_weapon = wc->weapons_inventory[next_type];
+                    found_weapon = Jtrue;
+                }
+
+            }
+            else
+            {
+                next_type = -1;
+            }
+        }
+    }
 }

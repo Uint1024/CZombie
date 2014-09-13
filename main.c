@@ -4,7 +4,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-//#include <GL/glew.h>
 #include "string.h"
 
 #include "entity.h"
@@ -20,71 +19,63 @@
 #include "weapon.h"
 #include "weapons_component.h"
 #include "bonus.h"
+#include "vector.h"
 
 Jbool debug_mode = Jfalse;
 
 
-void Update(Entity* map, int map_size, List* monsters,
-            List* bullets, Entity* player, int delta,
-            List* bonus_list)
+void Update(Entity* map, int map_size,
+            Entity* player, int delta,
+            Vector* bullets_vector,
+            Vector* bonus_vector, Vector* monsters_vector)
 {
-    Player_Move(player, map, map_size, &player->camera, bonus_list, delta, monsters);
+    Player_Move(player, map, map_size, delta, monsters_vector, bonus_vector);
 
-    ListNode *_node3 = bullets->first;
-    while (_node3 != NULL)
+    for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
-        Entity* bullet = (struct Entity*)_node3->value;
-        void* ptr_to_next = _node3->next;
-
-        if (bullet->t == Bullet)
+        if(Vector_Get(bullets_vector, i) != NULL)
         {
-            Bullet_Move(bullet, map, map_size, monsters, delta, player->camera);
+            Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
+            Bullet_Move(bullet, map, map_size, monsters_vector, delta, player->camera);
 
             if (bullet->alive == Jfalse)
             {
-                List_remove(bullets, _node3);
+                Vector_Delete(bullets_vector, i);
             }
         }
-        _node3 = ptr_to_next;
-        ptr_to_next = NULL;
     }
 
-
-    ListNode *_nodeMonster = monsters->first;
-    while (_nodeMonster != NULL)
+    for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
     {
-        Entity* mob = (struct Entity*)_nodeMonster->value;
-        void* ptr_to_next = _nodeMonster->next;
-        if (mob->t == Zombie)
+        if(Vector_Get(bonus_vector, i) != NULL)
         {
-            UpdateZombie(mob, player, map, map_size, monsters, delta);
-
-            if (mob->alive == Jfalse)
+            Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
+            Bonus_Update(bonus, player);
+            if (bonus->alive == Jfalse)
             {
-                Zombie_Die(mob, bonus_list);
-                List_remove(monsters, _nodeMonster);
+                Vector_Delete(bonus_vector, i);
             }
         }
-        _nodeMonster = ptr_to_next;
-        ptr_to_next = NULL;
     }
 
-     ListNode *_nodeB = bonus_list->first;
-    while(_nodeB != NULL)
+    for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
     {
-        void* ptr_to_next = _nodeB->next;
-        Entity* bonus = (struct Entity*)_nodeB->value;
-        Bonus_Update(bonus, player);
-        if(!bonus->alive)
+        if(Vector_Get(monsters_vector, i) != NULL)
         {
-            List_remove(bonus_list, _nodeB);
+            Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
+            if(mob->t == Zombie)
+            {
+                UpdateZombie(mob, player, map, map_size, monsters_vector, delta);
+
+                if (mob->alive == Jfalse)
+                {
+                    Zombie_Die(mob, bonus_vector);
+                    Vector_Delete(monsters_vector, i);
+
+                }
+            }
         }
-
-        _nodeB = ptr_to_next;
     }
-
-
-
 }
 
 int main(int argc, char* args[])
@@ -99,7 +90,10 @@ int main(int argc, char* args[])
 	Entity* player = Player_Create(screen_width / 2 - 10, screen_height / 2 - 10, 20, 20);
 
 	Controls* controls = CreateControls();
-	List* bullets = List_create();
+
+    Vector bullets_vector = Vector_Create();
+    Vector bonus_vector = Vector_Create();
+    Vector monsters_vector = Vector_Create();
 
 	int map_width = 50;
 	int map_height = 50;
@@ -107,10 +101,6 @@ int main(int argc, char* args[])
 
 	Entity* map;
 	map = calloc(map_size, sizeof(Entity));
-
-    List* bonus_list = List_create();
-	List* monsters = List_create();
-
 
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;
@@ -151,7 +141,7 @@ int main(int argc, char* args[])
             chrono_update = 0;
             running = PoolInputs(controls, player->camera);
 
-            ProcessInputs(controls, player, bullets, map, map_width, map_height, monsters, delta);
+            ProcessInputs(controls, player, map, map_width, map_height, delta, &bullets_vector, &monsters_vector);
 
 
             if (fps > 0)
@@ -162,7 +152,7 @@ int main(int argc, char* args[])
                 snprintf(full_txt_fps, sizeof full_txt_fps, "%s%s%s%s", fps_str, " FPS - ", delta_str, " ms since last frame.");
                 Graphics_RenderText(graphics, full_txt_fps, Medium, 700, 50);
             }
-
+/*
             if(debug_mode)
             {
                 char nb_of_monsters[50];
@@ -175,6 +165,8 @@ int main(int argc, char* args[])
 
 
             }
+*/
+            Graphics_RenderText(graphics, player->weapons_component->current_weapon->name, Medium, 700, 130);
 
             char nb_of_bullets_on_player[70];
             snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
@@ -189,19 +181,15 @@ int main(int argc, char* args[])
                 Graphics_RenderText(graphics, reloading_str, Medium, player->x - player->camera->x - 20, player->y - 20 - player->camera->y);
             }
 
-            Update(map, map_size, monsters, bullets, player, delta, bonus_list);
-            Graphics_RenderWorld(graphics, map, map_size, monsters, bullets, player, bonus_list);
-
+            Update(map, map_size, player, delta, &bullets_vector, &bonus_vector, &monsters_vector);
+            Graphics_RenderWorld(graphics, map, map_size, player, &bullets_vector, &bonus_vector, &monsters_vector);
             Graphics_Flip(graphics);
-            //SDL_RenderPresent(renderer);
             time_last_frame = time_now;
 
         }
 
         time_last_frame_real = time_this_frame_real;
 	}
-
-	//SDL_FreeSurface(textSurface);
 
 	SDL_DestroyRenderer(graphics->renderer);
 	SDL_DestroyWindow(graphics->window);

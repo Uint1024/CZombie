@@ -3,9 +3,10 @@
 #include "common.h"
 #include "weapons_component.h"
 #include "linkedList.h"
-
+#include "vector.h"
 typedef struct Weapon
 {
+    char *name;
     Weapon_Type type;
     int magazine_max_bullets;
     int magazine_bullets;
@@ -16,5 +17,5 @@ typedef struct Weapon
 } Weapon;
 
 Weapon* Weapon_Create(Weapon_Type type);
-void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle, List* bullets);
+void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle, Vector* bullets_vector);
 #endif // WEAPON_H
