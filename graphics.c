@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "graphics.h"
+#include "vector.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
@@ -35,6 +36,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 	g->textures[Ammo_Bonus_tex] =   IMG_LoadTexture(g->renderer, "bullet_bonus.png");
 	g->textures[Bullet_tex] =       IMG_LoadTexture(g->renderer, "bullet.png");
 	g->textures[Wall_tex] =         IMG_LoadTexture(g->renderer, "wall.png");
+	g->textures[Explosion1_tex] =   IMG_LoadTexture(g->renderer, "explosion.png");
 
 
     g->fonts[Small] =               TTF_OpenFont("cour.ttf", 12);
@@ -47,8 +49,9 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 }
 
 void Graphics_RenderWorld(Graphics* graphics, Entity* map,
-                            int map_size, List* monsters, List* bullets,
-                            Entity* player, List* bonus_list)
+                            int map_size, Entity* player, Vector* bullets_vector,
+                            Vector* bonus_vector, Vector* monsters_vector,
+                            Vector* explosions_vector)
 {
     //RenderPlayer(renderer, player, textures[Player_tex]);
     Graphics_RenderObject(graphics, player, player->camera);
@@ -60,30 +63,41 @@ void Graphics_RenderWorld(Graphics* graphics, Entity* map,
         }
     }
 
-    ListNode *_nodeM = NULL;
-    for(_nodeM = monsters->first; _nodeM != NULL; _nodeM = _nodeM->next)
+    for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
-        Entity* mob = (struct Entity*)_nodeM->value;
-        if (mob->t == Zombie)
+        if(Vector_Get(bullets_vector, i) != NULL)
         {
-            Graphics_RenderObject(graphics, mob, player->camera);
+            Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
+            Graphics_RenderObject(graphics, bullet, player->camera);
         }
     }
 
-    ListNode *_nodeB = NULL;
-    for(_nodeB = bullets->first; _nodeB != NULL; _nodeB = _nodeB->next)
+    for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
     {
-        Entity* bullet = (struct Entity*)_nodeB->value;
-
-        Graphics_RenderObject(graphics, bullet, player->camera);
+        if(Vector_Get(bonus_vector, i) != NULL)
+        {
+            Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
+            Graphics_RenderObject(graphics, bonus, player->camera);
+        }
     }
 
-    _nodeB = NULL;
-    for(_nodeB = bonus_list->first; _nodeB != NULL; _nodeB = _nodeB->next)
+    for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
     {
-        Entity* bonus = (struct Entity*)_nodeB->value;
+        if(Vector_Get(monsters_vector, i) != NULL)
+        {
+            Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
+            Graphics_RenderObject(graphics, mob, player->camera);
 
-        Graphics_RenderObject(graphics, bonus, player->camera);
+        }
+    }
+
+    for(int i = 0 ; i < Vector_Count(explosions_vector) ; i++)
+    {
+        if(Vector_Get(explosions_vector, i) != NULL)
+        {
+            Entity* explosion = (struct Entity*)Vector_Get(explosions_vector, i);
+            Graphics_RenderObject(graphics, explosion, player->camera);
+        }
     }
 }
 

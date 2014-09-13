@@ -3,7 +3,9 @@
 #include "zombie.h"
 #include "entity.h"
 #include "linkedList.h"
-void UpdateZombie(Entity* z, Entity* player, Entity* map, int map_size, List* mob_list, int delta)
+void UpdateZombie(Entity* z, Entity* player, Entity* map,
+                  int map_size, Vector* monsters_vector, int delta,
+                  Vector* explosions_vector)
 {
 	float adjacent = player->x - z->x;
 	float opposite = player->y - z->y;
@@ -12,8 +14,9 @@ void UpdateZombie(Entity* z, Entity* player, Entity* map, int map_size, List* mo
 	z->angle = angle;
 	z->dx = cos(angle) * z->speed * delta;
 	z->dy = sin(angle) * z->speed * delta;
-    CollisionWithMonsters(z, mob_list);
+    CollisionWithMonsters(z, monsters_vector);
     CalculateVelocity(z, map, map_size);
+    Entity_CollisionWithExplosions(z, explosions_vector);
 
 	moveEntity(z, z->dx, z->dy);
 }
@@ -33,12 +36,13 @@ Entity* CreateZombie(float x, float y, float speed)
 	return z;
 }
 
-void Zombie_Die(Entity* zombie, List* bonus_list)
+void Zombie_Die(Entity* zombie, Vector* bonus_vector)
 {
     int random = rand() % 10;
 
     if(random <= 5)
     {
-        List_push(bonus_list, Bonus_Create(Ammo, zombie->x, zombie->y));
+        Vector_Push(bonus_vector, Bonus_Create(Ammo, zombie->x, zombie->y));
+        //List_push(bonus_list, Bonus_Create(Ammo, zombie->x, zombie->y));
     }
 }

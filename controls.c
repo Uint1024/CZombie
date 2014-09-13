@@ -126,9 +126,9 @@ void ProcessInputs(Controls* controls, Entity* player,
 	float angle_from_muzzle_to_mouse = atan2f(opposite, adjacent);
 
 
-    if(controls->mouseWheelPos > 0)
+    if(controls->mouseWheelPos != 0)
     {
-        WeaponsComponent_ScrollWeapons(player->weapons_component, 1);
+        WeaponsComponent_ScrollWeapons(player->weapons_component, controls->mouseWheelPos );
     }
 
     if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
@@ -137,7 +137,9 @@ void ProcessInputs(Controls* controls, Entity* player,
                           player->muzzleX,
                           player->muzzleY,
                           angle_from_muzzle_to_mouse,
-                          bullets_vector
+                          bullets_vector,
+                          controls->mousePositionInWorldX,
+                          controls->mousePositionInWorldY
                           );
     }
 

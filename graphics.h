@@ -5,6 +5,7 @@
 #include <SDL_ttf.h>
 #include "entity.h"
 #include "linkedList.h"
+#include "vector.h"
 
 typedef struct Graphics
 {
@@ -21,8 +22,8 @@ typedef struct Graphics
 Graphics* Graphics_Create(int screen_width, int screen_height);
 void Graphics_Flip(Graphics* graphics);
 void Graphics_RenderWorld(Graphics* graphics, Entity* map,
-                            int map_size, List* monsters, List* bullets,
-                            Entity* player, List* bonus_list);
+                            int map_size, Entity* player, Vector* bullets_vector,
+                            Vector* bonus_vector, Vector* monsters_vector, Vector* explosions_vector);
 void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera);
 void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, int y);
 #endif // GRAPHICS_H

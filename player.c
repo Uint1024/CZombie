@@ -42,6 +42,8 @@ Entity* Player_Create(float x, float y, int w, int h)
     p->weapons_component = WeaponsComponent_Create();
     WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(AutomaticRifle_w));
     WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(Handgun_w));
+    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(Shotgun_w));
+    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(GrenadeLauncher_w));
     WeaponsComponent_ChangeWeapon(p->weapons_component, Handgun_w);
 
 	return p;
@@ -60,26 +62,10 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
         {
             if(bonus->t == Ammo)
             {
-                WeaponsComponent_AddAmmo(player->weapons_component, AutomaticRifle_w, 50);
+                WeaponsComponent_AddAmmo(player->weapons_component, player->weapons_component->current_weapon->type, 50);
                 bonus->alive = Jfalse;
             }
         }
     }
-
-    /*ListNode *_nodeB = NULL;
-    for(_nodeB = bonus_list->first; _nodeB != NULL; _nodeB = _nodeB->next)
-    {
-        collision = Jfalse;
-        Entity* bonus = (struct Entity*)_nodeB->value;
-        collision = BoundingBox_CheckSimpleCollision(&player->box, &bonus->box);
-        if(collision)
-        {
-            if(bonus->t == Ammo)
-            {
-                WeaponsComponent_AddAmmo(player->weapons_component, AutomaticRifle_w, 50);
-                bonus->alive = Jfalse;
-            }
-        }
-    }*/
 }
 

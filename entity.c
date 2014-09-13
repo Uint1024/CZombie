@@ -23,9 +23,11 @@ Entity* Entity_Spawn()
 	ent->alive                     = Jtrue;
 	ent->hp                        = 0;
     ent->weapons_component          = NULL;
+    ent->explosive_component = NULL;
 	ent->last_creation             = 0;
 	ent->camera                    = NULL;
     ent->texture                   = No_texture;
+    ent->damage                    = 0;
 	return ent;
 }
 void moveEntity(Entity* ent, float x, float y)
@@ -45,18 +47,16 @@ void moveToPosition(Entity* ent, float x, float y)
 
 
 
-void CollisionWithMonsters(Entity* ent, List* mob_list)
+void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
     Box* temp = BoundingBox_CreateTemp(ent);
     Entity* collision_sides[5] = {Jfalse};
 
-    for(ListNode* node = mob_list->first ; node != NULL ; node = node->next)
+    for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
     {
-
-        if(node->value != ent)
+        if(Vector_Get(monsters_vector, i) != ent)
         {
-
-            Entity* mob_to_check = (struct Entity*)node->value;
+            Entity* mob_to_check = (struct Entity*)Vector_Get(monsters_vector, i);
             Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &mob_to_check->box);
             if (collision_direction != None)
             {
@@ -164,7 +164,7 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size)
 		}
 	}
 }
-
+/*
 void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int map_size)
 {
 	Entity* collision_wall[5];
@@ -238,4 +238,26 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 		    moveEntity(camera, (collision_wall[Left]->box.right - p->box.left), 0);
 		}
 	}
+}*/
+
+void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions)
+{
+    Jbool collision = Jfalse;
+    for(int i = 0 ; i < Vector_Count(explosions) ; i++)
+    {
+        Entity* exp = (Entity*)Vector_Get(explosions, i);
+        collision = BoundingBox_CheckSimpleCollision(&ent->box, &exp->box);
+        if(collision)
+        {
+            Entity_LoseHealth(ent, exp->damage);
+        }
+    }
+}
+
+void Entity_LoseHealth(Entity* ent, int damage)
+{
+    ent->hp -= damage;
+
+    if (ent->hp <= 0)
+        ent->alive = Jfalse;
 }

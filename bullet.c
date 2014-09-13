@@ -6,7 +6,7 @@
 
 Entity* Bullet_Create(float x, float y, float angle, float speed)
 {
-	Entity* bullet = (Entity*)malloc(sizeof(Entity));
+	Entity* bullet = Entity_Spawn();
 
 	bullet->t = Bullet;
 	bullet->texture = Bullet_tex;
@@ -16,12 +16,10 @@ Entity* Bullet_Create(float x, float y, float angle, float speed)
 	bullet->box.width = 10;
 	bullet->angle = angle;
 	bullet->speed = speed;
-	bullet->alive = Jtrue;
-
 	return bullet;
 }
 
-void Bullet_Move(Entity* bullet, Entity* map, int map_size, List* monsters, int delta, Entity* camera)
+void Bullet_Move(Entity* bullet, Entity* map, int map_size, Vector* monsters_vector, int delta, Entity* camera)
 {
 	bullet->dx = cos(bullet->angle) * bullet->speed * delta;
 	bullet->dy = sin(bullet->angle) * bullet->speed  * delta;
@@ -37,21 +35,16 @@ void Bullet_Move(Entity* bullet, Entity* map, int map_size, List* monsters, int 
 		bullet->alive = !BoundingBox_CheckSimpleCollision(&bullet->box, &map[i].box);
 	}
 
-	ListNode *_nodeMonster = monsters->first;
-	while (_nodeMonster != NULL && bullet->alive)
-	{
-		Entity* mob = (struct Entity*)_nodeMonster->value;
+    for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
+    {
+        Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 		if (mob->t == Zombie)
 		{
 			if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
 			{
-				mob->hp -= 1;
-				if (mob->hp <= 0)
-					mob->alive = Jfalse;
-
-				bullet->alive = Jfalse;
+			    Entity_LoseHealth(mob, 1);
+                bullet->alive = Jfalse;
 			}
 		}
-		_nodeMonster = _nodeMonster->next;
-	}
+    }
 }

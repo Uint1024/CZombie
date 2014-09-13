@@ -20,6 +20,7 @@
 #include "weapons_component.h"
 #include "bonus.h"
 #include "vector.h"
+#include "explosion.h"
 
 Jbool debug_mode = Jfalse;
 
@@ -27,7 +28,8 @@ Jbool debug_mode = Jfalse;
 void Update(Entity* map, int map_size,
             Entity* player, int delta,
             Vector* bullets_vector,
-            Vector* bonus_vector, Vector* monsters_vector)
+            Vector* bonus_vector, Vector* monsters_vector,
+            Vector* explosions_vector)
 {
     Player_Move(player, map, map_size, delta, monsters_vector, bonus_vector);
 
@@ -35,10 +37,23 @@ void Update(Entity* map, int map_size,
     {
         if(Vector_Get(bullets_vector, i) != NULL)
         {
-            Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
-            Bullet_Move(bullet, map, map_size, monsters_vector, delta, player->camera);
+            Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
 
-            if (bullet->alive == Jfalse)
+            if(projectile->t == Bullet)
+            {
+                 Bullet_Move(projectile, map, map_size, monsters_vector, delta, player->camera);
+            }
+            else if(projectile->t == Grenade)
+            {
+                Grenade_Move(projectile, map, map_size, monsters_vector, delta, player->camera);
+
+                if(!projectile->alive)
+                {
+                    Vector_Push(explosions_vector, Explosion_Create(projectile->x - 64, projectile->y - 64) );
+                }
+            }
+
+            if (projectile->alive == Jfalse)
             {
                 Vector_Delete(bullets_vector, i);
             }
@@ -65,7 +80,7 @@ void Update(Entity* map, int map_size,
             Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
             if(mob->t == Zombie)
             {
-                UpdateZombie(mob, player, map, map_size, monsters_vector, delta);
+                UpdateZombie(mob, player, map, map_size, monsters_vector, delta, explosions_vector);
 
                 if (mob->alive == Jfalse)
                 {
@@ -74,6 +89,16 @@ void Update(Entity* map, int map_size,
 
                 }
             }
+        }
+    }
+
+    for(int i = 0 ; i < Vector_Count(explosions_vector) ; i++)
+    {
+        Entity* exp = (Entity*)Vector_Get(explosions_vector, i);
+        Explosion_Update(exp, delta);
+        if (!exp->alive)
+        {
+            Vector_Delete(explosions_vector, i);
         }
     }
 }
@@ -94,6 +119,7 @@ int main(int argc, char* args[])
     Vector bullets_vector = Vector_Create();
     Vector bonus_vector = Vector_Create();
     Vector monsters_vector = Vector_Create();
+    Vector explosions_vector = Vector_Create();
 
 	int map_width = 50;
 	int map_height = 50;
@@ -181,8 +207,8 @@ int main(int argc, char* args[])
                 Graphics_RenderText(graphics, reloading_str, Medium, player->x - player->camera->x - 20, player->y - 20 - player->camera->y);
             }
 
-            Update(map, map_size, player, delta, &bullets_vector, &bonus_vector, &monsters_vector);
-            Graphics_RenderWorld(graphics, map, map_size, player, &bullets_vector, &bonus_vector, &monsters_vector);
+            Update(map, map_size, player, delta, &bullets_vector, &bonus_vector, &monsters_vector, &explosions_vector);
+            Graphics_RenderWorld(graphics, map, map_size, player, &bullets_vector, &bonus_vector, &monsters_vector, &explosions_vector);
             Graphics_Flip(graphics);
             time_last_frame = time_now;
 

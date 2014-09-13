@@ -43,7 +43,7 @@ void* Vector_Get(Vector *v, int index)
 {
 	if (index >= v->count)
     {
-        printf("Index too high")
+        printf("Index too high");
 		return;
 	}
 
@@ -54,7 +54,7 @@ void Vector_Delete(Vector *v, int index)
 {
 	if (index >= v->count)
     {
-        printf("Index too high")
+        printf("Index too high");
 		return;
 	}
 
