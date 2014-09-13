@@ -70,7 +70,6 @@ Jbool PoolInputs(Controls* controls, Entity* camera)
 
 	controls->mouseTileY = (controls->mousePositionInWorldY - controls->mousePositionInWorldY % TILE_SIZE) / TILE_SIZE;
 
-//printf("%f %d\n", camera->x, controls->mouseTileX);
 	return Jtrue;
 }
 
@@ -108,7 +107,20 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
 	float ratio = opposite / adjacent;
 	float angle_to_mouse = atan2f(opposite, adjacent);
 
+
+	float muzzleDistanceX = cos(angle_to_mouse) * 20;
+	float muzzleDistanceY = sin(angle_to_mouse) * 20;
+    player->muzzleX = player->x + 10; //+ player->box.width/2 + muzzleDistanceX + angle_to_mouse;
+    player->muzzleY = player->y + 10; //+ player->box.height/2 + muzzleDistanceY + angle_to_mouse;
+
 	player->angle = angle_to_mouse;
+
+
+	adjacent = controls->mousePositionInWorldX  - player->muzzleX - 5;
+	opposite = controls->mousePositionInWorldY - player->muzzleY - 5;
+    ratio = opposite / adjacent;
+	float angle_from_muzzle_to_mouse = atan2f(opposite, adjacent);
+
 
     if(player->current_weapon == AutomaticRifle_w)
     {
@@ -116,7 +128,7 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
             SDL_GetTicks() - player->last_shoot > 35 &&
             controls->pressedMouseButtons[SDL_BUTTON_LEFT] == Jtrue)
         {
-            List_push(bullets, Bullet_Create(player->x + 10, player->y + 10, angle_to_mouse, 3));
+            List_push(bullets, Bullet_Create(player->muzzleX,  player->muzzleY, angle_from_muzzle_to_mouse, 1));
             player->magazine_bullets -= 1;
 
 
@@ -141,7 +153,6 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
         }
     }
 
-//printf("%d %d %d %d\n", controls->mouseTileX, controls->mouseTileY, controls->mousePositionInWorldX, controls->mousePositionInWorldY);
     if (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
     {
         if (controls->mouseTileX < map_width && controls->mouseTileX > 0 &&

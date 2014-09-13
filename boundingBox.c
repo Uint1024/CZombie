@@ -15,6 +15,8 @@ Box* BoundingBox_CreateTemp(Entity* ent)
 	return tempBox;
 }
 
+
+
 //create bounding box after entity creation
 void BoundingBox_Create(Entity* ent, int width, int height)
 {

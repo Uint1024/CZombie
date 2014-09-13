@@ -19,20 +19,6 @@
 
 Jbool debug_mode = Jfalse;
 
-Entity* createSquare(float x, float y, int w, int h)
-{
-	Entity* ent = (Entity*)malloc(sizeof(Entity));
-	ent->t = Square;
-	ent->x = x;
-	ent->y = y;
-	ent->dx = 0;
-	ent->dy = 0;
-	BoundingBox_Create(ent, w, h);
-	ent->speed = 0.5;
-	ent->last_creation = 0;
-	return ent;
-}
-
 void Render(SDL_Renderer* renderer, Entity* ent, SDL_Texture* textures[15], TTF_Font** font, Entity* camera);
 void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture);
 void Move_With_Camera(Entity* ent, Entity* camera);
@@ -79,7 +65,7 @@ void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture)
 	SDL_RenderCopyEx(renderer, texture, NULL, &rect, ent->angle * 57.32f, NULL, SDL_FLIP_NONE);
 
 SDL_SetRenderDrawColor(renderer, 0,0,0, 0xFF);
-	SDL_RenderDrawPoint(renderer, ent->muzzleX, ent->muzzleY);
+	SDL_RenderDrawPoint(renderer, ent->muzzleX - ent->camera->x, ent->muzzleY- ent->camera->y);
 }
 
 
@@ -202,7 +188,7 @@ void Update(Entity* map, int map_size, List* monsters,
     {
         void* ptr_to_next = _nodeB->next;
         Entity* bonus = (struct Entity*)_nodeB->value;
-
+        Bonus_Update(bonus, player);
         if(!bonus->alive)
         {
             List_remove(bonus_list, _nodeB);

@@ -52,6 +52,8 @@ void moveToPosition(Entity* ent, float x, float y)
 	BoundingBox_Update(ent);
 }
 
+
+
 void CollisionWithMonsters(Entity* ent, List* mob_list)
 {
     Box* temp = BoundingBox_CreateTemp(ent);
@@ -71,6 +73,8 @@ void CollisionWithMonsters(Entity* ent, List* mob_list)
             }
         }
     }
+
+    free(temp);
 
     if (collision_sides[Bottom] && ent->dy > 0)
 	{
@@ -115,6 +119,7 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size)
 		}
 	}
 
+    free(temp);
 
 	Jbool corner = Jfalse;
 	Jbool flatBottomTop = Jfalse;
@@ -196,6 +201,7 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 		}
 	}
 
+    free(temp);
 	Jbool corner = Jfalse;
 	Jbool flatBottomTop = Jfalse;
 
