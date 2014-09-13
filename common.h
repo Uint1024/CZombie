@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #define TILE_SIZE 32
+#define NB_OF_WEAPONS 5
 
 typedef enum { Jfalse, Jtrue } Jbool;
 

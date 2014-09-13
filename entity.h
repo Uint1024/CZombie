@@ -4,8 +4,12 @@
 #include "camera.h"
 #include "boundingBox.h"
 #include "linkedList.h"
+#include "weapons_component.h"
+
+typedef struct Weapon Weapon;
 typedef struct Entity
 {
+    Texture_Type texture;
 	Type t;
 	float x;
 	float y;
@@ -15,22 +19,20 @@ typedef struct Entity
 	float muzzleY;
 	float speed;
 	float angle;
+
+	//should be a pointer? Not every entity has a hitbox (maybe)
 	Box box;
-	int player_id;
+
 	Jbool alive;
 	int hp;
-	int bullets[5];
-    Entity* weapon;
-    int magazine_max_bullets;
-    int magazine_bullets;
+
+
+
+    WeaponsComponent* weapons_component;
+
 	int last_creation;
-	Weapon_Type current_weapon;
-	int last_shoot;
-	int last_reload;
-	Jbool reloading;
-	int tempFixForCamera;
 	Entity* camera;
-	Texture_Type texture;
+
 } Entity;
 
 

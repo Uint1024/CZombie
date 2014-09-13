@@ -32,7 +32,6 @@ void Bullet_Move(Entity* bullet, Entity* map, int map_size, List* monsters, int 
 	if (out_of_screen != None)
 		bullet->alive = Jfalse;
 
-	Jbool collision = Jfalse;
 	for (int i = 0; i < map_size && bullet->alive == Jtrue; i++)
 	{
 		bullet->alive = !BoundingBox_CheckSimpleCollision(&bullet->box, &map[i].box);

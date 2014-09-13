@@ -8,6 +8,9 @@
 #include "wall.h"
 #include "camera.h"
 #include "zombie.h"
+#include "weapon.h"
+#include "weapons_component.h"
+#include <stdio.h>
 
 Controls* CreateControls()
 {
@@ -104,53 +107,27 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
 
 	float adjacent = controls->mousePositionInWorldX  - player->x;
 	float opposite = controls->mousePositionInWorldY - player->y;
-	float ratio = opposite / adjacent;
 	float angle_to_mouse = atan2f(opposite, adjacent);
 
-
-	float muzzleDistanceX = cos(angle_to_mouse) * 20;
-	float muzzleDistanceY = sin(angle_to_mouse) * 20;
-    player->muzzleX = player->x + 10; //+ player->box.width/2 + muzzleDistanceX + angle_to_mouse;
-    player->muzzleY = player->y + 10; //+ player->box.height/2 + muzzleDistanceY + angle_to_mouse;
+    player->muzzleX = player->x + 10;
+    player->muzzleY = player->y + 10;
 
 	player->angle = angle_to_mouse;
 
 
 	adjacent = controls->mousePositionInWorldX  - player->muzzleX - 5;
 	opposite = controls->mousePositionInWorldY - player->muzzleY - 5;
-    ratio = opposite / adjacent;
 	float angle_from_muzzle_to_mouse = atan2f(opposite, adjacent);
 
 
-    if(player->current_weapon == AutomaticRifle_w)
+    if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
     {
-        if (player->magazine_bullets > 0 &&
-            SDL_GetTicks() - player->last_shoot > 35 &&
-            controls->pressedMouseButtons[SDL_BUTTON_LEFT] == Jtrue)
-        {
-            List_push(bullets, Bullet_Create(player->muzzleX,  player->muzzleY, angle_from_muzzle_to_mouse, 1));
-            player->magazine_bullets -= 1;
-
-
-            player->last_shoot = SDL_GetTicks();
-        }
-
-
-        if(player->reloading && SDL_GetTicks() - player->last_reload > 1000)
-        {
-            player->magazine_bullets = player->magazine_max_bullets;
-            player->bullets[AutomaticRifle_w] -= player->magazine_max_bullets;
-            player->reloading = Jfalse;
-        }
-    }
-
-    if(player->bullets[AutomaticRifle_w] > 0)
-    {
-        if(!player->reloading && player->magazine_bullets <= 0)
-        {
-            player->reloading = Jtrue;
-            player->last_reload = SDL_GetTicks();
-        }
+        Weapon_TryToShoot(player->weapons_component->current_weapon,
+                          player->muzzleX,
+                          player->muzzleY,
+                          angle_from_muzzle_to_mouse,
+                          bullets
+                          );
     }
 
     if (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
@@ -161,10 +138,6 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
             //converting tile position to real position on screen
             int tileInPixelsX = controls->mouseTileX * TILE_SIZE;
             int tileInPixelsY = controls->mouseTileY * TILE_SIZE;
-
-            //"- camera->dx" is "temporary fix"
-            //float positionWithCameraX = tileInPixelsX - camera->dx;
-            //float positionWithCameraY = tileInPixelsY  - camera->dy;
 
             Entity* wall = (Entity*)malloc(sizeof(Entity));
             wall = Wall_Create(tileInPixelsX, tileInPixelsY);
@@ -180,12 +153,12 @@ void ProcessInputs(Controls* controls, Entity* player, List* bullets,
             printf("out of bound!!!");
     }
 
-    if(SDL_GetTicks() - player->last_creation > 190)
+    if(SDL_GetTicks() - player->last_creation > 50)
     {
         if (controls->pressedKeys[SDL_SCANCODE_C] == Jtrue)
         {
             Entity* zombie = (Entity*)malloc(sizeof(Entity));
-            zombie = CreateZombie(controls->mousePositionInWorldX , controls->mousePositionInWorldY, 0.05);
+            zombie = CreateZombie(controls->mousePositionInWorldX , controls->mousePositionInWorldY, 0.2);
             List_push(monsters, zombie);
         }
 

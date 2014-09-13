@@ -20,19 +20,10 @@ Entity* Entity_Spawn()
 	ent->angle                     = 0;
 	//FUCK, this should be a pointer...
 	//ent-> box                       = NULL;
-	ent->player_id                 = 0;
 	ent->alive                     = Jtrue;
 	ent->hp                        = 0;
-	//ent-> bullets                = {0};
-    ent->weapon                    = NULL;
-    ent->magazine_max_bullets      = 0;
-    ent->magazine_bullets          = 0;
+    ent->weapons_component          = NULL;
 	ent->last_creation             = 0;
-	ent->current_weapon            = No_Weapon;
-	ent->last_shoot                = 0;
-	ent->last_reload               = 0;
-	ent->reloading                 = Jfalse;
-	ent->tempFixForCamera          = 0;
 	ent->camera                    = NULL;
     ent->texture                   = No_texture;
 	return ent;
@@ -101,7 +92,6 @@ void CollisionWithMonsters(Entity* ent, List* mob_list)
 
 void CalculateVelocity(Entity* p, Entity* map, int map_size)
 {
-    Jbool trajectoryCutShot = Jfalse;
 	Entity* collision_wall[5];
 	int walls_touched[5] = { 0 };
 
@@ -121,7 +111,7 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size)
 
     free(temp);
 
-	Jbool corner = Jfalse;
+
 	Jbool flatBottomTop = Jfalse;
 
 
@@ -132,25 +122,21 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size)
 	{
 		p->dx = collision_wall[Left]->box.right - p->box.left;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 	if (walls_touched[Bottom] > 0 && walls_touched[Right] > 1)
 	{
 		p->dx = collision_wall[Right]->box.left - p->box.right;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 	if (walls_touched[Top] > 0 && walls_touched[Left] > 1)
 	{
 		p->dx = collision_wall[Left]->box.right - p->box.left;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 	if (walls_touched[Top] > 0 && walls_touched[Right] > 1)
 	{
 		p->dx = collision_wall[Right]->box.left - p->box.right;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 
 	if (walls_touched[Bottom] && p->dy > 0)
@@ -181,8 +167,6 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size)
 
 void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int map_size)
 {
-    Jbool trajectoryCutShot = Jfalse;
-	Jbool collision[5] = { Jfalse };
 	Entity* collision_wall[5];
 	int walls_touched[5] = { 0 };
 
@@ -192,7 +176,6 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 		if (map[i].t == Wall)
 		{
 			Direction collision_direction = BoundingBox_CheckCollision(&p->box, temp, &map[i].box);
-			collision[collision_direction] = Jtrue;
 			if (collision_direction != None)
 			{
 				collision_wall[collision_direction] = &map[i];
@@ -202,7 +185,6 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 	}
 
     free(temp);
-	Jbool corner = Jfalse;
 	Jbool flatBottomTop = Jfalse;
 
 
@@ -213,38 +195,31 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 	{
 		p->dx = collision_wall[Left]->box.right - p->box.left;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 	if (walls_touched[Bottom] > 0 && walls_touched[Right] > 1)
 	{
 		p->dx = collision_wall[Right]->box.left - p->box.right;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 	if (walls_touched[Top] > 0 && walls_touched[Left] > 1)
 	{
 		p->dx = collision_wall[Left]->box.right - p->box.left;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 	if (walls_touched[Top] > 0 && walls_touched[Right] > 1)
 	{
 		p->dx = collision_wall[Right]->box.left - p->box.right;
 		p->dy = 0;
-		corner = Jtrue;
 	}
 
 	if (walls_touched[Bottom] && p->dy > 0)
 	{
-		//p->dy = collision_wall[Bottom]->box.top - p->box.bottom;
         p->dy = 0;
         moveEntity(camera, 0, collision_wall[Bottom]->box.top - p->box.bottom);
 	}
 
 	if (walls_touched[Top] && p->dy < 0)
 	{
-
-		//p->dy = collision_wall[Top]->box.bottom - p->box.top;
         p->dy = 0;
         moveEntity(camera, 0, collision_wall[Top]->box.bottom - p->box.top);
 	}
@@ -254,8 +229,6 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 	{
 		if (walls_touched[Right] && p->dx > 0)
 		{
-		    //p->dx = 0;
-		    //moveEntity(camera, (collision_wall[Right]->box.left - p->box.right), 0);
 			p->dx = collision_wall[Right]->box.left - p->box.right;
 		}
 
@@ -263,7 +236,6 @@ void CalculateVelocityPlayerCamera(Entity* p, Entity* camera, Entity* map, int m
 		{
 		    p->dx = 0;
 		    moveEntity(camera, (collision_wall[Left]->box.right - p->box.left), 0);
-			//p->dx = collision_wall[Left]->box.right - p->box.left;
 		}
 	}
 }

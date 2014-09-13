@@ -17,12 +17,15 @@
 #include "player.h"
 #include "zombie.h"
 #include "graphics.h"
+#include "weapon.h"
+#include "weapons_component.h"
+#include "bonus.h"
 
 Jbool debug_mode = Jfalse;
 
 
 void Update(Entity* map, int map_size, List* monsters,
-            List* bullets, Entity* player, Entity* camera, int delta,
+            List* bullets, Entity* player, int delta,
             List* bonus_list)
 {
     Player_Move(player, map, map_size, &player->camera, bonus_list, delta, monsters);
@@ -89,21 +92,7 @@ int main(int argc, char* args[])
     srand(time(NULL));
 	int screen_width = 1080;
 	int screen_height = 768;
-	/*
-	SDL_Window* window = SDL_CreateWindow("	C Game",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		screen_width,
-		screen_height,
-		SDL_WINDOW_SHOWN |
-		SDL_WINDOW_OPENGL);
-	SDL_GL_SwapWindow(window);
-	SDL_GL_CreateContext(window);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window,
-		-1,
-		SDL_RENDERER_ACCELERATED);*/
 
-	//glewInit();
     Graphics* graphics = Graphics_Create(screen_width, screen_height);
 	Jbool running = Jtrue;
 
@@ -128,22 +117,10 @@ int main(int argc, char* args[])
 	int delta = 1;
 	float fps = 0;
 
-	/*SDL_Texture* textures[15];
-
-	textures[Player_tex] = IMG_LoadTexture(renderer, "player.png");
-	textures[Zombie_tex] = IMG_LoadTexture(renderer, "zombie.png");
-	textures[Ammo_Bonus_tex] = IMG_LoadTexture(renderer, "bullet_bonus.png");
-	textures[Bullet_tex] = IMG_LoadTexture(renderer, "bullet.png");*/
-
-
-
-	/*TTF_Font* font[5];
-	font[Small] = TTF_OpenFont("cour.ttf", 7);
-	font[Medium] = TTF_OpenFont("cour.ttf", 16);*/
-
 	char fps_str[6];
     char delta_str[4];
-    int chrono_frame = 0;
+    int chrono_update = 0;
+    int chrono_render = 0;
     int time_last_frame_real = 0;
     int time_this_frame_real = 0;
     char reloading_str[11] = "Reloading!";
@@ -154,65 +131,65 @@ int main(int argc, char* args[])
 	    time_this_frame_real = SDL_GetTicks();
 
 
-        chrono_frame += time_this_frame_real - time_last_frame_real;
+        chrono_update += time_this_frame_real - time_last_frame_real;
 
 
 
         //1000/7 = 140 frames per second
-        if(chrono_frame > 7)
+        if(chrono_update > 14)
         {
             time_now = SDL_GetTicks();
             delta = time_now - time_last_frame;
             if(delta > 0)
             {
-                fps = 1000 / chrono_frame;
+                fps = 1000 / chrono_update;
             }
 
             SDL_SetRenderDrawColor(graphics->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
             SDL_RenderClear(graphics->renderer);
 
-            chrono_frame = 0;
+            chrono_update = 0;
             running = PoolInputs(controls, player->camera);
 
             ProcessInputs(controls, player, bullets, map, map_width, map_height, monsters, delta);
 
 
-            /*if (fps > 0)
+            if (fps > 0)
             {
                 snprintf(delta_str, 4, "%d", delta);
                 snprintf(fps_str, 6, "%f", fps);
                 char full_txt_fps[80];
                 snprintf(full_txt_fps, sizeof full_txt_fps, "%s%s%s%s", fps_str, " FPS - ", delta_str, " ms since last frame.");
-                RenderText(renderer, full_txt_fps, 700, 50, font[Medium]);
+                Graphics_RenderText(graphics, full_txt_fps, Medium, 700, 50);
             }
 
             if(debug_mode)
             {
-                char* nb_of_monsters[50];
+                char nb_of_monsters[50];
                 snprintf(nb_of_monsters, sizeof(nb_of_monsters), "%d%s", monsters->count, " monsters on screen.");
-                RenderText(renderer, nb_of_monsters, 700, 100, font[Medium]);
+                Graphics_RenderText(graphics, nb_of_monsters, Medium, 700, 100);
 
-                char* nb_of_bullets_on_screen[50];
+                char nb_of_bullets_on_screen[50];
                 snprintf(nb_of_bullets_on_screen, sizeof(nb_of_bullets_on_screen), "%d%s", bullets->count, " bullets on screen.");
-                RenderText(renderer, nb_of_bullets_on_screen, 700, 120, font[Medium]);
+                Graphics_RenderText(graphics, nb_of_bullets_on_screen, Medium, 700, 120);
 
 
             }
 
-            char* nb_of_bullets_on_player[70];
+            char nb_of_bullets_on_player[70];
             snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
-                     player->magazine_bullets, " / ",
-                     player->magazine_max_bullets, " / ",
-                     player->bullets[player->current_weapon]
+                     player->weapons_component->current_weapon->magazine_bullets, " / ",
+                     player->weapons_component->current_weapon->magazine_max_bullets, " / ",
+                     player->weapons_component->bullets[player->weapons_component->current_weapon->type]
                      );
-            RenderText(renderer, nb_of_bullets_on_player, 700, 150, font[Medium]);
+            Graphics_RenderText(graphics, nb_of_bullets_on_player, Medium, 700, 150);
 
-            if(player->reloading)
+            if(player->weapons_component->reloading)
             {
-                RenderText(renderer, reloading_str, player->x - player->camera->x - 20, player->y - 20 - player->camera->y, font[Medium]);
+                Graphics_RenderText(graphics, reloading_str, Medium, player->x - player->camera->x - 20, player->y - 20 - player->camera->y);
             }
-*/
-            Update(map, map_size, monsters, bullets, player, &player->camera, delta, bonus_list);
+
+            Update(map, map_size, monsters, bullets, player, delta, bonus_list);
             Graphics_RenderWorld(graphics, map, map_size, monsters, bullets, player, bonus_list);
 
             Graphics_Flip(graphics);
