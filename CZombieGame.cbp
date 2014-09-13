@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="CZombieGame" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/CZombieGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-std=c11" />
+					<Add directory="C:/SDL2-2.0.3/include/SDL2" />
+				</Compiler>
+				<Linker>
+					<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -Wall -Wextra" />
+					<Add directory="C:/SDL2-2.0.3/lib" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/CZombieGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="ball.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bonus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bonus.h" />
+		<Unit filename="boundingBox.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="boundingBox.h" />
+		<Unit filename="bullet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bullet.h" />
+		<Unit filename="camera.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="camera.h" />
+		<Unit filename="common.h" />
+		<Unit filename="controls.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="controls.h" />
+		<Unit filename="entity.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="entity.h" />
+		<Unit filename="linkedList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="linkedList.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="map.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="player.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="player.h" />
+		<Unit filename="string.h" />
+		<Unit filename="thing.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="thing.h" />
+		<Unit filename="wall.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="wall.h" />
+		<Unit filename="zombie.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="zombie.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
