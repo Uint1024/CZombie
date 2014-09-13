@@ -9,6 +9,7 @@ Entity* Wall_Create(int x_, int y_)
 {
 	Entity* ent = (Entity*)malloc(sizeof(Entity));
 	ent->t = Wall;
+	ent->texture = Wall_tex;
 	ent->x = x_;
 	ent->y = y_;
 	ent->dx = 0;

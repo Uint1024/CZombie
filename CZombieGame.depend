@@ -806,7 +806,7 @@
 	"entity.h"
 	"common.h"
 
-1410607366 source:c:\users\john\documents\github\czombie\boundingbox.c
+1410612451 source:c:\users\john\documents\github\czombie\boundingbox.c
 	"boundingBox.h"
 	"entity.h"
 
@@ -825,7 +825,7 @@
 	"camera.h"
 	"entity.h"
 
-1410611842 source:c:\users\john\documents\github\czombie\controls.c
+1410615811 source:c:\users\john\documents\github\czombie\controls.c
 	<SDL.h>
 	"entity.h"
 	"controls.h"
@@ -850,7 +850,7 @@
 1410560593 c:\users\john\documents\github\czombie\zombie.h
 	"linkedList.h"
 
-1410611883 source:c:\users\john\documents\github\czombie\entity.c
+1410612514 source:c:\users\john\documents\github\czombie\entity.c
 	"common.h"
 	"entity.h"
 	"math.h"
@@ -863,7 +863,7 @@
 1410601425 source:c:\users\john\documents\github\czombie\linkedlist.c
 	"linkedList.h"
 
-1410612231 source:c:\users\john\documents\github\czombie\main.c
+1410615591 source:c:\users\john\documents\github\czombie\main.c
 	<stdlib.h>
 	<stdio.h>
 	<time.h>
@@ -880,6 +880,7 @@
 	"camera.h"
 	"player.h"
 	"zombie.h"
+	"graphics.h"
 
 1410279293 c:\users\john\documents\github\czombie\string.h
 
@@ -903,7 +904,7 @@
 	<math.h>
 	<stdlib.h>
 
-1410571860 source:c:\users\john\documents\github\czombie\wall.c
+1410615715 source:c:\users\john\documents\github\czombie\wall.c
 	<math.h>
 	<stdlib.h>
 	"wall.h"
@@ -913,6 +914,18 @@
 	"math.h"
 	"bonus.h"
 	"zombie.h"
+	"entity.h"
+	"linkedList.h"
+
+1410616633 source:c:\users\john\documents\github\czombie\graphics.c
+	<SDL.h>
+	<SDL_image.h>
+	"graphics.h"
+
+1410616562 c:\users\john\documents\github\czombie\graphics.h
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_ttf.h>
 	"entity.h"
 	"linkedList.h"
 

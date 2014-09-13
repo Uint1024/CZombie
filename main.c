@@ -16,127 +16,10 @@
 #include "camera.h"
 #include "player.h"
 #include "zombie.h"
+#include "graphics.h"
 
 Jbool debug_mode = Jfalse;
 
-void Render(SDL_Renderer* renderer, Entity* ent, SDL_Texture* textures[15], TTF_Font** font, Entity* camera);
-void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture);
-void Move_With_Camera(Entity* ent, Entity* camera);
-void RenderText(SDL_Renderer* renderer, char* text, float x, float y, TTF_Font* font);
-void RenderWorld(SDL_Renderer* renderer, Entity* map,
-                 int map_size, List* monsters, List* bullets, Entity* player,
-                 SDL_Texture** textures, List* bonus_list, TTF_Font* font);
-
-
-void Render(SDL_Renderer* renderer, Entity* ent, SDL_Texture* textures[15],
-            TTF_Font** font, Entity* camera)
-{
-	const SDL_Rect rect = { ent->box.left - camera->x, ent->box.top - camera->y, ent->box.width, ent->box.height };
-
-	if (ent->t == Zombie || ent->t == Ammo || ent->t == Bullet)
-	{
-		SDL_RenderCopyEx(renderer, textures[ent->texture], NULL, &rect, ent->angle * 57.32f, NULL, SDL_FLIP_NONE);
-		//SDL_RenderCopy(renderer, textures[1], NULL, &rect);
-	}
-	else
-	{
-		SDL_SetRenderDrawColor(renderer, 0xFF, 0, 0, 0xFF);
-
-		SDL_RenderFillRect(renderer, &rect);
-	}
-	if(debug_mode)
-    {
-        SDL_SetRenderDrawColor(renderer, 0,0,0, 0xFF);
-        SDL_RenderDrawRect(renderer, &rect);
-
-        char* position_str[20];
-        snprintf(position_str, sizeof(position_str), "%d:%d", (int)ent->x, (int)ent->y);
-
-        RenderText(renderer, position_str, ent->x - camera->x, ent->y - camera->y, font[Small]);
-    }
-}
-
-void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture)
-{
-	//SDL_SetRenderDrawColor(renderer, 0xFF, 0, 0, 0xFF);
-	const SDL_Rect rect = { ent->box.left - ent->camera->x, ent->box.top - ent->camera->y, ent->box.width, ent->box.height };
-	//SDL_RenderFillRect(renderer, &rect);
-
-	SDL_RenderCopyEx(renderer, texture, NULL, &rect, ent->angle * 57.32f, NULL, SDL_FLIP_NONE);
-
-SDL_SetRenderDrawColor(renderer, 0,0,0, 0xFF);
-	SDL_RenderDrawPoint(renderer, ent->muzzleX - ent->camera->x, ent->muzzleY- ent->camera->y);
-}
-
-
-/*void Move_With_Camera(Entity* ent, Entity* camera)
-{
-	moveEntity(ent, camera->dx, camera->dy);
-
-}*/
-
-void RenderText(SDL_Renderer* renderer, char* text, float x, float y, TTF_Font* font)
-{
-
-
-    SDL_Color text_color = { 0, 255, 0, 255 };
-
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, text_color);
-
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    int textH = 0;
-    int textW = 0;
-
-    SDL_QueryTexture(textTexture, NULL, NULL, &textW, &textH);
-
-    SDL_Rect textRect = { x, y, textW, textH };
-
-    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-
-    SDL_FreeSurface(textSurface);
-    SDL_DestroyTexture(textTexture);
-}
-
-void RenderWorld(SDL_Renderer* renderer, Entity* map,
-                 int map_size, List* monsters, List* bullets, Entity* player,
-                 SDL_Texture** textures, List* bonus_list, TTF_Font* font)
-{
-    RenderPlayer(renderer, player, textures[Player_tex]);
-
-    for (int i = 0; i < map_size; i++)
-    {
-        if (map[i].t == Wall)
-        {
-            Render(renderer, &map[i], textures, font, player->camera);
-        }
-    }
-
-    ListNode *_nodeM = NULL;
-    for(_nodeM = monsters->first; _nodeM != NULL; _nodeM = _nodeM->next)
-    {
-        Entity* mob = (struct Entity*)_nodeM->value;
-        if (mob->t == Zombie)
-        {
-            Render(renderer, mob, textures, font, player->camera);
-        }
-    }
-
-    ListNode *_nodeB = NULL;
-    for(_nodeB = bullets->first; _nodeB != NULL; _nodeB = _nodeB->next)
-    {
-        Entity* bullet = (struct Entity*)_nodeB->value;
-
-        Render(renderer, bullet, textures, font, player->camera);
-    }
-
-    _nodeB = NULL;
-    for(_nodeB = bonus_list->first; _nodeB != NULL; _nodeB = _nodeB->next)
-    {
-        Entity* bonus = (struct Entity*)_nodeB->value;
-
-        Render(renderer, bonus, textures, font, player->camera);
-    }
-}
 
 void Update(Entity* map, int map_size, List* monsters,
             List* bullets, Entity* player, Entity* camera, int delta,
@@ -206,6 +89,7 @@ int main(int argc, char* args[])
     srand(time(NULL));
 	int screen_width = 1080;
 	int screen_height = 768;
+	/*
 	SDL_Window* window = SDL_CreateWindow("	C Game",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
@@ -217,10 +101,10 @@ int main(int argc, char* args[])
 	SDL_GL_CreateContext(window);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window,
 		-1,
-		SDL_RENDERER_ACCELERATED);
+		SDL_RENDERER_ACCELERATED);*/
 
 	//glewInit();
-
+    Graphics* graphics = Graphics_Create(screen_width, screen_height);
 	Jbool running = Jtrue;
 
 	Entity* player = Player_Create(screen_width / 2 - 10, screen_height / 2 - 10, 20, 20);
@@ -244,18 +128,18 @@ int main(int argc, char* args[])
 	int delta = 1;
 	float fps = 0;
 
-	SDL_Texture* textures[15];
+	/*SDL_Texture* textures[15];
 
 	textures[Player_tex] = IMG_LoadTexture(renderer, "player.png");
 	textures[Zombie_tex] = IMG_LoadTexture(renderer, "zombie.png");
 	textures[Ammo_Bonus_tex] = IMG_LoadTexture(renderer, "bullet_bonus.png");
-	textures[Bullet_tex] = IMG_LoadTexture(renderer, "bullet.png");
+	textures[Bullet_tex] = IMG_LoadTexture(renderer, "bullet.png");*/
 
-	TTF_Init();
 
-	TTF_Font* font[5];
+
+	/*TTF_Font* font[5];
 	font[Small] = TTF_OpenFont("cour.ttf", 7);
-	font[Medium] = TTF_OpenFont("cour.ttf", 16);
+	font[Medium] = TTF_OpenFont("cour.ttf", 16);*/
 
 	char fps_str[6];
     char delta_str[4];
@@ -284,8 +168,8 @@ int main(int argc, char* args[])
                 fps = 1000 / chrono_frame;
             }
 
-            SDL_SetRenderDrawColor(renderer, 0xE5, 0xFF, 0xFF, 0xFF);
-            SDL_RenderClear(renderer);
+            SDL_SetRenderDrawColor(graphics->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
+            SDL_RenderClear(graphics->renderer);
 
             chrono_frame = 0;
             running = PoolInputs(controls, player->camera);
@@ -293,7 +177,7 @@ int main(int argc, char* args[])
             ProcessInputs(controls, player, bullets, map, map_width, map_height, monsters, delta);
 
 
-            if (fps > 0)
+            /*if (fps > 0)
             {
                 snprintf(delta_str, 4, "%d", delta);
                 snprintf(fps_str, 6, "%f", fps);
@@ -327,12 +211,12 @@ int main(int argc, char* args[])
             {
                 RenderText(renderer, reloading_str, player->x - player->camera->x - 20, player->y - 20 - player->camera->y, font[Medium]);
             }
-
+*/
             Update(map, map_size, monsters, bullets, player, &player->camera, delta, bonus_list);
-            RenderWorld(renderer, map, map_size, monsters, bullets, player, textures, bonus_list, font);
+            Graphics_RenderWorld(graphics, map, map_size, monsters, bullets, player, bonus_list);
 
-
-            SDL_RenderPresent(renderer);
+            Graphics_Flip(graphics);
+            //SDL_RenderPresent(renderer);
             time_last_frame = time_now;
 
         }
@@ -342,8 +226,8 @@ int main(int argc, char* args[])
 
 	//SDL_FreeSurface(textSurface);
 
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(graphics->renderer);
+	SDL_DestroyWindow(graphics->window);
 
 
 
