@@ -9,10 +9,11 @@ Entity* Bullet_Create(float x, float y, float angle, float speed)
 	Entity* bullet = (Entity*)malloc(sizeof(Entity));
 
 	bullet->t = Bullet;
+	bullet->texture = Bullet_tex;
 	bullet->x = x;
 	bullet->y = y;
-	bullet->box.height = 5;
-	bullet->box.width = 5;
+	bullet->box.height = 10;
+	bullet->box.width = 10;
 	bullet->angle = angle;
 	bullet->speed = speed;
 	bullet->alive = Jtrue;
@@ -20,14 +21,14 @@ Entity* Bullet_Create(float x, float y, float angle, float speed)
 	return bullet;
 }
 
-void Bullet_Move(Entity* bullet, Entity* map, int map_size, List* monsters, int delta)
+void Bullet_Move(Entity* bullet, Entity* map, int map_size, List* monsters, int delta, Entity* camera)
 {
 	bullet->dx = cos(bullet->angle) * bullet->speed * delta;
 	bullet->dy = sin(bullet->angle) * bullet->speed  * delta;
 	moveEntity(bullet, bullet->dx, bullet->dy);
 
 	//set alive to false if out of screen
-	Direction out_of_screen = BoundingBox_CheckOutOfScreen(&bullet->box);
+	Direction out_of_screen = BoundingBox_CheckOutOfScreen(&bullet->box, camera);
 	if (out_of_screen != None)
 		bullet->alive = Jfalse;
 

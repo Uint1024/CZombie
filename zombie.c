@@ -20,15 +20,15 @@ void UpdateZombie(Entity* z, Entity* player, Entity* map, int map_size, List* mo
 
 Entity* CreateZombie(float x, float y, float speed)
 {
-	Entity* z = (Entity*)malloc(sizeof(Entity));
+	Entity* z = Entity_Spawn();
 
 	z->t = Zombie;
+	z->texture = Zombie_tex;
 	z->x = x;
 	z->y = y;
 	z->box.height = 20;
 	z->box.width = 20;
 	z->speed = speed;
-	z->alive = Jtrue;
 	z->hp = 5;
 	return z;
 }

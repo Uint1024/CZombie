@@ -36,7 +36,7 @@ Entity* createSquare(float x, float y, int w, int h)
 void Render(SDL_Renderer* renderer, Entity* ent, SDL_Texture* textures[15], TTF_Font** font, Entity* camera);
 void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture);
 void Move_With_Camera(Entity* ent, Entity* camera);
-void RenderText(SDL_Renderer* renderer, char* text, float x, float y, TTF_Font** font);
+void RenderText(SDL_Renderer* renderer, char* text, float x, float y, TTF_Font* font);
 void RenderWorld(SDL_Renderer* renderer, Entity* map,
                  int map_size, List* monsters, List* bullets, Entity* player,
                  SDL_Texture** textures, List* bonus_list, TTF_Font* font);
@@ -47,9 +47,9 @@ void Render(SDL_Renderer* renderer, Entity* ent, SDL_Texture* textures[15],
 {
 	const SDL_Rect rect = { ent->box.left - camera->x, ent->box.top - camera->y, ent->box.width, ent->box.height };
 
-	if (ent->t == Zombie || ent->t == Ammo)
+	if (ent->t == Zombie || ent->t == Ammo || ent->t == Bullet)
 	{
-		SDL_RenderCopyEx(renderer, textures[ent->t], NULL, &rect, ent->angle * 57.32f, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, textures[ent->texture], NULL, &rect, ent->angle * 57.32f, NULL, SDL_FLIP_NONE);
 		//SDL_RenderCopy(renderer, textures[1], NULL, &rect);
 	}
 	else
@@ -78,6 +78,8 @@ void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture)
 
 	SDL_RenderCopyEx(renderer, texture, NULL, &rect, ent->angle * 57.32f, NULL, SDL_FLIP_NONE);
 
+SDL_SetRenderDrawColor(renderer, 0,0,0, 0xFF);
+	SDL_RenderDrawPoint(renderer, ent->muzzleX, ent->muzzleY);
 }
 
 
@@ -87,7 +89,7 @@ void RenderPlayer(SDL_Renderer* renderer, Entity* ent, SDL_Texture* texture)
 
 }*/
 
-void RenderText(SDL_Renderer* renderer, char* text, float x, float y, TTF_Font** font)
+void RenderText(SDL_Renderer* renderer, char* text, float x, float y, TTF_Font* font)
 {
 
 
@@ -113,7 +115,7 @@ void RenderWorld(SDL_Renderer* renderer, Entity* map,
                  int map_size, List* monsters, List* bullets, Entity* player,
                  SDL_Texture** textures, List* bonus_list, TTF_Font* font)
 {
-    RenderPlayer(renderer, player, textures[0]);
+    RenderPlayer(renderer, player, textures[Player_tex]);
 
     for (int i = 0; i < map_size; i++)
     {
@@ -156,14 +158,6 @@ void Update(Entity* map, int map_size, List* monsters,
 {
     Player_Move(player, map, map_size, &player->camera, bonus_list, delta, monsters);
 
-    /*for (int i = 0; i < map_size; i++)
-    {
-        if (map[i].t == Wall)
-        {
-            Move_With_Camera(&map[i], camera);
-        }
-    }*/
-
     ListNode *_node3 = bullets->first;
     while (_node3 != NULL)
     {
@@ -172,8 +166,7 @@ void Update(Entity* map, int map_size, List* monsters,
 
         if (bullet->t == Bullet)
         {
-            Bullet_Move(bullet, map, map_size, monsters, delta);
-            //Move_With_Camera(bullet, camera);
+            Bullet_Move(bullet, map, map_size, monsters, delta, player->camera);
 
             if (bullet->alive == Jfalse)
             {
@@ -192,7 +185,6 @@ void Update(Entity* map, int map_size, List* monsters,
         void* ptr_to_next = _nodeMonster->next;
         if (mob->t == Zombie)
         {
-            //Move_With_Camera(mob, camera);
             UpdateZombie(mob, player, map, map_size, monsters, delta);
 
             if (mob->alive == Jfalse)
@@ -206,13 +198,10 @@ void Update(Entity* map, int map_size, List* monsters,
     }
 
      ListNode *_nodeB = bonus_list->first;
-    //for(_nodeB = bonus_list->first; _nodeB != NULL; _nodeB = _nodeB->next)
     while(_nodeB != NULL)
     {
         void* ptr_to_next = _nodeB->next;
         Entity* bonus = (struct Entity*)_nodeB->value;
-
-        //Move_With_Camera(bonus, camera);
 
         if(!bonus->alive)
         {
@@ -271,9 +260,10 @@ int main(int argc, char* args[])
 
 	SDL_Texture* textures[15];
 
-	textures[0] = IMG_LoadTexture(renderer, "player.png");
-	textures[Zombie] = IMG_LoadTexture(renderer, "zombie.png");
-	textures[Ammo] = IMG_LoadTexture(renderer, "bullet_bonus.png");
+	textures[Player_tex] = IMG_LoadTexture(renderer, "player.png");
+	textures[Zombie_tex] = IMG_LoadTexture(renderer, "zombie.png");
+	textures[Ammo_Bonus_tex] = IMG_LoadTexture(renderer, "bullet_bonus.png");
+	textures[Bullet_tex] = IMG_LoadTexture(renderer, "bullet.png");
 
 	TTF_Init();
 
@@ -349,7 +339,7 @@ int main(int argc, char* args[])
 
             if(player->reloading)
             {
-                RenderText(renderer, reloading_str, player->x, player->y - 20, font[Medium]);
+                RenderText(renderer, reloading_str, player->x - player->camera->x - 20, player->y - 20 - player->camera->y, font[Medium]);
             }
 
             Update(map, map_size, monsters, bullets, player, &player->camera, delta, bonus_list);

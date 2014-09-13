@@ -7,6 +7,36 @@
 #include "camera.h"
 #include "boundingBox.h"
 
+
+Entity* Entity_Spawn()
+{
+    Entity* ent = (Entity*)malloc(sizeof(Entity));
+    ent->t                         = Nothing;
+	ent->x                         = 0;
+	ent->y                         = 0;
+	ent->dx                        = 0;
+	ent->dy                        = 0;
+	ent->speed                     = 0;
+	ent->angle                     = 0;
+	//FUCK, this should be a pointer...
+	//ent-> box                       = NULL;
+	ent->player_id                 = 0;
+	ent->alive                     = Jtrue;
+	ent->hp                        = 0;
+	//ent-> bullets                = {0};
+    ent->weapon                    = NULL;
+    ent->magazine_max_bullets      = 0;
+    ent->magazine_bullets          = 0;
+	ent->last_creation             = 0;
+	ent->current_weapon            = No_Weapon;
+	ent->last_shoot                = 0;
+	ent->last_reload               = 0;
+	ent->reloading                 = Jfalse;
+	ent->tempFixForCamera          = 0;
+	ent->camera                    = NULL;
+    ent->texture                   = No_texture;
+	return ent;
+}
 void moveEntity(Entity* ent, float x, float y)
 {
 	ent->x += x;

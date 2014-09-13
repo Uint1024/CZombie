@@ -11,6 +11,8 @@ typedef struct Entity
 	float y;
 	float dx;
 	float dy;
+	float muzzleX;
+	float muzzleY;
 	float speed;
 	float angle;
 	Box box;
@@ -28,6 +30,7 @@ typedef struct Entity
 	Jbool reloading;
 	int tempFixForCamera;
 	Entity* camera;
+	Texture_Type texture;
 } Entity;
 
 
@@ -35,6 +38,6 @@ typedef struct Entity
 void moveEntity(Entity* ent, float x, float y);
 void CollisionWithMonsters(Entity* ent, List* mob_list);
 void CalculateVelocity(Entity* p, Entity* map, int map_size);
-
+Entity* Entity_Spawn();
 
 #endif

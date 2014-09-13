@@ -27,15 +27,15 @@ void BoundingBox_Create(Entity* ent, int width, int height)
 }
 
 //return direction of exit if the box is completely outside of the screen
-Direction BoundingBox_CheckOutOfScreen(Box* box)
+Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)
 {
-	if (box->top > 768)
+	if (box->top - camera->y > 768)
 		return Bottom;
-	else if (box->bottom < 0)
+	else if (box->bottom  - camera->y < 0)
 		return Top;
-	else if (box->right < 0)
+	else if (box->right  - camera->x < 0)
 		return Left;
-	else if (box->left > 1080)
+	else if (box->left - camera->x > 1080)
 	{
 		return Right;
 	}
@@ -55,13 +55,6 @@ void BoundingBox_Update(Entity* ent)
 //check collision between 2 objects, returns direction of collision
 Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 {
-	    /*printf("%d <= %d && %d >= %d && %d >= %d && %d <= %d\n", nextBox1->top, box2->bottom, nextBox1->bottom, box2->bottom,
-		nextBox1->right, box2->left, nextBox1->left, box2->right);*/
-
-
-    /*printf("%d >= %d && %d <= %d && %d <= %d && %d >= %d && %d <= %d\n", nextBox1->right, box2->left, nextBox1->left, box2->left,
-		currentBox1->right, box2->left,
-		nextBox1->bottom, box2->top, nextBox1->top, box2->bottom);*/
 
 	if (nextBox1->right >= box2->left && nextBox1->left <= box2->left &&
 		currentBox1->right - 5 <= box2->left &&

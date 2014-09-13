@@ -16,48 +16,30 @@ void Player_Move(Entity* p, Entity* map, int map_size, Entity* camera, List* bon
     moveEntity(p, p->dx, p->dy);
 
     MoveCamera(p->camera, p->dx , p->dy );
-    //printf("%f\n", p->camera->x);
-    /*if(p->tempFixForCamera == 0)
-    {
-        MoveCamera(camera, -p->dx -1, -p->dy -1);
-        p->tempFixForCamera = 1;
-    }
-    else if(p->tempFixForCamera == 1)
-    {
-        MoveCamera(camera, -p->dx + 1, -p->dy + 1);
-        p->tempFixForCamera = 0;
-    }*/
-	//int random = rand() % 2;
-	//if (random == 0) {MoveCamera(camera, 0.01, 0.01);}
-	//if (random == 1) {MoveCamera(camera, -0.01, -0.01);}
+
 }
 
 
 Entity* Player_Create(float x, float y, int w, int h)
 {
-	Entity* ent = (Entity*)malloc(sizeof(Entity));
-	ent->t = Square;
-	ent->x = x;
-	ent->y = y;
-	ent->dx = 0;
-	ent->dy = 0;
-	BoundingBox_Create(ent, w, h);
-	ent->speed = 0.5;
-	ent->last_creation = 0;
+    Entity* p = Entity_Spawn();
+	//Entity* ent = (Entity*)malloc(sizeof(Entity));
+	p->t = Player;
+	p->texture = Player_tex;
+	p->x = x;
+	p->y = y;
+	BoundingBox_Create(p, w, h);
+	p->speed = 0.5;
 	for(int i = 0 ; i < 5 ; i++)
-        ent->bullets[i] = 250;
+        p->bullets[i] = 250;
 
-    ent->magazine_max_bullets = 50;
-    ent->magazine_bullets = 50;
-    ent->current_weapon = AutomaticRifle_w;
-    ent->last_shoot = 0;
-    ent->last_reload = 0;
-    ent->reloading = Jfalse;
-    ent->tempFixForCamera = 0;
+    p->magazine_max_bullets = 50;
+    p->magazine_bullets = 50;
+    p->current_weapon = AutomaticRifle_w;
 
-    ent->camera = CreateCamera();
+    p->camera = CreateCamera();
 
-	return ent;
+	return p;
 }
 
 void Player_CheckBonusCollision(Entity* player, List* bonus_list)
