@@ -4,6 +4,7 @@
 typedef struct Vector Vector;
 
 typedef struct Entity Entity;
+typedef struct World World;
 
 typedef struct Explosive
 {
@@ -23,5 +24,5 @@ Explosive* ExplosiveComponent_Create(float x, float y, float angle, float speed,
                             float destinationX, float destinationY);
 Entity* Grenade_Create(float x, float y, float angle, float speed,
                         float destinationX, float destinationY);
-                        void Grenade_Move(Entity* g, Entity* map, int map_size, Vector* monsters_vector, int delta, Entity* camera);
+void Grenade_Update(Entity* g, int delta, World* world);
 #endif // EXPLOSIVE_H

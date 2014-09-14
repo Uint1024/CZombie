@@ -5,6 +5,8 @@
 #include "linkedList.h"
 #include "vector.h"
 
+typedef struct World World;
+
 typedef struct Controls
 {
 	Jbool pressedKeys[200];
@@ -17,11 +19,12 @@ typedef struct Controls
 	int mousePositionInWorldX;
 	int mousePositionInWorldY;
 	int mouseWheelPos;
+	int timer_menu;
 } Controls;
 
 Controls* CreateControls();
 Jbool PoolInputs(Controls* controls, Entity* camera);
-void ProcessInputs(Controls* controls, Entity* player,
-	Entity* map, int map_width, int map_height, int delta,
-	Vector* bullets_vector, Vector* monsters_vector);
+void ProcessInputs( Controls* controls, int delta,
+                    Jbool* game_started,
+                    World* world);
 #endif

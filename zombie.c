@@ -3,20 +3,20 @@
 #include "zombie.h"
 #include "entity.h"
 #include "linkedList.h"
-void UpdateZombie(Entity* z, Entity* player, Entity* map,
-                  int map_size, Vector* monsters_vector, int delta,
-                  Vector* explosions_vector)
+#include "world.h"
+
+void Zombie_Update(Entity* z, int delta, World* world)
 {
-	float adjacent = player->x - z->x;
-	float opposite = player->y - z->y;
+	float adjacent = world->player.x - z->x;
+	float opposite =world->player.y - z->y;
 
 	float angle = atan2f(opposite, adjacent);
 	z->angle = angle;
 	z->dx = cos(angle) * z->speed * delta;
 	z->dy = sin(angle) * z->speed * delta;
-    CollisionWithMonsters(z, monsters_vector);
-    CalculateVelocity(z, map, map_size);
-    Entity_CollisionWithExplosions(z, explosions_vector);
+    CollisionWithMonsters(z, &world->monsters_vector);
+    CalculateVelocity(z, world->map, world->map_size);
+    Entity_CollisionWithExplosions(z, &world->explosions_vector);
 
 	moveEntity(z, z->dx, z->dy);
 }

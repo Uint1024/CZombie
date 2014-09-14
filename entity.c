@@ -100,6 +100,7 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size)
 	{
 		if (map[i].t == Wall)
 		{
+
 			Direction collision_direction = BoundingBox_CheckCollision(&p->box, temp, &map[i].box);
 			if (collision_direction != None)
 			{

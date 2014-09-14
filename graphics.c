@@ -3,7 +3,9 @@
 #include "graphics.h"
 #include "vector.h"
 #include "entity.h"
-#include "main_menu.h"
+#include "menu.h"
+#include "menu_button.h"
+#include "world.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
@@ -40,6 +42,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 
     g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
 	g->fonts[Medium]            =   TTF_OpenFont("cour.ttf", 16);
+	g->fonts[Menu_font]         =   TTF_OpenFont("verdana.ttf", 46);
 
 	g->text_surface             =   NULL;
 	g->text_texture             =   NULL;
@@ -47,19 +50,22 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     return g;
 }
 
-void Graphics_RenderWorld(Graphics* graphics, Entity* map,
-                            int map_size, Entity* player, Vector* bullets_vector,
-                            Vector* bonus_vector, Vector* monsters_vector,
-                            Vector* explosions_vector)
+void Graphics_RenderWorld(Graphics* graphics, World* world)
 {
-    //RenderPlayer(renderer, player, textures[Player_tex]);
-    Graphics_RenderObject(graphics, player, player->camera);
 
-    for (int i = 0; i < map_size; i++)
+    Vector* bullets_vector = &world->bullets_vector;
+    Vector* bonus_vector = &world->bonus_vector;
+    Vector* monsters_vector = &world->monsters_vector;
+    Vector* explosions_vector = &world->explosions_vector;
+    Entity* camera = world->player.camera;
+
+    Graphics_RenderObject(graphics, &world->player, camera);
+
+    for (int i = 0; i < world->map_size; i++)
     {
-        if (map[i].t == Wall)
+        if (world->map[i].t == Wall)
         {
-            Graphics_RenderObject(graphics, &map[i], player->camera);
+            Graphics_RenderObject(graphics, &world->map[i], camera);
         }
     }
 
@@ -68,7 +74,7 @@ void Graphics_RenderWorld(Graphics* graphics, Entity* map,
         if(Vector_Get(bullets_vector, i) != NULL)
         {
             Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
-            Graphics_RenderObject(graphics, bullet, player->camera);
+            Graphics_RenderObject(graphics, bullet, camera);
         }
     }
 
@@ -77,7 +83,7 @@ void Graphics_RenderWorld(Graphics* graphics, Entity* map,
         if(Vector_Get(bonus_vector, i) != NULL)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
-            Graphics_RenderObject(graphics, bonus, player->camera);
+            Graphics_RenderObject(graphics, bonus, camera);
         }
     }
 
@@ -86,7 +92,7 @@ void Graphics_RenderWorld(Graphics* graphics, Entity* map,
         if(Vector_Get(monsters_vector, i) != NULL)
         {
             Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
-            Graphics_RenderObject(graphics, mob, player->camera);
+            Graphics_RenderObject(graphics, mob, camera);
 
         }
     }
@@ -96,7 +102,7 @@ void Graphics_RenderWorld(Graphics* graphics, Entity* map,
         if(Vector_Get(explosions_vector, i) != NULL)
         {
             Entity* explosion = (struct Entity*)Vector_Get(explosions_vector, i);
-            Graphics_RenderObject(graphics, explosion, player->camera);
+            Graphics_RenderObject(graphics, explosion, camera);
         }
     }
 }
@@ -164,13 +170,27 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, 
     SDL_DestroyTexture(graphics->text_texture);
 }
 
-void Graphics_RenderMenu(Graphics* graphics, MainMenu* main_menu)
+void Graphics_RenderMenu(Graphics* g, Menu* menu)
 {
-    for(int i = 0 ; i < TOTAL_MAIN_MENU_BUTTONS ; i++)
+    for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
     {
-        SDL_RenderCopy(graphics->renderer, main_menu->buttons[i].text_texture, NULL, &main_menu->buttons[i].text_rect);
-        if(main_menu->buttons[i].text_texture == NULL)
-            printf("error");
+        MenuButton* button = (MenuButton*)Vector_Get(&menu->buttons, i);
+
+        SDL_RenderCopy(g->renderer,
+                       button->text_texture,
+                       NULL,
+                       &button->text_rect);
+
+        if(button->hover)
+        {
+            SDL_Rect underline;
+            underline.x = button->text_rect.x;
+            underline.y = button->box.bottom + 1;
+            underline.h = 10;
+            underline.w = button->text_rect.w;
+
+            SDL_RenderCopy(g->renderer, g->textures[Wall_tex], NULL, &underline);
+        }
     }
 }
 

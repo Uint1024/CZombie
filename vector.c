@@ -30,7 +30,7 @@ void Vector_Push(Vector *v, void *e)
 
         if(v->data == NULL)
         {
-            printf("Vector_Push - Error after malloc and memset of vector");
+            printf("Vector_Push - Error after malloc and memset");
             return;
         }
         if (v->size == v->count)
@@ -41,7 +41,7 @@ void Vector_Push(Vector *v, void *e)
 
         if(v->data == NULL)
         {
-            printf("Vector_Push - Error after realloc of vector");
+            printf("Vector_Push - Error after realloc");
             return;
         }
 
@@ -79,9 +79,11 @@ void Vector_Delete(Vector *v, int index)
             v->data[destination] = v->data[index_to_copy];
             destination++;
         }
+        else
+        {
+            printf("Error during vector delete : trying to move null pointer");
+        }
     }
-
-    printf("deleting, size = %d\n", v->size);
 
 	v->data[v->count] = NULL;
 	v->count--;

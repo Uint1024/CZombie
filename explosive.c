@@ -38,13 +38,12 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
     return grenade;
 }
 
-void Grenade_Move(Entity* g, Entity* map, int map_size, Vector* monsters_vector, int delta, Entity* camera)
+void Grenade_Update(Entity* g, int delta, World* world)
 {
     g->explosive_component->explosion_timer -= delta;
 
     if(g->explosive_component->explosion_timer <= 0)
     {
-        printf("boom!");
         g->alive = Jfalse;
     }
     g->dx = cos(g->angle) * g->speed * delta;

@@ -65,6 +65,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="entity.h" />
+		<Unit filename="explosion.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="explosion.h" />
+		<Unit filename="explosive.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="explosive.h" />
+		<Unit filename="graphics.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics.h" />
 		<Unit filename="linkedList.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -72,9 +84,17 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="main_menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main_menu.h" />
 		<Unit filename="map.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="menu_button.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_button.h" />
 		<Unit filename="player.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -84,10 +104,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="thing.h" />
+		<Unit filename="vector.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="vector.h" />
 		<Unit filename="wall.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="wall.h" />
+		<Unit filename="weapon.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="weapon.h" />
+		<Unit filename="weapons_component.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="weapons_component.h" />
 		<Unit filename="zombie.c">
 			<Option compilerVar="CC" />
 		</Unit>

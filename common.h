@@ -5,7 +5,12 @@
 #define TILE_SIZE 32
 #define NB_OF_WEAPONS 5
 
-typedef enum { Play, Options, Quit} Menu_Button;
+typedef enum { Play_button, Options_button, Quit_button, Back_button } Menu_Button_Name;
+
+typedef enum { Main_Menu_menu, Options_menu } Menu_Name;
+
+//typedef enum { FPS_options_button, Controls_options_button, Back_button } OptionsMenu_Button;
+
 typedef enum { Jfalse, Jtrue } Jbool;
 
 typedef enum { Left, Top, Bottom, Right, None } Direction;
@@ -20,7 +25,7 @@ typedef enum { Key_W, Key_A, Key_S, Key_D } Keyboard_Key;
 
 typedef enum { No_Weapon, Handgun_w, AutomaticRifle_w, Shotgun_w, GrenadeLauncher_w } Weapon_Type;
 
-typedef enum { Small, Medium, Large } Font_Size;
+typedef enum { Small, Medium, Large, Menu_font } Font_Size;
 
 extern Jbool debug_mode;
 #endif

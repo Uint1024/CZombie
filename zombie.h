@@ -4,10 +4,9 @@
 #include "vector.h"
 
 typedef struct Entity Entity;
+typedef struct World World;
 
-void UpdateZombie(Entity* z, Entity* player, Entity* map,
-                  int map_size, Vector* monsters_vector, int delta,
-                  Vector* explosions_vector);
+void Zombie_Update(Entity* z, int delta, World* world);
 
 Entity* CreateZombie(float x, float y, float speed);
 void Zombie_Die(Entity* zombie, Vector* bonus_vector);

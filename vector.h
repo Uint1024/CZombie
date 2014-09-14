@@ -3,9 +3,9 @@
 
 typedef struct Vector
 {
-    void** data;
-    int size;
-    int count;
+    void**  data;
+    int     size;
+    int     count;
 }Vector;
 
 Vector Vector_Create();

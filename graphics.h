@@ -7,7 +7,8 @@
 
 typedef struct Entity   Entity;
 typedef struct Vector   Vector;
-typedef struct MainMenu MainMenu;
+typedef struct Menu     Menu;
+typedef struct World    World;
 
 typedef struct Graphics
 {
@@ -25,15 +26,12 @@ Graphics* Graphics_Create(  int screen_width, int screen_height);
 
 void Graphics_Flip(         Graphics* graphics);
 
-void Graphics_RenderWorld(  Graphics* graphics, Entity* map, int map_size,
-                            Entity* player, Vector* bullets_vector,
-                            Vector* bonus_vector, Vector* monsters_vector,
-                            Vector* explosions_vector);
+void Graphics_RenderWorld(  Graphics* graphics, World* world);
 
 void Graphics_RenderObject( Graphics* graphics, Entity* object, Entity* camera);
 
 void Graphics_RenderText(   Graphics* graphics, char* text, Font_Size size,
                             int x, int y);
 
-void Graphics_RenderMenu(   Graphics* graphics, MainMenu* main_menu);
+void Graphics_RenderMenu(   Graphics* g, Menu* menu);
 #endif // GRAPHICS_H

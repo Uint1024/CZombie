@@ -76,11 +76,8 @@ void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle
         }
         else if(weapon->type == GrenadeLauncher_w)
         {
-            printf("f");
-
             Vector_Push(bullets_vector, Grenade_Create(originX, originY, angle, 1, destinationX, destinationY));
             weapon->last_shot = SDL_GetTicks();
-            printf("uck");
         }
     }
     else if(weapon->magazine_bullets <= 0)

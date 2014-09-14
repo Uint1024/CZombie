@@ -3,6 +3,7 @@
 #include "linkedList.h"
 #include "bullet.h"
 #include "entity.h"
+#include "world.h"
 
 Entity* Bullet_Create(float x, float y, float angle, float speed)
 {
@@ -19,8 +20,11 @@ Entity* Bullet_Create(float x, float y, float angle, float speed)
 	return bullet;
 }
 
-void Bullet_Move(Entity* bullet, Entity* map, int map_size, Vector* monsters_vector, int delta, Entity* camera)
+void Bullet_Update(Entity* bullet, int delta, World* world)
 {
+    Entity* camera = &world->player.camera;
+
+
 	bullet->dx = cos(bullet->angle) * bullet->speed * delta;
 	bullet->dy = sin(bullet->angle) * bullet->speed  * delta;
 	moveEntity(bullet, bullet->dx, bullet->dy);
@@ -30,14 +34,14 @@ void Bullet_Move(Entity* bullet, Entity* map, int map_size, Vector* monsters_vec
 	if (out_of_screen != None)
 		bullet->alive = Jfalse;
 
-	for (int i = 0; i < map_size && bullet->alive == Jtrue; i++)
+	for (int i = 0; i < world->map_size && bullet->alive == Jtrue; i++)
 	{
-		bullet->alive = !BoundingBox_CheckSimpleCollision(&bullet->box, &map[i].box);
+		bullet->alive = !BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i].box);
 	}
 
-    for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
+    for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
     {
-        Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
+        Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
 		if (mob->t == Zombie)
 		{
 			if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))

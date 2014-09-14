@@ -6,18 +6,21 @@
 #include "linkedList.h"
 #include "weapon.h"
 #include "weapons_component.h"
+#include "world.h"
 
-void Player_Update(Entity* p, Entity* map, int map_size, int delta, Vector* monsters_vector, Vector* bonus_vector)
+void Player_Update(int delta, World* world)
 {
-    if(p->weapons_component->reloading)
+    Entity* p = &world->player;
+
+   if(p->weapons_component->reloading)
     {
         WeaponsComponent_Reload(p->weapons_component, delta);
     }
 
 	p->camera->dx = 0;
 	p->camera->dy = 0;
-    CalculateVelocity(p, map, map_size);
-    Player_CheckBonusCollision(p, bonus_vector);
+    CalculateVelocity(p, world->map, world->map_size);
+    Player_CheckBonusCollision(p, &world->bonus_vector);
     p->dx = floor(p->dx);
     p->dy = floor(p->dy);
     moveEntity(p, p->dx, p->dy);
@@ -26,25 +29,25 @@ void Player_Update(Entity* p, Entity* map, int map_size, int delta, Vector* mons
 }
 
 
-Entity* Player_Create(float x, float y, int w, int h)
+Entity Player_Create(float x, float y, int w, int h)
 {
-    Entity* p = Entity_Spawn();
+    Entity p;// = Entity_Spawn();
 
-	p->t = Player;
-	p->texture = Player_tex;
-	p->x = x;
-	p->y = y;
-	BoundingBox_Create(p, w, h);
-	p->speed = 0.6;
+	p.t = Player;
+	p.texture = Player_tex;
+	p.x = x;
+	p.y = y;
+	BoundingBox_Create(&p, w, h);
+	p.speed = 0.6;
 
-    p->camera = CreateCamera();
+    p.camera = CreateCamera();
 
-    p->weapons_component = WeaponsComponent_Create();
-    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(AutomaticRifle_w));
-    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(Handgun_w));
-    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(Shotgun_w));
-    WeaponsComponent_AddWeaponToInventory(p->weapons_component, Weapon_Create(GrenadeLauncher_w));
-    WeaponsComponent_ChangeWeapon(p->weapons_component, Handgun_w);
+    p.weapons_component = WeaponsComponent_Create();
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(AutomaticRifle_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(Handgun_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(Shotgun_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(GrenadeLauncher_w));
+    WeaponsComponent_ChangeWeapon(p.weapons_component, Handgun_w);
 
 	return p;
 }
