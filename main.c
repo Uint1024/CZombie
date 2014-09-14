@@ -128,21 +128,7 @@ int main(int argc, char* args[])
     Graphics* graphics = Graphics_Create(screen_width, screen_height);
 	Jbool running = Jtrue;
 
-	//Entity* player = Player_Create(screen_width / 2 - 10, screen_height / 2 - 10, 20, 20);
-
 	Controls* controls = CreateControls();
-
-    Vector bullets_vector = Vector_Create();
-    Vector bonus_vector = Vector_Create();
-    Vector monsters_vector = Vector_Create();
-    Vector explosions_vector = Vector_Create();
-
-	int map_width = 50;
-	int map_height = 50;
-	int map_size = map_width * map_height;
-
-	Entity* map;
-	map = calloc(map_size, sizeof(Entity));
 
     World world = World_Initialize(50, 50, screen_width, screen_height);
 	int time_now = SDL_GetTicks();
@@ -150,13 +136,10 @@ int main(int argc, char* args[])
 	int delta = 1;
 	float fps = 0;
 
-	char fps_str[6];
-    char delta_str[4];
     int chrono_update = 0;
     int chrono_render = 0;
     int time_last_frame_real = 0;
     int time_this_frame_real = 0;
-    char reloading_str[25] = "Reloading!";
 
     Jbool game_started = Jtrue;
 
@@ -188,61 +171,19 @@ int main(int argc, char* args[])
 
             ProcessInputs(controls, delta, &game_started, &world);
 
-
-            if (fps > 0)
-            {
-                snprintf(delta_str, 4, "%d", delta);
-                snprintf(fps_str, 6, "%f", fps);
-                char full_txt_fps[80];
-                snprintf(full_txt_fps, sizeof full_txt_fps, "%s%s%s%s", fps_str, " FPS - ", delta_str, " ms since last frame.");
-                Graphics_RenderText(graphics, full_txt_fps, Medium, 700, 50);
-            }
-/*
-            if(debug_mode)
-            {
-                char nb_of_monsters[50];
-                snprintf(nb_of_monsters, sizeof(nb_of_monsters), "%d%s", monsters->count, " monsters on screen.");
-                Graphics_RenderText(graphics, nb_of_monsters, Medium, 700, 100);
-
-                char nb_of_bullets_on_screen[50];
-                snprintf(nb_of_bullets_on_screen, sizeof(nb_of_bullets_on_screen), "%d%s", bullets->count, " bullets on screen.");
-                Graphics_RenderText(graphics, nb_of_bullets_on_screen, Medium, 700, 120);
-
-
-            }
-*/
-
             if(game_started)
             {
-                Graphics_RenderText(graphics, world.player.weapons_component->current_weapon->name, Medium, 700, 130);
-
-                char nb_of_bullets_on_player[70];
-                snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
-                         world.player.weapons_component->current_weapon->magazine_bullets, " / ",
-                         world.player.weapons_component->current_weapon->magazine_max_bullets, " / ",
-                         world.player.weapons_component->bullets[world.player.weapons_component->current_weapon->type]
-                         );
-                Graphics_RenderText(graphics, nb_of_bullets_on_player, Medium, 700, 150);
-
-                if(world.player.weapons_component->reloading)
-                {
-                    reloading_str[25] = "";
-                    snprintf(reloading_str, sizeof(reloading_str), "Reloading (%d)",
-                             world.player.weapons_component->reload_timer);
-                    Graphics_RenderText(graphics, reloading_str,
-                                        Medium,
-                                        world.player.x - world.player.camera->x - 20,
-                                        world.player.y - 20 - world.player.camera->y);
-                }
-
                 Update(delta, &world);
                 Graphics_RenderWorld(graphics, &world);
+                Graphics_RenderUI(graphics,&world, controls, fps, delta);
             }
             else //show menu
             {
-                Graphics_RenderMenu(graphics, menu_manager.active_menu);
+                Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
                 MenuManager_Update(&menu_manager, controls, &game_started, &running, delta);
             }
+
+
 
             Graphics_Flip(graphics);
             time_last_frame = time_now;

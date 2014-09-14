@@ -783,7 +783,7 @@
 1410423040 source:c:\users\john\documents\github\czombie\ball.c
 	"entity.h"
 
-1410647514 c:\users\john\documents\github\czombie\entity.h
+1410721066 c:\users\john\documents\github\czombie\entity.h
 	"common.h"
 	"camera.h"
 	"boundingBox.h"
@@ -792,7 +792,7 @@
 	"vector.h"
 	"explosive.h"
 
-1410704183 c:\users\john\documents\github\czombie\common.h
+1410717506 c:\users\john\documents\github\czombie\common.h
 
 1410538187 c:\users\john\documents\github\czombie\camera.h
 
@@ -810,11 +810,11 @@
 	"entity.h"
 	"common.h"
 
-1410659095 source:c:\users\john\documents\github\czombie\boundingbox.c
+1410721975 source:c:\users\john\documents\github\czombie\boundingbox.c
 	"boundingBox.h"
 	"entity.h"
 
-1410710523 source:c:\users\john\documents\github\czombie\bullet.c
+1410715795 source:c:\users\john\documents\github\czombie\bullet.c
 	<math.h>
 	<stdlib.h>
 	"linkedList.h"
@@ -862,7 +862,7 @@
 	"linkedList.h"
 	"vector.h"
 
-1410714005 source:c:\users\john\documents\github\czombie\entity.c
+1410720747 source:c:\users\john\documents\github\czombie\entity.c
 	"common.h"
 	"entity.h"
 	"math.h"
@@ -871,11 +871,13 @@
 	<stdlib.h>
 	"camera.h"
 	"boundingBox.h"
+	"player.h"
+	"world.h"
 
 1410601425 source:c:\users\john\documents\github\czombie\linkedlist.c
 	"linkedList.h"
 
-1410714668 source:c:\users\john\documents\github\czombie\main.c
+1410718068 source:c:\users\john\documents\github\czombie\main.c
 	<stdlib.h>
 	<stdio.h>
 	<time.h>
@@ -903,13 +905,13 @@
 
 1410279293 c:\users\john\documents\github\czombie\string.h
 
-1410711241 c:\users\john\documents\github\czombie\player.h
+1410718784 c:\users\john\documents\github\czombie\player.h
 	"linkedList.h"
 	"vector.h"
 
 1410430732 source:c:\users\john\documents\github\czombie\map.c
 
-1410714128 source:c:\users\john\documents\github\czombie\player.c
+1410721133 source:c:\users\john\documents\github\czombie\player.c
 	"math.h"
 	"stdio.h"
 	"player.h"
@@ -933,7 +935,7 @@
 	"wall.h"
 	"entity.h"
 
-1410714979 source:c:\users\john\documents\github\czombie\zombie.c
+1410720655 source:c:\users\john\documents\github\czombie\zombie.c
 	"math.h"
 	"bonus.h"
 	"zombie.h"
@@ -941,7 +943,7 @@
 	"linkedList.h"
 	"world.h"
 
-1410714035 source:c:\users\john\documents\github\czombie\graphics.c
+1410721856 source:c:\users\john\documents\github\czombie\graphics.c
 	<SDL.h>
 	<SDL_image.h>
 	"graphics.h"
@@ -950,8 +952,9 @@
 	"menu.h"
 	"menu_button.h"
 	"world.h"
+	"controls.h"
 
-1410710372 c:\users\john\documents\github\czombie\graphics.h
+1410723001 c:\users\john\documents\github\czombie\graphics.h
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>

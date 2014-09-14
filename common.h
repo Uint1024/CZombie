@@ -19,7 +19,8 @@ typedef enum { Nothing, Ball, Paddle, Square, Bullet, Wall, Zombie, Handgun, Aut
 
 typedef enum {  No_texture, Player_tex, Bullet_tex, Wall_tex,
                 Zombie_tex, Handgun_tex,
-                AutomaticRifle_tex, Health_tex, Ammo_Bonus_tex, Explosion1_tex } Texture_Type;
+                AutomaticRifle_tex, Health_tex, Ammo_Bonus_tex, Explosion1_tex,
+                Cursor_aiming_tex } Texture_Type;
 
 typedef enum { Key_W, Key_A, Key_S, Key_D } Keyboard_Key;
 

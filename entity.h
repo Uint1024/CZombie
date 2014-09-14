@@ -27,6 +27,7 @@ typedef struct Entity
 	Box box;
     int damage;
 	Jbool alive;
+
 	int hp;
 
     //used if this entity is an explosive
@@ -38,6 +39,11 @@ typedef struct Entity
 	int last_creation;
 	Entity* camera;
 
+
+	int invulnerability_timer;
+	int blinking_timer;
+	int blinking_frame;
+
 } Entity;
 
 
@@ -48,4 +54,5 @@ void CalculateVelocity(Entity* p, Entity* map, int map_size);
 Entity* Entity_Spawn();
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
 void Entity_LoseHealth(Entity* ent, int damage);
+void Entity_CollisionWithStuff(Entity* ent, World* world);
 #endif

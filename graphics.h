@@ -9,6 +9,7 @@ typedef struct Entity   Entity;
 typedef struct Vector   Vector;
 typedef struct Menu     Menu;
 typedef struct World    World;
+typedef struct Controls    Controls;
 
 typedef struct Graphics
 {
@@ -33,5 +34,9 @@ void Graphics_RenderObject( Graphics* graphics, Entity* object, Entity* camera);
 void Graphics_RenderText(   Graphics* graphics, char* text, Font_Size size,
                             int x, int y);
 
-void Graphics_RenderMenu(   Graphics* g, Menu* menu);
+void Graphics_RenderMenu(   Graphics* g, Menu* menu, Controls* controls);
+
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta);
+
+
 #endif // GRAPHICS_H

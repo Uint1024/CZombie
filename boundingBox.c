@@ -31,6 +31,7 @@ void BoundingBox_Create(Entity* ent, int width, int height)
 //return direction of exit if the box is completely outside of the screen
 Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)
 {
+
 	if (box->top - camera->y > 768)
 		return Bottom;
 	else if (box->bottom  - camera->y < 0)

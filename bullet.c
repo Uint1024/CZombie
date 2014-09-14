@@ -22,7 +22,7 @@ Entity* Bullet_Create(float x, float y, float angle, float speed)
 
 void Bullet_Update(Entity* bullet, int delta, World* world)
 {
-    Entity* camera = &world->player.camera;
+    Entity* camera = world->player.camera;
 
 
 	bullet->dx = cos(bullet->angle) * bullet->speed * delta;

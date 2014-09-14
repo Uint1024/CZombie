@@ -15,7 +15,7 @@ void Zombie_Update(Entity* z, int delta, World* world)
 	z->dx = cos(angle) * z->speed * delta;
 	z->dy = sin(angle) * z->speed * delta;
     CollisionWithMonsters(z, &world->monsters_vector);
-    CalculateVelocity(z, world->map, world->map_size);
+    Entity_CollisionWithStuff(z, world);
     Entity_CollisionWithExplosions(z, &world->explosions_vector);
 
 	moveEntity(z, z->dx, z->dy);

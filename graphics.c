@@ -6,11 +6,16 @@
 #include "menu.h"
 #include "menu_button.h"
 #include "world.h"
+#include "controls.h"
+#include "weapons_component.h"
+#include "weapon.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
+
+    SDL_ShowCursor(0);
 
     Graphics* g = (Graphics*)malloc(sizeof(Graphics));
 
@@ -38,6 +43,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 	g->textures[Bullet_tex]     =   IMG_LoadTexture(g->renderer, "bullet.png");
 	g->textures[Wall_tex]       =   IMG_LoadTexture(g->renderer, "wall.png");
 	g->textures[Explosion1_tex] =   IMG_LoadTexture(g->renderer, "explosion.png");
+	g->textures[Cursor_aiming_tex]     =   IMG_LoadTexture(g->renderer, "aim.png");
 
 
     g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
@@ -109,6 +115,33 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
 
 void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
 {
+    if(object->t == Player)
+    {
+        int alpha_value = 255;
+        if(object->invulnerability_timer > 0)
+        {
+            if(object->invulnerability_timer > 1500)
+            {
+                alpha_value = 100;
+            }
+            else if(object->invulnerability_timer > 1000)
+            {
+                alpha_value = 255;
+            }
+            else if(object->invulnerability_timer > 500)
+            {
+                alpha_value = 100;
+            }
+            else if(object->invulnerability_timer > 0)
+            {
+                alpha_value = 255;
+            }
+
+            SDL_SetTextureBlendMode(graphics->textures[object->texture], SDL_BLENDMODE_BLEND);
+            SDL_SetTextureAlphaMod(graphics->textures[object->texture], alpha_value);
+        }
+    }
+
     const SDL_Rect rect = { object->box.left - camera->x,
                             object->box.top - camera->y,
                             object->box.width,
@@ -170,7 +203,7 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, 
     SDL_DestroyTexture(graphics->text_texture);
 }
 
-void Graphics_RenderMenu(Graphics* g, Menu* menu)
+void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 {
     for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
     {
@@ -192,8 +225,74 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu)
             SDL_RenderCopy(g->renderer, g->textures[Wall_tex], NULL, &underline);
         }
     }
+
+    SDL_Rect cursor_rect;
+    cursor_rect.x = controls->mouseX - 10;
+    cursor_rect.y = controls->mouseY - 10;
+    cursor_rect.h = 21;
+    cursor_rect.w = 21;
+
+    SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
 }
 
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta)
+{
+    //====Cursor stuff
+    SDL_Rect cursor_rect;
+    cursor_rect.x = controls->mouseX - 10;
+    cursor_rect.y = controls->mouseY - 10;
+    cursor_rect.h = 21;
+    cursor_rect.w = 21;
+
+    SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
+
+
+    //name of weapon
+    Graphics_RenderText(g, world->player.weapons_component->current_weapon->name, Medium, 700, 130);
+
+    //bullets left
+    char nb_of_bullets_on_player[70];
+    snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
+             world->player.weapons_component->current_weapon->magazine_bullets, " / ",
+             world->player.weapons_component->current_weapon->magazine_max_bullets, " / ",
+             world->player.weapons_component->bullets[world->player.weapons_component->current_weapon->type]
+             );
+    Graphics_RenderText(g, nb_of_bullets_on_player, Medium, 700, 150);
+
+    //reloading! text
+    if(world->player.weapons_component->reloading)
+    {
+        char reloading_str[25] = "";
+        snprintf(reloading_str, sizeof(reloading_str), "Reloading (%d)",
+                 world->player.weapons_component->reload_timer);
+        Graphics_RenderText(g, reloading_str,
+                            Medium,
+                            world->player.x - world->player.camera->x - 20,
+                            world->player.y - 20 - world->player.camera->y);
+    }
+
+
+    //NON-GAMEPLAY
+    //fps
+    if (fps > 0)
+    {
+        char full_txt_fps[80];
+        snprintf(full_txt_fps, sizeof full_txt_fps, "%f%s%d%s", fps, " FPS (", delta, " ms)");
+        Graphics_RenderText(g, full_txt_fps, Medium, 700, 50);
+    }
+
+    //debug stuff
+    if(debug_mode)
+    {
+        char nb_of_monsters[50];
+        snprintf(nb_of_monsters, sizeof(nb_of_monsters), "%d%s", Vector_Count(&world->monsters_vector), " monsters on screen.");
+        Graphics_RenderText(g, nb_of_monsters, Medium, 700, 100);
+
+        char nb_of_bullets_on_screen[50];
+        snprintf(nb_of_bullets_on_screen, sizeof(nb_of_bullets_on_screen), "%d%s", Vector_Count(&world->bullets_vector), " bullets on screen.");
+        Graphics_RenderText(g, nb_of_bullets_on_screen, Medium, 700, 120);
+    }
+}
 void Graphics_Flip(Graphics* graphics)
 {
     SDL_RenderPresent(graphics->renderer);

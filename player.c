@@ -10,16 +10,19 @@
 
 void Player_Update(int delta, World* world)
 {
-    Entity* p = &world->player;
 
-   if(p->weapons_component->reloading)
+
+    Entity* p = &world->player;
+    p->invulnerability_timer -= delta;
+    if(p->weapons_component->reloading)
     {
         WeaponsComponent_Reload(p->weapons_component, delta);
     }
 
 	p->camera->dx = 0;
 	p->camera->dy = 0;
-    CalculateVelocity(p, world->map, world->map_size);
+    Entity_CollisionWithStuff(p, world);
+    CollisionWithMonsters(p, &world->monsters_vector);
     Player_CheckBonusCollision(p, &world->bonus_vector);
     p->dx = floor(p->dx);
     p->dy = floor(p->dy);
@@ -31,23 +34,33 @@ void Player_Update(int delta, World* world)
 
 Entity Player_Create(float x, float y, int w, int h)
 {
-    Entity p;// = Entity_Spawn();
+    Entity p;
 
-	p.t = Player;
-	p.texture = Player_tex;
-	p.x = x;
-	p.y = y;
-	BoundingBox_Create(&p, w, h);
-	p.speed = 0.6;
+	p.t                             =   Player;
+	p.texture                       =   Player_tex;
+	p.x                             =   x;
+	p.y                             =   y;
+    p.hp                            =   50;
+	p.speed                         =   0.6;
+    p.blinking_frame                =   0;
+    p.blinking_timer                =   0;
+    p.camera                        =   CreateCamera();
+    p.invulnerability_timer         =   0;
+    p.weapons_component             =   WeaponsComponent_Create();
 
-    p.camera = CreateCamera();
+    BoundingBox_Create(&p, w, h);
 
-    p.weapons_component = WeaponsComponent_Create();
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(AutomaticRifle_w));
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(Handgun_w));
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(Shotgun_w));
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component, Weapon_Create(GrenadeLauncher_w));
-    WeaponsComponent_ChangeWeapon(p.weapons_component, Handgun_w);
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+                                          Weapon_Create(AutomaticRifle_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+                                          Weapon_Create(Handgun_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+                                          Weapon_Create(Shotgun_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+                                          Weapon_Create(GrenadeLauncher_w));
+
+    WeaponsComponent_ChangeWeapon(p.weapons_component,
+                                  Handgun_w);
 
 	return p;
 }
@@ -70,5 +83,12 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
             }
         }
     }
+}
+
+void Player_TakeDamage(Entity* p, int damage)
+{
+    p->hp -= damage;
+
+    p->invulnerability_timer = 2000;
 }
 
