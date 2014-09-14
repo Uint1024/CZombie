@@ -21,6 +21,7 @@
 #include "bonus.h"
 #include "vector.h"
 #include "explosion.h"
+#include "main_menu.h"
 
 Jbool debug_mode = Jfalse;
 
@@ -31,7 +32,7 @@ void Update(Entity* map, int map_size,
             Vector* bonus_vector, Vector* monsters_vector,
             Vector* explosions_vector)
 {
-    Player_Move(player, map, map_size, delta, monsters_vector, bonus_vector);
+    Player_Update(player, map, map_size, delta, monsters_vector, bonus_vector);
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
@@ -139,8 +140,11 @@ int main(int argc, char* args[])
     int chrono_render = 0;
     int time_last_frame_real = 0;
     int time_this_frame_real = 0;
-    char reloading_str[11] = "Reloading!";
+    char reloading_str[25] = "Reloading!";
 
+    Jbool game_started = Jfalse;
+
+    MainMenu main_menu = MainMenu_Create(graphics);
 
 	while (running)
 	{
@@ -192,26 +196,38 @@ int main(int argc, char* args[])
 
             }
 */
-            Graphics_RenderText(graphics, player->weapons_component->current_weapon->name, Medium, 700, 130);
 
-            char nb_of_bullets_on_player[70];
-            snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
-                     player->weapons_component->current_weapon->magazine_bullets, " / ",
-                     player->weapons_component->current_weapon->magazine_max_bullets, " / ",
-                     player->weapons_component->bullets[player->weapons_component->current_weapon->type]
-                     );
-            Graphics_RenderText(graphics, nb_of_bullets_on_player, Medium, 700, 150);
-
-            if(player->weapons_component->reloading)
+            if(game_started)
             {
-                Graphics_RenderText(graphics, reloading_str, Medium, player->x - player->camera->x - 20, player->y - 20 - player->camera->y);
-            }
+                Graphics_RenderText(graphics, player->weapons_component->current_weapon->name, Medium, 700, 130);
 
-            Update(map, map_size, player, delta, &bullets_vector, &bonus_vector, &monsters_vector, &explosions_vector);
-            Graphics_RenderWorld(graphics, map, map_size, player, &bullets_vector, &bonus_vector, &monsters_vector, &explosions_vector);
+                char nb_of_bullets_on_player[70];
+                snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
+                         player->weapons_component->current_weapon->magazine_bullets, " / ",
+                         player->weapons_component->current_weapon->magazine_max_bullets, " / ",
+                         player->weapons_component->bullets[player->weapons_component->current_weapon->type]
+                         );
+                Graphics_RenderText(graphics, nb_of_bullets_on_player, Medium, 700, 150);
+
+                if(player->weapons_component->reloading)
+                {
+                    reloading_str[25] = "";
+                    snprintf(reloading_str, sizeof(reloading_str), "Reloading (%d)",
+                             player->weapons_component->reload_timer);
+                    Graphics_RenderText(graphics, reloading_str, Medium, player->x - player->camera->x - 20, player->y - 20 - player->camera->y);
+                }
+
+                Update(map, map_size, player, delta, &bullets_vector, &bonus_vector, &monsters_vector, &explosions_vector);
+                Graphics_RenderWorld(graphics, map, map_size, player, &bullets_vector, &bonus_vector, &monsters_vector, &explosions_vector);
+            }
+            else //show menu
+            {
+                Graphics_RenderMenu(graphics, &main_menu);
+                MainMenu_Update(&main_menu, controls, &game_started);
+            }
             Graphics_Flip(graphics);
             time_last_frame = time_now;
-
+            //printf("%d\n", game_started);
         }
 
         time_last_frame_real = time_this_frame_real;

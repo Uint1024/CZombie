@@ -21,5 +21,6 @@ Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera);
 void BoundingBox_Update(Entity* ent);
 Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2);
 Jbool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2);
-
+Box BoundingBox_CreateFromAllValues(int width, int height, float x, float y);
+Jbool BoundingBox_CheckPointCollision(int x, int y, Box* box2);
 #endif

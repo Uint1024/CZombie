@@ -1,9 +1,11 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define TOTAL_MAIN_MENU_BUTTONS 3
 #define TILE_SIZE 32
 #define NB_OF_WEAPONS 5
 
+typedef enum { Play, Options, Quit} Menu_Button;
 typedef enum { Jfalse, Jtrue } Jbool;
 
 typedef enum { Left, Top, Bottom, Right, None } Direction;

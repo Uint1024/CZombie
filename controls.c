@@ -139,8 +139,8 @@ void ProcessInputs(Controls* controls, Entity* player,
                           angle_from_muzzle_to_mouse,
                           bullets_vector,
                           controls->mousePositionInWorldX,
-                          controls->mousePositionInWorldY
-                          );
+                          controls->mousePositionInWorldY,
+                          delta);
     }
 
 

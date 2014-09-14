@@ -10,12 +10,13 @@ typedef struct WeaponsComponent
     int last_reload;
 	Jbool reloading;
     int bullets[NB_OF_WEAPONS];
+    int reload_timer;
 } WeaponsComponent;
 
 WeaponsComponent* WeaponsComponent_Create();
 void WeaponsComponent_AddWeaponToInventory(WeaponsComponent* wc, Weapon* weapon);
 void WeaponsComponent_AddAmmo(WeaponsComponent* wc, Weapon_Type type, int quantity);
 void WeaponsComponent_ChangeWeapon(WeaponsComponent* wc, Weapon_Type type);
-void WeaponsComponent_Reload(WeaponsComponent* wc);
+void WeaponsComponent_Reload(WeaponsComponent* wc, int delta);
 void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction);
 #endif // WEAPON_H

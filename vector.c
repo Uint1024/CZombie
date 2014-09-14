@@ -19,23 +19,35 @@ int Vector_Count(Vector *v)
 
 void Vector_Push(Vector *v, void *e)
 {
-	if (v->size == 0)
+    if(e != NULL)
     {
-		v->size = 10;
-		v->data = malloc(sizeof(void*) * v->size);
-		memset(v->data, NULL, sizeof(void*) * v->size);
-	}
+        if (v->size == 0)
+        {
+            v->size = 20;
+            v->data = malloc(sizeof(void*) * v->size);
+            memset(v->data, NULL, sizeof(void*) * v->size);
+        }
 
-	if (v->size == v->count)
-    {
-		v->size *= 2;
-		v->data = realloc(v->data, sizeof(void*) * v->size);
-	}
+        if(v->data == NULL)
+        {
+            printf("Vector_Push - Error after malloc and memset of vector");
+            return;
+        }
+        if (v->size == v->count)
+        {
+            v->size *= 2;
+            v->data = realloc(v->data, sizeof(void*) * v->size);
+        }
 
-	v->data[v->count] = e;
-	v->count++;
+        if(v->data == NULL)
+        {
+            printf("Vector_Push - Error after realloc of vector");
+            return;
+        }
 
-	printf("pushing, size = %d\n", v->size);
+        v->data[v->count] = e;
+        v->count++;
+    }
 }
 
 
@@ -62,8 +74,11 @@ void Vector_Delete(Vector *v, int index)
 
     for(int index_to_copy = index + 1; index_to_copy < v->count ; index_to_copy++)
     {
-        v->data[destination] = v->data[index_to_copy];
-        destination++;
+        if(v->data[index_to_copy] != NULL)
+        {
+            v->data[destination] = v->data[index_to_copy];
+            destination++;
+        }
     }
 
     printf("deleting, size = %d\n", v->size);

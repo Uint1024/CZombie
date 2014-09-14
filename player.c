@@ -7,11 +7,11 @@
 #include "weapon.h"
 #include "weapons_component.h"
 
-void Player_Move(Entity* p, Entity* map, int map_size, int delta, Vector* monsters_vector, Vector* bonus_vector)
+void Player_Update(Entity* p, Entity* map, int map_size, int delta, Vector* monsters_vector, Vector* bonus_vector)
 {
     if(p->weapons_component->reloading)
     {
-        WeaponsComponent_Reload(p->weapons_component);
+        WeaponsComponent_Reload(p->weapons_component, delta);
     }
 
 	p->camera->dx = 0;

@@ -36,15 +36,19 @@ void WeaponsComponent_AddAmmo(WeaponsComponent* wc, Weapon_Type type, int quanti
     wc->bullets[type] += quantity;
 }
 
-void WeaponsComponent_Reload(WeaponsComponent* wc)
+void WeaponsComponent_Reload(WeaponsComponent* wc, int delta)
 {
     if(!wc->reloading &&  wc->bullets[wc->current_weapon->type] > 0)
     {
         wc->reloading = Jtrue;
-        wc->last_reload = SDL_GetTicks();
+        wc->reload_timer = wc->current_weapon->reloading_time;
     }
-    else if(wc->reloading && wc->bullets[wc->current_weapon->type] > 0 &&
-            SDL_GetTicks() - wc->last_reload >= wc->current_weapon->reloading_time)
+    else if(wc->reloading && wc->bullets[wc->current_weapon->type] > 0)
+    {
+        wc->reload_timer -= delta;
+    }
+
+    if(wc->reloading && wc->reload_timer <= 0)
     {
         wc->current_weapon->magazine_bullets = wc->current_weapon->magazine_max_bullets;
         wc->bullets[wc->current_weapon->type] -= wc->current_weapon->magazine_max_bullets;
@@ -58,44 +62,23 @@ void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
     Weapon_Type current_type = wc->current_weapon->type;
     Weapon_Type next_type = current_type;
 
-    if(wheel_direction == 1)
-    {
-        while(!found_weapon)
-        {
-            next_type += 1;
-            if(next_type < NB_OF_WEAPONS)
-            {
-                if(wc->weapons_inventory[next_type] != NULL)
-                {
-                    wc->current_weapon = wc->weapons_inventory[next_type];
-                    found_weapon = Jtrue;
-                }
 
-            }
-            else
+    while(!found_weapon)
+    {
+        next_type += (wheel_direction == 1) ? 1 : -1;
+        if(next_type < NB_OF_WEAPONS)
+        {
+            if(wc->weapons_inventory[next_type] != NULL)
             {
-                next_type = -1;
+                wc->current_weapon = wc->weapons_inventory[next_type];
+                found_weapon = Jtrue;
             }
+
+        }
+        else
+        {
+            next_type = (wheel_direction == 1) ? -1 : NB_OF_WEAPONS;
         }
     }
-    else
-    {
-        while(!found_weapon)
-        {
-            next_type -= 1;
-            if(next_type > 0)
-            {
-                if(wc->weapons_inventory[next_type] != NULL)
-                {
-                    wc->current_weapon = wc->weapons_inventory[next_type];
-                    found_weapon = Jtrue;
-                }
 
-            }
-            else
-            {
-                next_type = NB_OF_WEAPONS ;
-            }
-        }
-    }
 }

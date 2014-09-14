@@ -2,6 +2,8 @@
 #include <SDL_image.h>
 #include "graphics.h"
 #include "vector.h"
+#include "entity.h"
+#include "main_menu.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
@@ -18,12 +20,9 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
                                     SDL_WINDOWPOS_UNDEFINED,
                                     screen_width,
                                     screen_height,
-                                    SDL_WINDOW_SHOWN |
-                                    SDL_WINDOW_OPENGL
+                                    SDL_WINDOW_SHOWN
                                 );
 
-    SDL_GL_SwapWindow(g->window);
-	SDL_GL_CreateContext(g->window);
 
 	g->renderer = SDL_CreateRenderer(   g->window,
                                         -1,
@@ -31,19 +30,19 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
                                     );
 
 
-    g->textures[Player_tex] =       IMG_LoadTexture(g->renderer, "player.png");
-	g->textures[Zombie_tex] =       IMG_LoadTexture(g->renderer, "zombie.png");
+    g->textures[Player_tex]     =   IMG_LoadTexture(g->renderer, "player.png");
+	g->textures[Zombie_tex]     =   IMG_LoadTexture(g->renderer, "zombie.png");
 	g->textures[Ammo_Bonus_tex] =   IMG_LoadTexture(g->renderer, "bullet_bonus.png");
-	g->textures[Bullet_tex] =       IMG_LoadTexture(g->renderer, "bullet.png");
-	g->textures[Wall_tex] =         IMG_LoadTexture(g->renderer, "wall.png");
+	g->textures[Bullet_tex]     =   IMG_LoadTexture(g->renderer, "bullet.png");
+	g->textures[Wall_tex]       =   IMG_LoadTexture(g->renderer, "wall.png");
 	g->textures[Explosion1_tex] =   IMG_LoadTexture(g->renderer, "explosion.png");
 
 
-    g->fonts[Small] =               TTF_OpenFont("cour.ttf", 12);
-	g->fonts[Medium] =              TTF_OpenFont("cour.ttf", 16);
+    g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
+	g->fonts[Medium]            =   TTF_OpenFont("cour.ttf", 16);
 
-	g->text_surface = NULL;
-	g->text_texture = NULL;
+	g->text_surface             =   NULL;
+	g->text_texture             =   NULL;
 
     return g;
 }
@@ -55,6 +54,7 @@ void Graphics_RenderWorld(Graphics* graphics, Entity* map,
 {
     //RenderPlayer(renderer, player, textures[Player_tex]);
     Graphics_RenderObject(graphics, player, player->camera);
+
     for (int i = 0; i < map_size; i++)
     {
         if (map[i].t == Wall)
@@ -130,13 +130,15 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
                             positionX_str,
                             Small,
                             object->x - camera->x,
-                            object->y - camera->y);
+                            object->y - camera->y
+                            );
 
         Graphics_RenderText(graphics,
                             positionY_str,
                             Small,
                             object->x - camera->x,
-                            object->y - camera->y + 10);
+                            object->y - camera->y + 10
+                            );
     }
 }
 
@@ -147,7 +149,7 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, 
     SDL_Color shading_color = { 0, 0, 0, 150 };
 
     graphics->text_surface = TTF_RenderText_Shaded(graphics->fonts[size], text, text_color, shading_color);
-//graphics->text_surface = TTF_RenderText_Solid(graphics->fonts[size], text, text_color);
+
     graphics->text_texture = SDL_CreateTextureFromSurface(graphics->renderer, graphics->text_surface);
     int textH = 0;
     int textW = 0;
@@ -160,6 +162,16 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, 
 
     SDL_FreeSurface(graphics->text_surface);
     SDL_DestroyTexture(graphics->text_texture);
+}
+
+void Graphics_RenderMenu(Graphics* graphics, MainMenu* main_menu)
+{
+    for(int i = 0 ; i < TOTAL_MAIN_MENU_BUTTONS ; i++)
+    {
+        SDL_RenderCopy(graphics->renderer, main_menu->buttons[i].text_texture, NULL, &main_menu->buttons[i].text_rect);
+        if(main_menu->buttons[i].text_texture == NULL)
+            printf("error");
+    }
 }
 
 void Graphics_Flip(Graphics* graphics)

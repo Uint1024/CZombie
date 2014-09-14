@@ -53,7 +53,7 @@ Weapon* Weapon_Create(Weapon_Type type)
     return w;
 }
 void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle, Vector* bullets_vector,
-                       float destinationX, float destinationY)
+                       float destinationX, float destinationY, int delta)
 {
     if(weapon->magazine_bullets > 0 &&
         SDL_GetTicks() - weapon->last_shot > weapon->delay_between_shots)
@@ -85,6 +85,6 @@ void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle
     }
     else if(weapon->magazine_bullets <= 0)
     {
-        WeaponsComponent_Reload(weapon->parent);
+        WeaponsComponent_Reload(weapon->parent, delta);
     }
 }

@@ -108,3 +108,34 @@ Jbool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2)
 		return Jtrue;
 	}
 }
+
+//check collision between a point (vec2) and a box
+Jbool BoundingBox_CheckPointCollision(int x, int y, Box* box2)
+{
+
+	if (x > box2->right ||
+		x < box2->left ||
+		y > box2->bottom ||
+		y < box2->top)
+	{
+		return Jfalse;
+	}
+	else
+	{
+		return Jtrue;
+	}
+}
+
+
+Box BoundingBox_CreateFromAllValues(int width, int height, float x, float y)
+{
+    Box box;
+    box.width = width;
+    box.height = height;
+    box.left = x;
+    box.right = x + width;
+    box.top = y;
+    box.bottom = y + height;
+
+    return box;
+}
