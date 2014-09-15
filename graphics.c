@@ -37,14 +37,34 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
                                     );
 
 
-    g->textures[Player_tex]     =   IMG_LoadTexture(g->renderer, "player.png");
-	g->textures[Zombie_tex]     =   IMG_LoadTexture(g->renderer, "zombie.png");
-	g->textures[Ammo_Bonus_tex] =   IMG_LoadTexture(g->renderer, "bullet_bonus.png");
-	g->textures[Bullet_tex]     =   IMG_LoadTexture(g->renderer, "bullet.png");
-	g->textures[Wall_tex]       =   IMG_LoadTexture(g->renderer, "wall.png");
-	g->textures[Explosion1_tex] =   IMG_LoadTexture(g->renderer, "explosion.png");
-	g->textures[Cursor_aiming_tex]     =   IMG_LoadTexture(g->renderer, "aim.png");
+    g->textures[Player_tex]         =   IMG_LoadTexture(g->renderer,
+                                                        "player.png");
+	g->textures[Zombie_tex]         =   IMG_LoadTexture(g->renderer,
+                                                        "zombie.png");
+	g->textures[FastZombie_tex]     =   IMG_LoadTexture(g->renderer,
+                                                        "fastzombie.png");
+	g->textures[HeavyZombie_tex]    =   IMG_LoadTexture(g->renderer,
+                                                        "heavyzombie.png");
+	g->textures[HugeZombie_tex]     =   IMG_LoadTexture(g->renderer,
+                                                        "hugezombie.png");
+	g->textures[Ammo_Bonus_tex]     =   IMG_LoadTexture(g->renderer,
+                                                        "bullet_bonus.png");
+	g->textures[Rifle_Bonus_tex]    =   IMG_LoadTexture(g->renderer,
+                                                        "rifle.png");
+	g->textures[Shotgun_Bonus_tex]  =   IMG_LoadTexture(g->renderer,
+                                                        "shotgun.png");
+	g->textures[Bullet_tex]         =   IMG_LoadTexture(g->renderer,
+                                                        "bullet.png");
+	g->textures[Wall_tex]           =   IMG_LoadTexture(g->renderer,
+                                                        "wall.png");
+	g->textures[Explosion1_tex]     =   IMG_LoadTexture(g->renderer,
+                                                        "explosion.png");
+	g->textures[Cursor_aiming_tex]  =   IMG_LoadTexture(g->renderer,
+                                                        "aim.png");
 
+    g->textures[GrenadeLauncher_Bonus_tex] =  IMG_LoadTexture(
+                                                    g->renderer,
+                                                    "grenadeLauncher.png");
 
     g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
 	g->fonts[Medium]            =   TTF_OpenFont("cour.ttf", 16);
@@ -55,6 +75,17 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 
     return g;
 }
+
+
+void Graphics_RenderGame(Graphics* g, World* world,
+                         Controls* controls, float fps, int delta)
+ {
+     SDL_SetRenderDrawColor(g->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
+     SDL_RenderClear(g->renderer);
+     Graphics_RenderWorld(g, world);
+     Graphics_RenderUI(g, world, controls, fps, delta);
+     Graphics_Flip(g);
+ }
 
 void Graphics_RenderWorld(Graphics* graphics, World* world)
 {
@@ -205,6 +236,9 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, 
 
 void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 {
+    SDL_SetRenderDrawColor(g->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
+    SDL_RenderClear(g->renderer);
+
     for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
     {
         MenuButton* button = (MenuButton*)Vector_Get(&menu->buttons, i);
@@ -233,6 +267,8 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     cursor_rect.w = 21;
 
     SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
+
+    Graphics_Flip(g);
 }
 
 void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta)
@@ -246,6 +282,10 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps,
 
     SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
 
+    //hp
+    char hp[8];
+    snprintf(hp, sizeof(hp), "%d hp", world->player.hp);
+    Graphics_RenderText(g, hp, Medium, 700, 110);
 
     //name of weapon
     Graphics_RenderText(g, world->player.weapons_component->current_weapon->name, Medium, 700, 130);

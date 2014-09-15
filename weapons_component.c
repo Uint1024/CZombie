@@ -1,4 +1,7 @@
 #include "stdlib.h"
+#include <SDL.h>
+
+#include "bullet.h"
 
 #include "weapon.h"
 #include "weapons_component.h"
@@ -28,6 +31,11 @@ void WeaponsComponent_AddWeaponToInventory(WeaponsComponent* wc, Weapon* weapon)
 
 void WeaponsComponent_ChangeWeapon(WeaponsComponent* wc, Weapon_Type type)
 {
+    if(wc->current_weapon != NULL)
+    {
+        wc->reloading = Jfalse;
+        wc->reload_timer = wc->current_weapon->reloading_time;
+    }
     wc->current_weapon = wc->weapons_inventory[type];
 }
 
@@ -38,27 +46,42 @@ void WeaponsComponent_AddAmmo(WeaponsComponent* wc, Weapon_Type type, int quanti
 
 void WeaponsComponent_Reload(WeaponsComponent* wc, int delta)
 {
-    if(!wc->reloading &&  wc->bullets[wc->current_weapon->type] > 0)
+    if(wc->current_weapon->magazine_bullets < wc->current_weapon->magazine_max_bullets)
     {
-        wc->reloading = Jtrue;
-        wc->reload_timer = wc->current_weapon->reloading_time;
-    }
-    else if(wc->reloading && wc->bullets[wc->current_weapon->type] > 0)
-    {
-        wc->reload_timer -= delta;
-    }
+        if(!wc->reloading &&  wc->bullets[wc->current_weapon->type] > 0)
+        {
+            wc->reloading = Jtrue;
+            wc->reload_timer = wc->current_weapon->reloading_time;
+        }
+        else if(wc->reloading && wc->bullets[wc->current_weapon->type] > 0)
+        {
+            wc->reload_timer -= delta;
+        }
 
-    if(wc->reloading && wc->reload_timer <= 0)
-    {
-        wc->current_weapon->magazine_bullets = wc->current_weapon->magazine_max_bullets;
-        wc->bullets[wc->current_weapon->type] -= wc->current_weapon->magazine_max_bullets;
-        wc->reloading = Jfalse;
+        if(wc->reloading && wc->reload_timer <= 0)
+        {
+            int bullets_to_reload = wc->current_weapon->magazine_max_bullets -
+                            wc->current_weapon->magazine_bullets;
+
+            if(wc->bullets[wc->current_weapon->type] - bullets_to_reload >= 0)
+            {
+                wc->bullets[wc->current_weapon->type] -= bullets_to_reload;
+            }
+            else
+            {
+                bullets_to_reload = wc->bullets[wc->current_weapon->type];
+                wc->bullets[wc->current_weapon->type] = 0;
+            }
+            wc->current_weapon->magazine_bullets += bullets_to_reload;
+
+            wc->reloading = Jfalse;
+        }
     }
 }
 
 void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
 {
-    Jbool found_weapon = Jfalse;
+   Jbool found_weapon = Jfalse;
     Weapon_Type current_type = wc->current_weapon->type;
     Weapon_Type next_type = current_type;
 
@@ -70,15 +93,51 @@ void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
         {
             if(wc->weapons_inventory[next_type] != NULL)
             {
-                wc->current_weapon = wc->weapons_inventory[next_type];
+                WeaponsComponent_ChangeWeapon(wc, next_type);//wc->current_weapon = wc->weapons_inventory[next_type];
                 found_weapon = Jtrue;
             }
-
         }
         else
         {
             next_type = (wheel_direction == 1) ? -1 : NB_OF_WEAPONS;
         }
+    }
+}
+
+void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float originY, float angle, Vector* bullets_vector,
+                       float destinationX, float destinationY, int delta)
+{
+
+    Weapon* weapon = wc->current_weapon;
+
+    if(weapon->magazine_bullets > 0 &&
+        SDL_GetTicks() - weapon->last_shot > weapon->delay_between_shots)
+    {
+        if(weapon->type == AutomaticRifle_w || weapon->type == Handgun_w)
+        {
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle, 1));
+            weapon->magazine_bullets -= 1;
+            weapon->last_shot = SDL_GetTicks();
+        }
+        else if(weapon->type == Shotgun_w)
+        {
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle, 1));
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle+0.05, 1));
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle+0.1, 1));
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle-0.1, 1));
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle-0.05, 1));
+            weapon->magazine_bullets -= 1;
+            weapon->last_shot = SDL_GetTicks();
+        }
+        else if(weapon->type == GrenadeLauncher_w)
+        {
+            Vector_Push(bullets_vector, Grenade_Create(originX, originY, angle, 1, destinationX, destinationY));
+            weapon->last_shot = SDL_GetTicks();
+        }
+    }
+    else if(weapon->magazine_bullets <= 0)
+    {
+        WeaponsComponent_Reload(wc, delta);
     }
 
 }

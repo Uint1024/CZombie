@@ -24,8 +24,13 @@ Controls* CreateControls()
 	return controls;
 }
 
+void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world)
+{
+    Inputs_PoolInputs(controls, world->player.camera);
+    Inputs_ApplyInputs(controls, delta, game_started, world);
+}
 
-Jbool PoolInputs(Controls* controls, Entity* camera)
+Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
 {
     controls->mouseWheelPos = 0;
 	while (SDL_PollEvent(&controls->e))
@@ -82,8 +87,9 @@ Jbool PoolInputs(Controls* controls, Entity* camera)
 	return Jtrue;
 }
 
-void ProcessInputs(Controls* controls, int delta,
-                   Jbool* game_started, World* world)
+void Inputs_ApplyInputs( Controls* controls, int delta,
+                            Jbool* game_started,
+                            World* world)
 {
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
@@ -94,6 +100,8 @@ void ProcessInputs(Controls* controls, int delta,
     Entity* map = world->map;
 
     controls->timer_menu -= delta;
+
+    //show menu
     if(controls->timer_menu <= 0 && controls->pressedKeys[SDL_SCANCODE_ESCAPE] == Jtrue)
     {   if(*game_started)
         {
@@ -108,6 +116,7 @@ void ProcessInputs(Controls* controls, int delta,
 
     if(*game_started && controls->timer_menu < 0)
     {
+
         player->dx = 0;
         player->dy = 0;
         if (controls->pressedKeys[SDL_SCANCODE_W] == Jtrue)
@@ -133,21 +142,61 @@ void ProcessInputs(Controls* controls, int delta,
             player->dy *= 0.707106781;
         }
 
+        /*if (controls->pressedKeys[SDL_SCANCODE_H] == Jtrue)
+        {
+            FILE *save_file;
+            save_file = fopen("test.txt", "wb");
+            if(!save_file)
+            {
+                printf("Can't open file");
 
+            }
+            for(int i = 0 ; i < world->map_size ; i++)
+            {
+                fwrite(&world->map[i], sizeof(Entity), 1, save_file);
+            }
 
-        float adjacent = controls->mousePositionInWorldX  - player->x;
+            fclose(save_file);
+        }
+
+        if (controls->pressedKeys[SDL_SCANCODE_G] == Jtrue)
+        {
+            FILE *save_file;
+            save_file = fopen("test.txt", "rb");
+            if(!save_file)
+            {
+                printf("Can't open file");
+
+            }
+            for(int i = 0 ; i < world->map_size ; i++)
+            {
+                fread(&world->map[i], sizeof(Entity), 1, save_file);
+            }
+
+            fclose(save_file);
+        }*/
+
+        /*float adjacent = controls->mousePositionInWorldX  - player->x;
         float opposite = controls->mousePositionInWorldY - player->y;
-        float angle_to_mouse = atan2f(opposite, adjacent);
+        float angle_to_mouse = atan2f(opposite, adjacent);*/
+        float angle_to_mouse = C_AngleBetween2Points(
+                                        player->x,
+                                        player->y,
+                                        controls->mousePositionInWorldX,
+                                        controls->mousePositionInWorldY);
 
         player->muzzleX = player->x + 10;
         player->muzzleY = player->y + 10;
-
         player->angle = angle_to_mouse;
 
 
-        adjacent = controls->mousePositionInWorldX  - player->muzzleX - 5;
-        opposite = controls->mousePositionInWorldY - player->muzzleY - 5;
-        float angle_from_muzzle_to_mouse = atan2f(opposite, adjacent);
+        //adjacent = controls->mousePositionInWorldX  - player->muzzleX - 5;
+        //opposite = controls->mousePositionInWorldY - player->muzzleY - 5;
+        float angle_from_muzzle_to_mouse = C_AngleBetween2Points(
+                                        player->muzzleX,
+                                        player->muzzleY,
+                                        controls->mousePositionInWorldX,
+                                        controls->mousePositionInWorldY  );
 
 
         if(controls->mouseWheelPos != 0)
@@ -157,14 +206,14 @@ void ProcessInputs(Controls* controls, int delta,
 
         if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
         {
-            Weapon_TryToShoot(player->weapons_component->current_weapon,
-                              player->muzzleX,
-                              player->muzzleY,
-                              angle_from_muzzle_to_mouse,
-                              bullets_vector,
-                              controls->mousePositionInWorldX,
-                              controls->mousePositionInWorldY,
-                              delta);
+            WeaponsComponent_TryToShoot(player->weapons_component,
+                                          player->muzzleX,
+                                          player->muzzleY,
+                                          angle_from_muzzle_to_mouse,
+                                          bullets_vector,
+                                          controls->mousePositionInWorldX,
+                                          controls->mousePositionInWorldY,
+                                          delta);
         }
 
 
@@ -183,7 +232,6 @@ void ProcessInputs(Controls* controls, int delta,
                 int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
 
                 map[position_in_array] = *wall;
-                //world->map[position_in_array] = *wall;
                 printf("Created wall at %d:%d\n", tileInPixelsX, tileInPixelsY);
 
             }
@@ -191,13 +239,19 @@ void ProcessInputs(Controls* controls, int delta,
                 printf("out of bound!!!");
         }
 
+        if(controls->pressedKeys[SDL_SCANCODE_R])
+        {
+            WeaponsComponent_Reload(player->weapons_component, delta);
+        }
+
         if(SDL_GetTicks() - player->last_creation > 50)
         {
             if (controls->pressedKeys[SDL_SCANCODE_C] == Jtrue)
             {
-                Entity* zombie = (Entity*)malloc(sizeof(Entity));
-                zombie = CreateZombie(controls->mousePositionInWorldX , controls->mousePositionInWorldY, 0.2);
+                Entity* zombie;
+                zombie = CreateZombie(Normal_Zombie, controls->mousePositionInWorldX , controls->mousePositionInWorldY);
                 Vector_Push(monsters_vector, zombie);
+
 
             }
 

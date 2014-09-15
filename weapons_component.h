@@ -2,6 +2,7 @@
 #ifndef WEAPONS_COMPONENT_H
 #define WEAPONS_COMPONENT_H
 typedef struct Weapon Weapon;
+typedef struct Vector Vector;
 
 typedef struct WeaponsComponent
 {
@@ -19,4 +20,6 @@ void WeaponsComponent_AddAmmo(WeaponsComponent* wc, Weapon_Type type, int quanti
 void WeaponsComponent_ChangeWeapon(WeaponsComponent* wc, Weapon_Type type);
 void WeaponsComponent_Reload(WeaponsComponent* wc, int delta);
 void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction);
+void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float originY, float angle, Vector* bullets_vector,
+                       float destinationX, float destinationY, int delta);
 #endif // WEAPON_H

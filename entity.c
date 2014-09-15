@@ -115,6 +115,12 @@ void Entity_CollisionWithStuff(Entity* ent, World* world)
 
 }
 
+void Entity_CalculateVelocityFromAngle(Entity* ent, int delta)
+{
+    ent->dx = cos(ent->angle) * ent->speed * delta;
+    ent->dy = sin(ent->angle) * ent->speed * delta;
+}
+
 void Entity_CollisionWithWalls(Entity* ent, Entity* map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched)
 {
     for (int i = 0; i < map_size; i++)
@@ -133,7 +139,6 @@ void Entity_CollisionWithWalls(Entity* ent, Entity* map, int map_size, Box* temp
 
 void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
-    //printf("%d", ent->invulnerability_timer);
     if(ent->t != Player ||
        (ent->t == Player && ent->invulnerability_timer <= 0))
     {
@@ -171,11 +176,8 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 
         if(collision && ent->t == Player)
         {
-            Player_TakeDamage(ent, 1);
-            if(collision_sides[Left])       ent->x += 20;
-            if(collision_sides[Right])      ent->x -= 20;
-            if(collision_sides[Top])        ent->y += 20;
-            if(collision_sides[Bottom])     ent->x -= 20;
+            Player_TakeDamage(ent, 1, collision_sides);
+
         }
     }
 

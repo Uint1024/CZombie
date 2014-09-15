@@ -23,8 +23,10 @@ typedef struct Controls
 } Controls;
 
 Controls* CreateControls();
-Jbool PoolInputs(Controls* controls, Entity* camera);
-void ProcessInputs( Controls* controls, int delta,
-                    Jbool* game_started,
-                    World* world);
+Jbool   Inputs_PoolInputs(Controls* controls, Entity* camera);
+void    Inputs_ApplyInputs( Controls* controls, int delta,
+                            Jbool* game_started,
+                            World* world);
+void Inputs_ProcessInputs(Controls* controls, int delta,
+                          Jbool* game_started, World* world);
 #endif

@@ -16,9 +16,9 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->type = AutomaticRifle_w;
         w->magazine_max_bullets = 50;
         w->magazine_bullets = 50;
-        w->last_shot = 0;
         w->delay_between_shots = 35;
-        w->reloading_time = 1000;
+        w->reloading_time = 3000;
+        w->corresponding_pickup = Rifle_bonus;
     }
     else if(type == Handgun_w)
     {
@@ -26,9 +26,9 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->type = Handgun_w;
         w->magazine_max_bullets = 15;
         w->magazine_bullets = 15;
-        w->last_shot = 0;
         w->delay_between_shots = 200;
-        w->reloading_time = 700;
+        w->reloading_time = 1200;
+        //w->corresponding_pickup = ;
     }
     else if(type == Shotgun_w)
     {
@@ -36,9 +36,9 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->type = Shotgun_w;
         w->magazine_max_bullets = 15;
         w->magazine_bullets = 15;
-        w->last_shot = 0;
         w->delay_between_shots = 450;
-        w->reloading_time = 1500;
+        w->reloading_time = 2000;
+        w->corresponding_pickup = Shotgun_bonus;
     }
     else if(type == GrenadeLauncher_w)
     {
@@ -46,13 +46,17 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->type = GrenadeLauncher_w;
         w->magazine_max_bullets = 5;
         w->magazine_bullets = 5;
-        w->last_shot = 0;
         w->delay_between_shots = 500;
-        w->reloading_time = 2500;
+        w->reloading_time = 6000;
+        w->corresponding_pickup = GrenadeLauncher_bonus;
     }
+
+    w->last_shot = 0;
+
     return w;
 }
-void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle, Vector* bullets_vector,
+
+/*void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle, Vector* bullets_vector,
                        float destinationX, float destinationY, int delta)
 {
     if(weapon->magazine_bullets > 0 &&
@@ -84,4 +88,4 @@ void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle
     {
         WeaponsComponent_Reload(weapon->parent, delta);
     }
-}
+}*/

@@ -42,13 +42,13 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
     for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
     {
         Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
-		if (mob->t == Zombie)
-		{
+		//if (mob->t == Zombie)
+		//{
 			if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
 			{
 			    Entity_LoseHealth(mob, 1);
                 bullet->alive = Jfalse;
 			}
-		}
+		//}
     }
 }

@@ -1,49 +1,62 @@
 #include "bonus.h"
 #include <stdio.h>
 
-Entity* Bonus_Create(Type bonus_type, float x, float y)
+void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
+{
+    Bonus_type type = rand() % 4;
+
+    Vector_Push(bonus_vector, Bonus_Create(type, source->x, source->y, source->angle));
+
+}
+
+Entity* Bonus_Create(Type bonus_type, float x, float y, float angle)
 {
     Entity* bonus = Entity_Spawn();
-    if(bonus_type == Ammo)
+
+    bonus->x = x;
+    bonus->y = y;
+    bonus->t = bonus_type;
+    bonus->angle = angle;
+    //bonus->pos = {x, y };
+
+    if(bonus_type == Ammo_bonus)
     {
-        bonus->x = x;
-        bonus->y = y;
-        bonus->t = Ammo;
         bonus->texture = Ammo_Bonus_tex;
+
         BoundingBox_Create(bonus, 10, 10);
     }
-
+    else if(bonus_type == Shotgun_bonus)
+    {
+        bonus->texture = Shotgun_Bonus_tex;
+        bonus->corresponding_weapon = Shotgun_w;
+        BoundingBox_Create(bonus, 30, 15);
+    }
+    else if(bonus_type == Rifle_bonus)
+    {
+        bonus->texture = Rifle_Bonus_tex;
+        bonus->corresponding_weapon = AutomaticRifle_w;
+        BoundingBox_Create(bonus, 30, 15);
+    }
+    else if(bonus_type == GrenadeLauncher_bonus)
+    {
+        bonus->texture = GrenadeLauncher_Bonus_tex;
+        bonus->corresponding_weapon = GrenadeLauncher_w;
+        BoundingBox_Create(bonus, 30, 15);
+    }
     return bonus;
 }
 
 
-void Bonus_Update(Entity* bonus, Entity* player)
+void Bonus_Update(Entity* bonus, Entity* player,int delta)
 {
     if(abs(bonus->x - player->x) < 150 && abs(bonus->y - player->y) < 150)
     {
-        float dx = 0;
-        float dy = 0;
+        bonus->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);
 
-        //velocity = 0.0053 * distance + 1
-        //the velocity gets faster when the player is closer
-        if(bonus->x > player->x)
-        {
-            dx = -(-0.0053f * (player->x - bonus->x) + 1);
-        }
-        else if(bonus->x < player->x)
-        {
-            dx = -0.0053f * (player->x - bonus->x) + 1;
-        }
+        //min speed is 0 when distance is 150, max speed is 0.05f when distance is 0
+        bonus->speed = -0.003f * abs(bonus->x - player->x) + 0.5;
 
-        if(bonus->y > player->y)
-        {
-            dy = -(-0.0053f * (player->y - bonus->y) + 1);
-        }
-        else if(bonus->y < player->y)
-        {
-            dy = -0.0053f * (player->y - bonus->y) + 1;
-        }
-
-        moveEntity(bonus, dx, dy);
+        Entity_CalculateVelocityFromAngle(bonus, delta);
+        moveEntity(bonus, bonus->dx, bonus->dy);
     }
 }

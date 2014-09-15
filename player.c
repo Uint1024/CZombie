@@ -10,8 +10,6 @@
 
 void Player_Update(int delta, World* world)
 {
-
-
     Entity* p = &world->player;
     p->invulnerability_timer -= delta;
     if(p->weapons_component->reloading)
@@ -26,13 +24,19 @@ void Player_Update(int delta, World* world)
     Player_CheckBonusCollision(p, &world->bonus_vector);
     p->dx = floor(p->dx);
     p->dy = floor(p->dy);
-    moveEntity(p, p->dx, p->dy);
-    MoveCamera(p->camera, p->dx , p->dy );
 
+    Player_Move(p, p->dx, p->dy);
 }
 
 
-Entity Player_Create(float x, float y, int w, int h)
+void Player_Move(Entity* p, const float dx, const float dy)
+{
+    moveEntity(p, dx, dy);
+    MoveCamera(p->camera, dx , dy);
+}
+
+
+Entity Player_Create(const float x, const float y, const int w, const int h)
 {
     Entity p;
 
@@ -67,7 +71,6 @@ Entity Player_Create(float x, float y, int w, int h)
 
 void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
 {
-	//Box* temp = BoundingBox_CreateTemp(player);
     Jbool collision = Jfalse;
     for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
     {
@@ -76,18 +79,55 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
         collision = BoundingBox_CheckSimpleCollision(&player->box, &bonus->box);
         if(collision)
         {
-            if(bonus->t == Ammo)
-            {
-                WeaponsComponent_AddAmmo(player->weapons_component, player->weapons_component->current_weapon->type, 50);
-                bonus->alive = Jfalse;
-            }
+            Player_PickUpBonus(player, bonus);
+
         }
     }
 }
 
-void Player_TakeDamage(Entity* p, int damage)
+void Player_PickUpBonus(Entity* player, Entity* bonus)
+{
+    WeaponsComponent* wc = player->weapons_component;
+    printf("%d", bonus->t);
+    if(bonus->t == Ammo_bonus)
+    {
+        WeaponsComponent_AddAmmo(player->weapons_component,
+                                 player->weapons_component->current_weapon->type,
+                                 50);
+    }
+    else
+    {
+
+        if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
+        {
+            WeaponsComponent_AddAmmo(wc,
+                                 bonus->corresponding_weapon,
+                                 50);
+        }
+        else
+        {
+            WeaponsComponent_AddWeaponToInventory(
+                    wc, Weapon_Create(bonus->corresponding_weapon));
+        }
+
+
+    }
+
+    bonus->alive = Jfalse;
+}
+
+//attacker is an array 5 pointers
+//a pointer to the attacker of each side
+//so attacker[Left] is the attacker on the left
+void Player_TakeDamage(Entity* p, const int damage, const Entity** attacker)
 {
     p->hp -= damage;
+
+    //push player in the opposite direction of the attacker
+    if(attacker[Left])      Player_Move(p, 20,  0);
+    if(attacker[Right])     Player_Move(p, -20, 0);
+    if(attacker[Top])       Player_Move(p, 0,   20);
+    if(attacker[Bottom])    Player_Move(p, 0,   -20);
 
     p->invulnerability_timer = 2000;
 }

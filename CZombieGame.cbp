@@ -56,6 +56,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="camera.h" />
+		<Unit filename="common.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="common.h" />
 		<Unit filename="controls.c">
 			<Option compilerVar="CC" />
@@ -73,6 +76,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="explosive.h" />
+		<Unit filename="gameManager.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="gameManager.h" />
 		<Unit filename="graphics.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -84,17 +91,21 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="main_menu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="main_menu.h" />
 		<Unit filename="map.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu.h" />
 		<Unit filename="menu_button.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="menu_button.h" />
+		<Unit filename="menu_manager.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menu_manager.h" />
 		<Unit filename="player.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -120,6 +131,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="weapons_component.h" />
+		<Unit filename="world.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="world.h" />
 		<Unit filename="zombie.c">
 			<Option compilerVar="CC" />
 		</Unit>

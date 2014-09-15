@@ -11,38 +11,40 @@
 typedef struct Weapon Weapon;
 typedef struct Entity
 {
-    Texture_Type texture;
-	Type t;
-	float x;
-	float y;
-	float dx;
-	float dy;
-	float muzzleX;
-	float muzzleY;
-	float speed;
-	float angle;
+    Texture_Type            texture;
+	Type                    t;
+	Vec2                    pos;
+	float                   x;
+	float                   y;
+	float                   dx;
+	float                   dy;
+	float                   muzzleX;
+	float                   muzzleY;
+	float                   speed;
+	float                   angle;
 
-    int explosion_timer;
+    int                     explosion_timer;
 	//should be a pointer? Not every entity has a hitbox (maybe)
-	Box box;
-    int damage;
-	Jbool alive;
+	Box                     box;
+    int                     damage;
+	Jbool                   alive;
 
-	int hp;
+	int                     hp;
 
     //used if this entity is an explosive
-    Explosive* explosive_component;
+    Explosive*              explosive_component;
 
     //used if it can use weapons
-    WeaponsComponent* weapons_component;
+    WeaponsComponent*       weapons_component;
 
-	int last_creation;
-	Entity* camera;
+	int                     last_creation;
+	Entity*                 camera;
 
-
-	int invulnerability_timer;
-	int blinking_timer;
-	int blinking_frame;
+    //used for bonus... should be moved elsewhere...
+    Weapon_Type             corresponding_weapon;
+	int                     invulnerability_timer;
+	int                     blinking_timer;
+	int                     blinking_frame;
 
 } Entity;
 
@@ -55,4 +57,5 @@ Entity* Entity_Spawn();
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
 void Entity_LoseHealth(Entity* ent, int damage);
 void Entity_CollisionWithStuff(Entity* ent, World* world);
+void Entity_CalculateVelocityFromAngle(Entity* ent, int delta);
 #endif

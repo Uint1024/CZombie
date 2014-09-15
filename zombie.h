@@ -8,6 +8,7 @@ typedef struct World World;
 
 void Zombie_Update(Entity* z, int delta, World* world);
 
-Entity* CreateZombie(float x, float y, float speed);
+Entity* CreateZombie(Zombie_Type type, float x, float y);
 void Zombie_Die(Entity* zombie, Vector* bonus_vector);
+
 #endif

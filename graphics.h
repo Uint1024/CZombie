@@ -13,7 +13,7 @@ typedef struct Controls    Controls;
 
 typedef struct Graphics
 {
-    SDL_Texture*            textures[15];
+    SDL_Texture*            textures[35];
     TTF_Font*               fonts[10];
     SDL_Window*             window;
     SDL_Renderer*           renderer;
@@ -37,6 +37,9 @@ void Graphics_RenderText(   Graphics* graphics, char* text, Font_Size size,
 void Graphics_RenderMenu(   Graphics* g, Menu* menu, Controls* controls);
 
 void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta);
+
+void Graphics_RenderGame(Graphics* g, World* world,
+                         Controls* controls, float fps, int delta);
 
 
 #endif // GRAPHICS_H
