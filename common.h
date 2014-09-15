@@ -3,7 +3,7 @@
 
 #define TOTAL_MAIN_MENU_BUTTONS 3
 #define TILE_SIZE 32
-#define NB_OF_WEAPONS 5
+
 
 typedef enum { Play_button, Options_button, Quit_button, Back_button } Menu_Button_Name;
 
@@ -33,7 +33,7 @@ typedef enum {  No_texture, Player_tex, Bullet_tex, Wall_tex,
 
 typedef enum { Key_W, Key_A, Key_S, Key_D } Keyboard_Key;
 
-typedef enum { No_Weapon, Handgun_w, AutomaticRifle_w, Shotgun_w, GrenadeLauncher_w } Weapon_Type;
+typedef enum { No_Weapon, Handgun_w, AutomaticRifle_w, Shotgun_w, GrenadeLauncher_w, Fireball_w, NB_WEAPON_TYPES } Weapon_Type;
 
 typedef enum { Small, Medium, Large, Menu_font } Font_Size;
 
@@ -41,10 +41,14 @@ extern Jbool debug_mode;
 
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb);
 
+typedef struct Entity Entity;
+float C_AngleBetween2Entities(Entity* a, Entity* b);
 
 typedef struct Vec2
 {
     float x;
     float y;
 } Vec2;
+
+#define NB_OF_WEAPONS NB_WEAPON_TYPES
 #endif

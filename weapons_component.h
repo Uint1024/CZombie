@@ -12,6 +12,10 @@ typedef struct WeaponsComponent
 	Jbool reloading;
     int bullets[NB_OF_WEAPONS];
     int reload_timer;
+
+    //monsters have infinite bullets
+    //their bullets can't harm other mobs
+    Jbool is_monster;
 } WeaponsComponent;
 
 WeaponsComponent* WeaponsComponent_Create();
@@ -21,5 +25,5 @@ void WeaponsComponent_ChangeWeapon(WeaponsComponent* wc, Weapon_Type type);
 void WeaponsComponent_Reload(WeaponsComponent* wc, int delta);
 void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction);
 void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float originY, float angle, Vector* bullets_vector,
-                       float destinationX, float destinationY, int delta);
+                       float destinationX, float destinationY);
 #endif // WEAPON_H

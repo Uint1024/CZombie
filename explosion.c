@@ -16,7 +16,7 @@ Entity* Explosion_Create(int x, int y)
 }
 
 
-Entity* Explosion_Update(Entity* exp, int delta)
+void Explosion_Update(Entity* exp, int delta)
 {
     exp->explosion_timer -= delta;
     if(exp->explosion_timer <= 0)

@@ -1,5 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <stdio.h>
+
 #include "graphics.h"
 #include "vector.h"
 #include "entity.h"
@@ -191,9 +193,9 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
 
         SDL_SetRenderDrawColor(graphics->renderer, 0x00, 0x00, 0x00, 0xFF);
 
-        char* positionX_str[6];
+        char positionX_str[6];
         snprintf(positionX_str, sizeof(positionX_str), "%d", (int)object->x);
-        char* positionY_str[6];
+        char positionY_str[6];
         snprintf(positionY_str, sizeof(positionY_str), "%d", (int)object->y);
 
         Graphics_RenderText(graphics,

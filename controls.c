@@ -93,10 +93,9 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 {
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
-    Vector* bonus_vector = &world->bonus_vector;
+    //Vector* bonus_vector = &world->bonus_vector;
     Vector* monsters_vector = &world->monsters_vector;
-    Vector* explosions_vector = &world->explosions_vector;
-    Entity* camera = world->player.camera;
+    //Vector* explosions_vector = &world->explosions_vector;
     Entity* map = world->map;
 
     controls->timer_menu -= delta;
@@ -212,8 +211,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                                           angle_from_muzzle_to_mouse,
                                           bullets_vector,
                                           controls->mousePositionInWorldX,
-                                          controls->mousePositionInWorldY,
-                                          delta);
+                                          controls->mousePositionInWorldY);
         }
 
 

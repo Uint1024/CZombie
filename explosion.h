@@ -4,6 +4,6 @@
 #include "entity.h"
 
 Entity* Explosion_Create(int x, int y);
-Entity* Explosion_Update(Entity* explosion, int delta);
+void Explosion_Update(Entity* exp, int delta);
 
 #endif // EXPLOSIVE_H

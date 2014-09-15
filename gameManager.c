@@ -1,7 +1,12 @@
 #include "gameManager.h"
+#include <stdio.h>
 #include "world.h"
 #include "math.h"
 #include "zombie.h"
+#include "explosion.h"
+#include "player.h"
+#include "bullet.h"
+#include "bonus.h"
 
 GameManager GameManager_Create()
 {
@@ -9,11 +14,11 @@ GameManager GameManager_Create()
 
     gm.wave_id = 0;
     gm.game_mode = Survival_mode;
-
-    gm.waves[0] = Wave_Create(5, 0, 0, 0);
-    gm.waves[1] = Wave_Create(15, 6, 0, 0);
-    gm.waves[2] = Wave_Create(5, 25, 0, 0);
-    gm.waves[3] = Wave_Create(28, 10, 5, 0);
+    gm.wave_timer = 30000;
+    gm.waves[0] = Wave_Create(0, 0, 30, 0);
+    gm.waves[1] = Wave_Create(40, 0, 0, 0);
+    gm.waves[2] = Wave_Create(40, 5, 0, 0);
+    gm.waves[3] = Wave_Create(60, 10, 2, 0);
     gm.waves[4] = Wave_Create(0, 36, 15, 0);
     gm.waves[5] = Wave_Create(50, 50, 5, 0);
     gm.waves[6] = Wave_Create(30, 50, 24, 1);
@@ -43,7 +48,7 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
 void GameManager_Update(GameManager* gm, World* world, int delta)
 {
     GameManage_UpdateWorldEntities(delta, world);
-    GameManager_UpdateEnnemyWaves(gm, world);
+    GameManager_UpdateEnnemyWaves(gm, world, delta);
 }
 
 void GameManage_UpdateWorldEntities(int delta, World* world)
@@ -109,8 +114,7 @@ void GameManage_UpdateWorldEntities(int delta, World* world)
         if(Vector_Get(monsters_vector, i) != NULL)
         {
             Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
-            //if(mob->t == Zombie)
-            //{
+
                 Zombie_Update(mob, delta, world);
 
                 if (mob->alive == Jfalse)
@@ -119,7 +123,6 @@ void GameManage_UpdateWorldEntities(int delta, World* world)
                     Vector_Delete(monsters_vector, i);
 
                 }
-           // }
         }
         else
         {
@@ -138,48 +141,38 @@ void GameManage_UpdateWorldEntities(int delta, World* world)
     }
 }
 
-GameManager_UpdateEnnemyWaves(GameManager* gm, World* world)
+void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world, int delta)
 {
-    if(Vector_Count(&world->monsters_vector) == 0)
-    {
-        gm->wave_id += 1;
-        //Jbool all_mobs_generated = Jfalse;
+    gm->wave_timer -= delta;
 
+
+    if(Vector_Count(&world->monsters_vector) == 0 || gm->wave_timer <= 0)
+    {
+        gm->wave_timer = 30000;
         int randX = 0;
         int randY = 0;
-        //while(!all_mobs_generated)
-        //{
 
-
-            for(int z_type = 0 ; z_type < NB_ZOMBIE_TYPES ; z_type++)
-            {
-                for(int i = 0 ; i < gm->waves[gm->wave_id].zombies[z_type] ; i++)
-                {
-
-                    GameManager_GeneratePositionOutsideOfScreen(&randX, &randY);
-                    printf("%d\n", randX);
-                    Vector_Push(&world->monsters_vector,
-                                CreateZombie(   z_type,
-                                                randX + world->player.camera->x,
-                                                randY + world->player.camera->y
-                                            )
-                                );
-                }
-            }
-        //}
-       /* for(int i = 0 ; i < pow(2, gm->wave_id + 1) ; i++)
+        for(int z_type = 0 ; z_type < NB_ZOMBIE_TYPES ; z_type++)
         {
+            for(int i = 0 ; i < gm->waves[gm->wave_id].zombies[z_type] ; i++)
+            {
 
-            Vector_Push(&world->monsters_vector,
-                        CreateZombie(randX + world->player.camera->x,
-                                     randY + world->player.camera->y,
-                                     0.2));
-        }*/
+                GameManager_GeneratePositionOutsideOfScreen(&randX, &randY);
+                Vector_Push(&world->monsters_vector,
+                            CreateZombie(   z_type,
+                                            randX + world->player.camera->x,
+                                            randY + world->player.camera->y
+                                        )
+                            );
+            }
+        }
+
+        gm->wave_id += 1;
 
     }
 }
 
-GameManager_GeneratePositionOutsideOfScreen(int* randX, int* randY)
+void GameManager_GeneratePositionOutsideOfScreen(int* randX, int* randY)
 {
     Direction direction = rand() % 4;
 
@@ -212,6 +205,9 @@ GameManager_GeneratePositionOutsideOfScreen(int* randX, int* randY)
         modulusX = 800;
         bumpX = 1600;
         modulusY = 800;
+        break;
+    case None:
+        printf("Error, generated random position None\n");
         break;
     }
 

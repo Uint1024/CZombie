@@ -9,7 +9,7 @@ void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
 
 }
 
-Entity* Bonus_Create(Type bonus_type, float x, float y, float angle)
+Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 {
     Entity* bonus = Entity_Spawn();
 

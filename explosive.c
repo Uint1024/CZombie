@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <math.h>
 #include "explosive.h"
 #include "entity.h"
 

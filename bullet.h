@@ -5,7 +5,7 @@
 #include "vector.h"
 typedef struct World World;
 
-Entity* Bullet_Create(float x, float y, float angle, float speed);
+Entity* Bullet_Create(float x, float y, float angle, float speed, Jbool is_ennemy_bullet);
 void Bullet_Update(Entity* bullet, int delta, World* world);
 
 #endif

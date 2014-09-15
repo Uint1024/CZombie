@@ -510,10 +510,9 @@
 1394940797 c:\sdl2-2.0.3\include\sdl2\sdl_config.h
 	"SDL_platform.h"
 
-1410526639 c:\sdl2-2.0.3\include\sdl2\sdl_platform.h
+1410795302 c:\sdl2-2.0.3\include\sdl2\sdl_platform.h
 	"AvailabilityMacros.h"
 	"TargetConditionals.h"
-	<winapifamily.h>
 	"begin_code.h"
 	"close_code.h"
 
@@ -783,7 +782,7 @@
 1410423040 source:c:\users\john\documents\github\czombie\ball.c
 	"entity.h"
 
-1410781778 c:\users\john\documents\github\czombie\entity.h
+1410795400 c:\users\john\documents\github\czombie\entity.h
 	"common.h"
 	"camera.h"
 	"boundingBox.h"
@@ -792,7 +791,7 @@
 	"vector.h"
 	"explosive.h"
 
-1410787462 c:\users\john\documents\github\czombie\common.h
+1410793018 c:\users\john\documents\github\czombie\common.h
 
 1410538187 c:\users\john\documents\github\czombie\camera.h
 
@@ -802,11 +801,11 @@
 1410380536 c:\users\john\documents\github\czombie\linkedlist.h
 	<stdlib.h>
 
-1410783617 source:c:\users\john\documents\github\czombie\bonus.c
+1410794114 source:c:\users\john\documents\github\czombie\bonus.c
 	"bonus.h"
 	<stdio.h>
 
-1410750466 c:\users\john\documents\github\czombie\bonus.h
+1410794218 c:\users\john\documents\github\czombie\bonus.h
 	"entity.h"
 	"common.h"
 
@@ -814,7 +813,7 @@
 	"boundingBox.h"
 	"entity.h"
 
-1410787334 source:c:\users\john\documents\github\czombie\bullet.c
+1410796604 source:c:\users\john\documents\github\czombie\bullet.c
 	<math.h>
 	<stdlib.h>
 	"linkedList.h"
@@ -822,7 +821,7 @@
 	"entity.h"
 	"world.h"
 
-1410708248 c:\users\john\documents\github\czombie\bullet.h
+1410794784 c:\users\john\documents\github\czombie\bullet.h
 	"entity.h"
 	"linkedList.h"
 	"vector.h"
@@ -831,7 +830,7 @@
 	"camera.h"
 	"entity.h"
 
-1410787197 source:c:\users\john\documents\github\czombie\controls.c
+1410794198 source:c:\users\john\documents\github\czombie\controls.c
 	<SDL.h>
 	"entity.h"
 	"controls.h"
@@ -858,11 +857,11 @@
 	<stdlib.h>
 	"entity.h"
 
-1410786854 c:\users\john\documents\github\czombie\zombie.h
+1410792568 c:\users\john\documents\github\czombie\zombie.h
 	"linkedList.h"
 	"vector.h"
 
-1410743998 source:c:\users\john\documents\github\czombie\entity.c
+1410796640 source:c:\users\john\documents\github\czombie\entity.c
 	"common.h"
 	"entity.h"
 	"math.h"
@@ -906,13 +905,13 @@
 
 1410279293 c:\users\john\documents\github\czombie\string.h
 
-1410782608 c:\users\john\documents\github\czombie\player.h
+1410796633 c:\users\john\documents\github\czombie\player.h
 	"linkedList.h"
 	"vector.h"
 
 1410430732 source:c:\users\john\documents\github\czombie\map.c
 
-1410783632 source:c:\users\john\documents\github\czombie\player.c
+1410796652 source:c:\users\john\documents\github\czombie\player.c
 	"math.h"
 	"stdio.h"
 	"player.h"
@@ -936,17 +935,20 @@
 	"wall.h"
 	"entity.h"
 
-1410787305 source:c:\users\john\documents\github\czombie\zombie.c
+1410796260 source:c:\users\john\documents\github\czombie\zombie.c
 	"math.h"
+	<stdio.h>
 	"bonus.h"
 	"zombie.h"
 	"entity.h"
 	"linkedList.h"
 	"world.h"
+	"weapon.h"
 
-1410785900 source:c:\users\john\documents\github\czombie\graphics.c
+1410794198 source:c:\users\john\documents\github\czombie\graphics.c
 	<SDL.h>
 	<SDL_image.h>
+	<stdio.h>
 	"graphics.h"
 	"vector.h"
 	"entity.h"
@@ -963,15 +965,15 @@
 	<SDL_ttf.h>
 	"common.h"
 
-1410783864 c:\users\john\documents\github\czombie\weapons_component.h
+1410793659 c:\users\john\documents\github\czombie\weapons_component.h
 
-1410783717 c:\users\john\documents\github\czombie\weapon.h
+1410794032 c:\users\john\documents\github\czombie\weapon.h
 	"common.h"
 	"weapons_component.h"
 	"linkedList.h"
 	"vector.h"
 
-1410783710 source:c:\users\john\documents\github\czombie\weapon.c
+1410793312 source:c:\users\john\documents\github\czombie\weapon.c
 	<stdlib.h>
 	<SDL.h>
 	"linkedList.h"
@@ -980,7 +982,7 @@
 	"vector.h"
 	"explosive.h"
 
-1410785066 source:c:\users\john\documents\github\czombie\weapons_component.c
+1410795727 source:c:\users\john\documents\github\czombie\weapons_component.c
 	"stdlib.h"
 	<SDL.h>
 	"bullet.h"
@@ -989,23 +991,24 @@
 
 1410705810 c:\users\john\documents\github\czombie\vector.h
 
-1410706058 source:c:\users\john\documents\github\czombie\vector.c
+1410790302 source:c:\users\john\documents\github\czombie\vector.c
 	"vector.h"
 	<stdlib.h>
 
 1410708596 c:\users\john\documents\github\czombie\explosive.h
 	"common.h"
 
-1410708570 source:c:\users\john\documents\github\czombie\explosive.c
+1410795315 source:c:\users\john\documents\github\czombie\explosive.c
 	<SDL.h>
+	<math.h>
 	"explosive.h"
 	"entity.h"
 
-1410646758 c:\users\john\documents\github\czombie\explosion.h
+1410795253 c:\users\john\documents\github\czombie\explosion.h
 	"common.h"
 	"entity.h"
 
-1410646785 source:c:\users\john\documents\github\czombie\explosion.c
+1410795245 source:c:\users\john\documents\github\czombie\explosion.c
 	"explosion.h"
 
 1410698985 c:\users\john\documents\github\czombie\main_menu.h
@@ -1021,14 +1024,16 @@
 	"controls.h"
 	"menu_button.h"
 
-1410704540 source:c:\users\john\documents\github\czombie\menu_button.c
+1410795404 source:c:\users\john\documents\github\czombie\menu_button.c
 	"menu_button.h"
 	"graphics.h"
 	<SDL_ttf.h>
+	<stdlib.h>
 
-1410704603 source:c:\users\john\documents\github\czombie\menu.c
+1410795404 source:c:\users\john\documents\github\czombie\menu.c
 	"menu.h"
 	"menu_button.h"
+	<stdlib.h>
 
 1410702808 c:\users\john\documents\github\czombie\menu.h
 	"menu_button.h"
@@ -1053,15 +1058,22 @@
 	"entity.h"
 	"player.h"
 
-1410788377 source:c:\users\john\documents\github\czombie\gamemanager.c
+1410795315 source:c:\users\john\documents\github\czombie\gamemanager.c
 	"gameManager.h"
+	<stdio.h>
 	"world.h"
 	"math.h"
 	"zombie.h"
+	"explosion.h"
+	"player.h"
+	"bullet.h"
+	"bonus.h"
 
-1410788442 c:\users\john\documents\github\czombie\gamemanager.h
+1410794975 c:\users\john\documents\github\czombie\gamemanager.h
 	"common.h"
 
-1410743522 source:c:\users\john\documents\github\czombie\common.c
+1410795417 source:c:\users\john\documents\github\czombie\common.c
 	"common.h"
+	"entity.h"
+	"math.h"
 

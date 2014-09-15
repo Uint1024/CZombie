@@ -1,6 +1,7 @@
 #include "menu_button.h"
 #include "graphics.h"
 #include <SDL_ttf.h>
+#include <stdlib.h>
 
 MenuButton* MenuButton_Create(Menu_Button_Name name,
                               float x, float y,

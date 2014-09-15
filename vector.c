@@ -87,4 +87,12 @@ void Vector_Delete(Vector *v, int index)
 
 	v->data[v->count] = NULL;
 	v->count--;
+
+
+    if(v->count == 0)
+    {
+            v->size = 0;
+            v->data = realloc(v->data, sizeof(void*) * v->size);
+    }
+	printf("count = %d\n", v->count);
 }

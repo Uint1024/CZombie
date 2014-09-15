@@ -1,6 +1,6 @@
 #include "menu.h"
 #include "menu_button.h"
-
+#include <stdlib.h>
 
 Menu* MainMenu_Create(Graphics* graphics)
 {

@@ -162,21 +162,22 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 
         free(temp);
 
-        if (collision_sides[Bottom] && ent->dy > 0 ||
-            collision_sides[Top] && ent->dy < 0)
+        if ((collision_sides[Bottom] && ent->dy > 0) ||
+            (collision_sides[Top] && ent->dy < 0))
         {
             ent->dy = 0;
         }
 
-        if (collision_sides[Right] && ent->dx > 0 ||
-            collision_sides[Left] && ent->dx < 0)
+        if ((collision_sides[Right] && ent->dx > 0) ||
+            (collision_sides[Left] && ent->dx < 0))
         {
             ent->dx = 0;
         }
 
         if(collision && ent->t == Player)
         {
-            Player_TakeDamage(ent, 1, collision_sides);
+
+            Player_TakeDamage(ent, collision_sides);
 
         }
     }

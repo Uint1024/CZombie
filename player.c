@@ -29,14 +29,14 @@ void Player_Update(int delta, World* world)
 }
 
 
-void Player_Move(Entity* p, const float dx, const float dy)
+void Player_Move(Entity* p, float dx, float dy)
 {
     moveEntity(p, dx, dy);
     MoveCamera(p->camera, dx , dy);
 }
 
 
-Entity Player_Create(const float x, const float y, const int w, const int h)
+Entity Player_Create(float x, float y, int w, int h)
 {
     Entity p;
 
@@ -66,6 +66,7 @@ Entity Player_Create(const float x, const float y, const int w, const int h)
     WeaponsComponent_ChangeWeapon(p.weapons_component,
                                   Handgun_w);
 
+    p.weapons_component->is_monster = Jfalse;
 	return p;
 }
 
@@ -88,7 +89,6 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
     WeaponsComponent* wc = player->weapons_component;
-    printf("%d", bonus->t);
     if(bonus->t == Ammo_bonus)
     {
         WeaponsComponent_AddAmmo(player->weapons_component,
@@ -119,15 +119,32 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
 //attacker is an array 5 pointers
 //a pointer to the attacker of each side
 //so attacker[Left] is the attacker on the left
-void Player_TakeDamage(Entity* p, const int damage, const Entity** attacker)
+void Player_TakeDamage(Entity* p, Entity** attacker)
 {
-    p->hp -= damage;
 
     //push player in the opposite direction of the attacker
-    if(attacker[Left])      Player_Move(p, 20,  0);
-    if(attacker[Right])     Player_Move(p, -20, 0);
-    if(attacker[Top])       Player_Move(p, 0,   20);
-    if(attacker[Bottom])    Player_Move(p, 0,   -20);
+    if(attacker[Left])
+    {
+        p->hp -= attacker[Left]->damage;
+        Player_Move(p, 20,  0);
+    }
+    if(attacker[Right])
+    {
+        p->hp -= attacker[Right]->damage;
+        Player_Move(p, -20, 0);
+    }
+
+    if(attacker[Top])
+    {
+        p->hp -= attacker[Top]->damage;
+        Player_Move(p, 0,   20);
+    }
+
+    if(attacker[Bottom])
+    {
+        p->hp -= attacker[Bottom]->damage;
+        Player_Move(p, 0,   -20);
+    }
 
     p->invulnerability_timer = 2000;
 }

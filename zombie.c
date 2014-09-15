@@ -1,9 +1,11 @@
 #include "math.h"
+#include <stdio.h>
 #include "bonus.h"
 #include "zombie.h"
 #include "entity.h"
 #include "linkedList.h"
 #include "world.h"
+#include "weapon.h"
 
 void Zombie_Update(Entity* z, int delta, World* world)
 {
@@ -15,7 +17,22 @@ void Zombie_Update(Entity* z, int delta, World* world)
     Entity_CollisionWithStuff(z, world);
     Entity_CollisionWithExplosions(z, &world->explosions_vector);
 
+    if(z->t == Heavy_Zombie)
+    {
+        Zombie_Shoot(z, world);
+    }
 	moveEntity(z, z->dx, z->dy);
+}
+
+void  Zombie_Shoot(Entity* z, World* world)
+{
+
+    float angle = C_AngleBetween2Entities(z, &world->player);
+    float originX = z->x + z->box.width/2;
+    float originY = z->y + z->box.height/2;
+
+    WeaponsComponent_TryToShoot(z->weapons_component, originX, originY,
+                                angle, &world->bullets_vector, 0, 0);
 }
 
 Entity* CreateZombie(Zombie_Type type, float x, float y)
@@ -34,6 +51,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->box.width = 20;
         z->speed = 0.2;
         z->hp = 2;
+        z->damage = 2;
         break;
     case Fast_Zombie:
         z->texture = FastZombie_tex;
@@ -41,6 +59,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->box.width = 20;
         z->speed = 0.6;
         z->hp = 2;
+        z->damage = 4;
         break;
     case Heavy_Zombie:
         z->texture = HeavyZombie_tex;
@@ -48,6 +67,10 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->box.width = 40;
         z->speed = 0.1;
         z->hp = 20;
+        z->damage = 10;
+        z->weapons_component = WeaponsComponent_Create(Jtrue);
+        WeaponsComponent_AddWeaponToInventory(z->weapons_component,
+                                              Weapon_Create(Fireball_w));
         break;
     case Huge_Zombie:
         z->texture = HugeZombie_tex;
@@ -55,6 +78,11 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->box.width = 100;
         z->speed = 0.2;
         z->hp = 150;
+        z->damage = 20;
+        break;
+
+    case NB_ZOMBIE_TYPES:
+        printf("Error in Zombie_Create, ttried to create zombie type \"NB_ZOMBIE_TYPES\"");
         break;
     }
 
@@ -71,4 +99,6 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector)
     {
         Bonus_GenerateRandom(bonus_vector, zombie);
     }
+
+    free(zombie->weapons_component);
 }
