@@ -22,6 +22,7 @@ Controls* CreateControls()
 		controls->pressedKeys[i] = Jfalse;
 	}
     controls->mouseWheelPos = 0;
+    controls->active_window = NULL;
 	return controls;
 }
 
@@ -29,6 +30,13 @@ void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, Wo
 {
     Inputs_PoolInputs(controls, world->player.camera);
     Inputs_ApplyInputs(controls, delta, game_started, world, level_editor);
+
+    for(int i = 0 ; i < 20 ; i++)
+        controls->previousPressedMouseButtons[i] = controls->pressedMouseButtons[i];
+
+
+    controls->previousMouseX = controls->mouseX;
+    controls->previousMouseY = controls->mouseY;
 }
 
 Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
@@ -92,6 +100,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                             Jbool* game_started,
                             World* world, Window* level_editor)
 {
+    Jbool hovering_on_window = Jfalse;
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
     //Vector* bonus_vector = &world->bonus_vector;
@@ -114,7 +123,35 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
         controls->timer_menu  = 100;
     }
 
-    //if()
+
+    if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
+    {
+       hovering_on_window = Jtrue;
+
+       if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+            controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+        {
+            controls->active_window = level_editor;
+        }
+    }
+
+
+    if(controls->active_window != NULL &&
+       !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+    {
+        controls->active_window = NULL;
+    }
+
+    if(controls->active_window != NULL &&
+       controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+       controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+    {
+
+         Window_Move(level_editor,
+                     controls->mouseX - controls->previousMouseX,
+                     controls->mouseY - controls->previousMouseY);
+    }
+
     if(*game_started && controls->timer_menu < 0)
     {
 
@@ -200,65 +237,69 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                                         controls->mousePositionInWorldY  );
 
 
-        if(controls->mouseWheelPos != 0)
+        if(!controls->active_window && !hovering_on_window)
         {
-            WeaponsComponent_ScrollWeapons(player->weapons_component, controls->mouseWheelPos );
-        }
-
-        if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
-        {
-            WeaponsComponent_TryToShoot(player->weapons_component,
-                                          player->muzzleX,
-                                          player->muzzleY,
-                                          angle_from_muzzle_to_mouse,
-                                          bullets_vector,
-                                          controls->mousePositionInWorldX,
-                                          controls->mousePositionInWorldY);
-        }
-
-
-        if (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
-        {
-            if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
-                controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
+            if(controls->mouseWheelPos != 0)
             {
-                //converting tile position to real position on screen
-                int tileInPixelsX = controls->mouseTileX * TILE_SIZE;
-                int tileInPixelsY = controls->mouseTileY * TILE_SIZE;
-
-                //Entity* wall = (Entity*)malloc(sizeof(Entity));
-                //wall = Wall_Create(tileInPixelsX, tileInPixelsY);
-
-                int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
-
-                map[position_in_array] = Wall_Create(tileInPixelsX, tileInPixelsY);
-                printf("Created wall at %d:%d\n", tileInPixelsX, tileInPixelsY);
-
-            }
-            else
-                printf("out of bound!!!");
-        }
-
-        if(controls->pressedKeys[SDL_SCANCODE_R])
-        {
-            WeaponsComponent_Reload(player->weapons_component, delta);
-        }
-
-        if(SDL_GetTicks() - player->last_creation > 50)
-        {
-            if (controls->pressedKeys[SDL_SCANCODE_C] == Jtrue)
-            {
-                Entity* zombie;
-                zombie = CreateZombie(Normal_Zombie, controls->mousePositionInWorldX , controls->mousePositionInWorldY);
-                Vector_Push(monsters_vector, zombie);
-
-
+                WeaponsComponent_ScrollWeapons(player->weapons_component, controls->mouseWheelPos );
             }
 
-            player->last_creation = SDL_GetTicks();
+            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
+            {
+                WeaponsComponent_TryToShoot(player->weapons_component,
+                                              player->muzzleX,
+                                              player->muzzleY,
+                                              angle_from_muzzle_to_mouse,
+                                              bullets_vector,
+                                              controls->mousePositionInWorldX,
+                                              controls->mousePositionInWorldY);
+            }
+
+
+            if (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
+            {
+                if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
+                    controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
+                {
+                    //converting tile position to real position on screen
+                    int tileInPixelsX = controls->mouseTileX * TILE_SIZE;
+                    int tileInPixelsY = controls->mouseTileY * TILE_SIZE;
+
+                    //Entity* wall = (Entity*)malloc(sizeof(Entity));
+                    //wall = Wall_Create(tileInPixelsX, tileInPixelsY);
+
+                    int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
+
+                    map[position_in_array] = Wall_Create(tileInPixelsX, tileInPixelsY);
+                    printf("Created wall at %d:%d\n", tileInPixelsX, tileInPixelsY);
+
+                }
+                else
+                    printf("out of bound!!!");
+            }
+
+            if(controls->pressedKeys[SDL_SCANCODE_R])
+            {
+                WeaponsComponent_Reload(player->weapons_component, delta);
+            }
+
+            if(SDL_GetTicks() - player->last_creation > 50)
+            {
+                if (controls->pressedKeys[SDL_SCANCODE_C] == Jtrue)
+                {
+                    Entity* zombie;
+                    zombie = CreateZombie(Normal_Zombie, controls->mousePositionInWorldX , controls->mousePositionInWorldY);
+                    Vector_Push(monsters_vector, zombie);
+
+
+                }
+
+                player->last_creation = SDL_GetTicks();
+            }
         }
+
+
     }
 
-    for(int i = 0 ; i < 20 ; i++)
-        controls->previousPressedMouseButtons[i] = controls->pressedMouseButtons[i];
+
 }

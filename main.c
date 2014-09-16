@@ -52,7 +52,7 @@ int main(int argc, char* args[])
 
     Jbool game_started = Jtrue;
 
-    Window level_editor = Window_Create();
+    Window level_editor = Window_CreateLevelEditor();
     MenuManager menu_manager = MenuManager_Create(graphics);
     int ms_delay_between_frame = 1000 / 60;
 

@@ -29,6 +29,17 @@ void BoundingBox_Create(Entity* ent, int width, int height)
 	ent->box.bottom = ent->y + height;
 }
 
+//struct agnostic = better
+Box BoundingBox_CreateBetter(int x, int y, int width, int height)
+{
+    Box box;
+    box.width = width;
+	box.height = height;
+	box.left = x;
+	box.top = y;
+	box.right = x + width;
+	box.bottom = y + height;
+}
 void BoundingBox_CreateWindow(Window* ent, int width, int height)
 {
 	ent->box.width = width;
@@ -65,6 +76,15 @@ void BoundingBox_Update(Entity* ent)
 	ent->box.top = ent->y;
 	ent->box.right = ent->box.left + ent->box.width;
 	ent->box.bottom = ent->box.top + ent->box.height;
+}
+
+//add velocity to bounding box
+void BoundingBox_UpdateWindow(Box* box, int newX, int newY)
+{
+	box->left = newX;
+	box->top = newY;
+	box->right = box->left + box->width;
+    box->bottom = box->top + box->height;
 }
 
 //check collision between 2 objects, returns direction of collision

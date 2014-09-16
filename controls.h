@@ -15,12 +15,15 @@ typedef struct Controls
 	SDL_Event e;
 	int mouseX;
 	int mouseY;
+    int previousMouseX;
+	int previousMouseY;
 	int mouseTileX;
 	int mouseTileY;
 	int mousePositionInWorldX;
 	int mousePositionInWorldY;
 	int mouseWheelPos;
 	int timer_menu;
+	Window*     active_window;
 } Controls;
 
 Controls* CreateControls();
