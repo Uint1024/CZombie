@@ -25,6 +25,10 @@ Controls* CreateControls()
     controls->active_window = NULL;
     controls->cursor_resize_left_right = Jfalse;
     controls->cursor_resize_up_down = Jfalse;
+    controls->active_button = NULL;
+
+    controls->tileInPixelsX = 0;
+    controls->tileInPixelsY = 0;
 	return controls;
 }
 
@@ -129,6 +133,20 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
     if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
     {
        hovering_on_window = Jtrue;
+
+        if(!controls->active_window)
+        {
+            for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
+            {
+                if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->buttons[i].box))
+                {
+                    if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
+                    {
+                        controls->active_button = &level_editor->buttons[i];
+                    }
+                }
+            }
+        }
 
         if(controls->mouseX > level_editor->box.right - 10 ||
            controls->mouseX < level_editor->box.left + 10 &&
@@ -311,23 +329,29 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                                               controls->mousePositionInWorldY);
             }
 
+            controls->tileInPixelsX = controls->mouseTileX * TILE_SIZE;
+            controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;
 
-            if (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
+            if (controls->active_button != NULL &&
+                controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
             {
                 if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
                     controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
                 {
                     //converting tile position to real position on screen
-                    int tileInPixelsX = controls->mouseTileX * TILE_SIZE;
-                    int tileInPixelsY = controls->mouseTileY * TILE_SIZE;
 
-                    //Entity* wall = (Entity*)malloc(sizeof(Entity));
-                    //wall = Wall_Create(tileInPixelsX, tileInPixelsY);
 
                     int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
 
-                    map[position_in_array] = Wall_Create(tileInPixelsX, tileInPixelsY);
-                    printf("Created wall at %d:%d\n", tileInPixelsX, tileInPixelsY);
+                    if(controls->active_button->button_type == DirtGround_button)
+                    {
+                        world->ground_map[position_in_array] = Ground_Create(Dirt_ground, controls->tileInPixelsX, controls->tileInPixelsY);
+                    }
+                    else if(controls->active_button->button_type == GrassGround_button)
+                    {
+                        world->ground_map[position_in_array] = Ground_Create(Grass_ground, controls->tileInPixelsX, controls->tileInPixelsY);
+                    }
+                    //world->map[position_in_array] = Wall_Create(tileInPixelsX, tileInPixelsY);
 
                 }
                 else

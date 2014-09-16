@@ -6,6 +6,7 @@
 #include "vector.h"
 
 typedef struct World World;
+typedef struct Button Button;
 
 typedef struct Controls
 {
@@ -21,6 +22,8 @@ typedef struct Controls
 	int mouseTileY;
 	int mousePositionInWorldX;
 	int mousePositionInWorldY;
+	int tileInPixelsX;
+	int tileInPixelsY;
 	int mouseWheelPos;
 	int timer_menu;
 	Window*     active_window;
@@ -30,6 +33,7 @@ typedef struct Controls
 	Jbool       resizing_left;
 	Jbool       resizing_up;
 	Jbool       resizing_down;
+	Button*     active_button;
 } Controls;
 
 Controls* CreateControls();

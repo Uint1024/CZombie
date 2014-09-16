@@ -298,7 +298,27 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps,
 
         SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
                        NULL, &button_rect);
+
+        if(&level_editor->buttons[i] == controls->active_button)
+        {
+            SDL_SetRenderDrawColor(g->renderer, 255, 0,0, 255);
+            SDL_RenderDrawRect(g->renderer, &button_rect);
+
+            int tex_w;
+            int tex_h;
+
+            SDL_QueryTexture(g->textures[level_editor->buttons[i].texture], 0, 0, &tex_w, &tex_h);
+
+            SDL_Rect blueprint_rect = {controls->tileInPixelsX - world->player.camera->x, controls->tileInPixelsY, TILE_SIZE, TILE_SIZE };
+
+            SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
+                           NULL, &blueprint_rect);
+        }
     }
+
+    //render level editor
+
+
     //====Cursor stuff
     if(!controls->cursor_resize_left_right)
     {
