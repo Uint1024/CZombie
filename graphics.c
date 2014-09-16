@@ -11,6 +11,7 @@
 #include "controls.h"
 #include "weapons_component.h"
 #include "weapon.h"
+#include "window.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
@@ -39,34 +40,29 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
                                     );
 
 
-    g->textures[Player_tex]         =   IMG_LoadTexture(g->renderer,
-                                                        "player.png");
-	g->textures[Zombie_tex]         =   IMG_LoadTexture(g->renderer,
-                                                        "zombie.png");
-	g->textures[FastZombie_tex]     =   IMG_LoadTexture(g->renderer,
-                                                        "fastzombie.png");
-	g->textures[HeavyZombie_tex]    =   IMG_LoadTexture(g->renderer,
-                                                        "heavyzombie.png");
-	g->textures[HugeZombie_tex]     =   IMG_LoadTexture(g->renderer,
-                                                        "hugezombie.png");
-	g->textures[Ammo_Bonus_tex]     =   IMG_LoadTexture(g->renderer,
-                                                        "bullet_bonus.png");
-	g->textures[Rifle_Bonus_tex]    =   IMG_LoadTexture(g->renderer,
-                                                        "rifle.png");
-	g->textures[Shotgun_Bonus_tex]  =   IMG_LoadTexture(g->renderer,
-                                                        "shotgun.png");
-	g->textures[Bullet_tex]         =   IMG_LoadTexture(g->renderer,
-                                                        "bullet.png");
-	g->textures[Wall_tex]           =   IMG_LoadTexture(g->renderer,
-                                                        "wall.png");
-	g->textures[Explosion1_tex]     =   IMG_LoadTexture(g->renderer,
-                                                        "explosion.png");
-	g->textures[Cursor_aiming_tex]  =   IMG_LoadTexture(g->renderer,
-                                                        "aim.png");
+    g->textures_names[Player_tex]                   =   "player.png";
+    g->textures_names[Zombie_tex]                   =   "zombie.png";
+    g->textures_names[FastZombie_tex]               =   "fastzombie.png";
+    g->textures_names[HeavyZombie_tex]              =   "heavyzombie.png";
+    g->textures_names[TrooperZombie_tex]            =   "trooperzombie.png";
+    g->textures_names[HugeZombie_tex]               =   "hugezombie.png";
+    g->textures_names[Ammo_Bonus_tex]               =   "bullet_bonus.png";
+    g->textures_names[Rifle_Bonus_tex]              =   "rifle.png";
+    g->textures_names[Shotgun_Bonus_tex]            =   "shotgun.png";
+    g->textures_names[Bullet_tex]                   =   "bullet.png";
+    g->textures_names[Fireball_tex]                 =   "fireball.png";
+    g->textures_names[Wall_tex]                     =   "wall.png";
+    g->textures_names[Explosion1_tex]               =   "explosion.png";
+    g->textures_names[Cursor_aiming_tex]            =   "aim.png";
+    g->textures_names[GrassGround_tex]              =   "ground_grass.png";
+    g->textures_names[DirtGround_tex]               =   "ground_dirt.png";
+    g->textures_names[GrenadeLauncher_Bonus_tex]    =   "grenadeLauncher.png";
 
-    g->textures[GrenadeLauncher_Bonus_tex] =  IMG_LoadTexture(
-                                                    g->renderer,
-                                                    "grenadeLauncher.png");
+    for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
+    {
+        g->textures[i] =  IMG_LoadTexture(g->renderer, g->textures_names[i]);
+    }
+
 
     g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
 	g->fonts[Medium]            =   TTF_OpenFont("cour.ttf", 16);
@@ -80,12 +76,12 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 
 
 void Graphics_RenderGame(Graphics* g, World* world,
-                         Controls* controls, float fps, int delta)
+                         Controls* controls, float fps, int delta, Window* level_editor)
  {
-     SDL_SetRenderDrawColor(g->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
+     SDL_SetRenderDrawColor(g->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
      SDL_RenderClear(g->renderer);
      Graphics_RenderWorld(g, world);
-     Graphics_RenderUI(g, world, controls, fps, delta);
+     Graphics_RenderUI(g, world, controls, fps, delta, level_editor);
      Graphics_Flip(g);
  }
 
@@ -98,23 +94,31 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     Vector* explosions_vector = &world->explosions_vector;
     Entity* camera = world->player.camera;
 
-    Graphics_RenderObject(graphics, &world->player, camera);
 
     for (int i = 0; i < world->map_size; i++)
     {
-        if (world->map[i].t == Wall)
+        if (world->ground_map[i] != NULL)
         {
-            Graphics_RenderObject(graphics, &world->map[i], camera);
+            Graphics_RenderObject(graphics, world->ground_map[i], camera);
         }
     }
 
+    for (int i = 0; i < world->map_size; i++)
+    {
+        if (world->map[i] != NULL)
+        {
+            Graphics_RenderObject(graphics, world->map[i], camera);
+        }
+    }
+    Graphics_RenderObject(graphics, &world->player, camera);
+
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
-        if(Vector_Get(bullets_vector, i) != NULL)
-        {
+
             Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
+        if(BoundingBox_CheckOutOfScreen(&bullet->box, camera) == None)
             Graphics_RenderObject(graphics, bullet, camera);
-        }
+
     }
 
     for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
@@ -122,6 +126,8 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         if(Vector_Get(bonus_vector, i) != NULL)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
+
+            if(BoundingBox_CheckOutOfScreen(&bonus->box, camera) == None)
             Graphics_RenderObject(graphics, bonus, camera);
         }
     }
@@ -131,6 +137,8 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         if(Vector_Get(monsters_vector, i) != NULL)
         {
             Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
+
+            if(BoundingBox_CheckOutOfScreen(&mob->box, camera) == None)
             Graphics_RenderObject(graphics, mob, camera);
 
         }
@@ -273,8 +281,11 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     Graphics_Flip(g);
 }
 
-void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta)
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta, Window* level_editor)
 {
+    SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.height, level_editor->box.width};
+    SDL_RenderFillRect(g->renderer, &editor_rect);
+
     //====Cursor stuff
     SDL_Rect cursor_rect;
     cursor_rect.x = controls->mouseX - 10;

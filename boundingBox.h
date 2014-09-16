@@ -3,6 +3,7 @@
 
 #include "common.h"
 typedef struct Entity Entity;
+typedef struct Window Window;
 
 //#include "entity.h"
 typedef struct Box
@@ -23,4 +24,5 @@ Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 Jbool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2);
 Box BoundingBox_CreateFromAllValues(int width, int height, float x, float y);
 Jbool BoundingBox_CheckPointCollision(int x, int y, Box* box2);
+void BoundingBox_CreateWindow(Window* ent, int width, int height);
 #endif

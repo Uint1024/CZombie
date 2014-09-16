@@ -2,6 +2,7 @@
 #define GAME_MANAGER_H
 #include "common.h"
 typedef struct World World;
+typedef struct Window Window;
 
 typedef struct Wave
 {
@@ -17,10 +18,11 @@ typedef struct GameManager
 } GameManager;
 
 GameManager GameManager_Create();
-void GameManager_Update(GameManager* gm, World* world, int delta);
+void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_editor);
 void GameManage_UpdateWorldEntities(int delta, World* world);
 Wave Wave_Create(int normal_zombies, int fast_zombies,
-                 int heavy_zombies, int huge_zombies);
+                 int heavy_zombies, int huge_zombies,
+                 int trooper_zombies);
 void GameManager_GeneratePositionOutsideOfScreen(int* randX, int* randY);
 void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world, int delta);
 #endif // GAME_MANAGER_H

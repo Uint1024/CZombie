@@ -1,5 +1,6 @@
 #include "vector.h"
 #include <stdlib.h>
+#include "entity.h"
 
 Vector Vector_Create()
 {
@@ -19,6 +20,12 @@ int Vector_Count(Vector *v)
 
 void Vector_Push(Vector *v, void *e)
 {
+    //printf("push\n");
+    Entity* to_push = (Entity*)e;
+    Zombie_Type type = to_push->zombie_type;
+
+
+
     if(e != NULL)
     {
         if (v->size == 0)
@@ -48,6 +55,9 @@ void Vector_Push(Vector *v, void *e)
         v->data[v->count] = e;
         v->count++;
     }
+
+    /*if(type == Normal_Zombie || type == Fast_Zombie || type == Heavy_Zombie)
+        //printf("adding zombie of type %d at %f:%f, count after addition = %d size = %d\n", type, to_push->x, to_push->y, v->count, v->size);*/
 }
 
 
@@ -64,35 +74,50 @@ void* Vector_Get(Vector *v, int index)
 
 void Vector_Delete(Vector *v, int index)
 {
+
+    Entity* to_delete = (Entity*)Vector_Get(v, index);
+    Zombie_Type type = to_delete->zombie_type;
+
 	if (index >= v->count)
     {
         printf("Index too high");
 		return;
 	}
 
-    int destination = index;
 
-    for(int index_to_copy = index + 1; index_to_copy < v->count ; index_to_copy++)
+
+    //int destination = index;
+
+    if(index + 1 < v->count)
     {
-        if(v->data[index_to_copy] != NULL)
+        for(int index_to_copy = index + 1; index_to_copy < v->count ; index_to_copy++)
         {
-            v->data[destination] = v->data[index_to_copy];
-            destination++;
+            if(v->data[index_to_copy] != NULL)
+            {
+                v->data[index_to_copy - 1] = v->data[index_to_copy];
+                //destination++;
+            }
+            else
+            {
+                printf("Error during vector delete : trying to move null pointer");
+            }
         }
-        else
-        {
-            printf("Error during vector delete : trying to move null pointer");
-        }
+
     }
 
-	v->data[v->count] = NULL;
+
+    v->data[v->count-1] = NULL;
+    free(to_delete);
+
 	v->count--;
 
 
-    if(v->count == 0)
+    if(v->count == 0 && v->size > 20)
     {
             v->size = 0;
             v->data = realloc(v->data, sizeof(void*) * v->size);
     }
-	printf("count = %d\n", v->count);
+
+
+
 }

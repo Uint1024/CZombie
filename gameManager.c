@@ -14,26 +14,27 @@ GameManager GameManager_Create()
 
     gm.wave_id = 0;
     gm.game_mode = Survival_mode;
-    gm.wave_timer = 30000;
-    gm.waves[0] = Wave_Create(0, 0, 30, 0);
-    gm.waves[1] = Wave_Create(40, 0, 0, 0);
-    gm.waves[2] = Wave_Create(40, 5, 0, 0);
-    gm.waves[3] = Wave_Create(60, 10, 2, 0);
-    gm.waves[4] = Wave_Create(0, 36, 15, 0);
-    gm.waves[5] = Wave_Create(50, 50, 5, 0);
-    gm.waves[6] = Wave_Create(30, 50, 24, 1);
-    gm.waves[7] = Wave_Create(50, 70, 0, 2);
-    gm.waves[8] = Wave_Create(5, 0, 0, 9);
-    gm.waves[9] = Wave_Create(5, 0, 0, 0);
-    gm.waves[10] = Wave_Create(5, 0, 0, 0);
-    gm.waves[11] = Wave_Create(5, 0, 0, 0);
-    gm.waves[12] = Wave_Create(5, 0, 0, 0);
-    gm.waves[13] = Wave_Create(5, 0, 0, 0);
+    gm.wave_timer = 40000;
+    gm.waves[0] = Wave_Create(5, 0, 0, 0, 0);
+    gm.waves[1] = Wave_Create(30, 0, 2, 0, 0);
+    gm.waves[2] = Wave_Create(40, 5, 4, 0, 1);
+    gm.waves[3] = Wave_Create(70, 10, 8, 0, 2);
+    gm.waves[4] = Wave_Create(60, 30, 8, 0, 3);
+    gm.waves[5] = Wave_Create(50, 50, 5, 0, 3);
+    gm.waves[6] = Wave_Create(30, 50, 24, 1, 0);
+    gm.waves[7] = Wave_Create(50, 70, 0, 2, 0);
+    gm.waves[8] = Wave_Create(5, 0, 0, 9, 0);
+    gm.waves[9] = Wave_Create(5, 0, 0, 0, 0);
+    gm.waves[10] = Wave_Create(5, 0, 0, 0, 0);
+    gm.waves[11] = Wave_Create(5, 0, 0, 0, 0);
+    gm.waves[12] = Wave_Create(5, 0, 0, 0, 0);
+    gm.waves[13] = Wave_Create(5, 0, 0, 0, 0);
     return gm;
 }
 
 Wave Wave_Create(int normal_zombies, int fast_zombies,
-                 int heavy_zombies, int huge_zombies)
+                 int heavy_zombies, int huge_zombies,
+                 int trooper_zombies)
 {
     Wave wave;
 
@@ -41,15 +42,22 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
     wave.zombies[Fast_Zombie] = fast_zombies;
     wave.zombies[Heavy_Zombie] = heavy_zombies;
     wave.zombies[Huge_Zombie] = huge_zombies;
+    wave.zombies[Trooper_Zombie] = trooper_zombies;
 
     return wave;
 }
 
-void GameManager_Update(GameManager* gm, World* world, int delta)
+void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_editor)
 {
     GameManage_UpdateWorldEntities(delta, world);
     GameManager_UpdateEnnemyWaves(gm, world, delta);
+    //GameManager_UpdateUI(level_editor);
 }
+
+/*void GameManager_UpdateUI(Window level_editor)
+{
+    //if(BoundingBox_CheckPointCollision())
+}*/
 
 void GameManage_UpdateWorldEntities(int delta, World* world)
 {
@@ -162,6 +170,7 @@ void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world, int delta)
                             CreateZombie(   z_type,
                                             randX + world->player.camera->x,
                                             randY + world->player.camera->y
+
                                         )
                             );
             }

@@ -11,6 +11,7 @@ typedef struct Controls
 {
 	Jbool pressedKeys[200];
 	Jbool pressedMouseButtons[20];
+	Jbool previousPressedMouseButtons[20];
 	SDL_Event e;
 	int mouseX;
 	int mouseY;
@@ -26,7 +27,6 @@ Controls* CreateControls();
 Jbool   Inputs_PoolInputs(Controls* controls, Entity* camera);
 void    Inputs_ApplyInputs( Controls* controls, int delta,
                             Jbool* game_started,
-                            World* world);
-void Inputs_ProcessInputs(Controls* controls, int delta,
-                          Jbool* game_started, World* world);
+                            World* world, Window* level_editor);
+void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor);
 #endif

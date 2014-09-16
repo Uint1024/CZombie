@@ -12,10 +12,11 @@ typedef struct World
     Entity      player;
 
     //"foreground" layer of the map
-    Entity*     map;
+    Entity**     map;
     int         map_width;
     int         map_height;
     int         map_size;
+    Entity**      ground_map;
 
 } World;
 

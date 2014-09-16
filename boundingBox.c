@@ -1,5 +1,6 @@
 #include "boundingBox.h"
 #include "entity.h"
+#include "window.h"
 
 //create temporary bounding box from entity's position and velocity
 Box* BoundingBox_CreateTemp(Entity* ent)
@@ -27,6 +28,17 @@ void BoundingBox_Create(Entity* ent, int width, int height)
 	ent->box.right = ent->x + width;
 	ent->box.bottom = ent->y + height;
 }
+
+void BoundingBox_CreateWindow(Window* ent, int width, int height)
+{
+	ent->box.width = width;
+	ent->box.height = height;
+	ent->box.left = ent->x;
+	ent->box.top = ent->y;
+	ent->box.right = ent->x + width;
+	ent->box.bottom = ent->y + height;
+}
+
 
 //return direction of exit if the box is completely outside of the screen
 Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)

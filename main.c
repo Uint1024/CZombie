@@ -24,6 +24,7 @@
 #include "menu_manager.h"
 #include "world.h"
 #include "gameManager.h"
+#include "window.h"
 
 Jbool debug_mode = Jfalse;
 
@@ -51,6 +52,7 @@ int main(int argc, char* args[])
 
     Jbool game_started = Jtrue;
 
+    Window level_editor = Window_Create();
     MenuManager menu_manager = MenuManager_Create(graphics);
     int ms_delay_between_frame = 1000 / 60;
 
@@ -71,12 +73,12 @@ int main(int argc, char* args[])
 
             chrono_update = 0;
 
-            Inputs_ProcessInputs(controls, delta, &game_started, &world);
+            Inputs_ProcessInputs(controls, delta, &game_started, &world, &level_editor);
 
             if(game_started)
             {
-                GameManager_Update(&game_manager, &world, delta);
-                Graphics_RenderGame(graphics,&world, controls, fps, delta);
+                GameManager_Update(&game_manager, &world, delta, &level_editor);
+                Graphics_RenderGame(graphics,&world, controls, fps, delta, &level_editor);
             }
             else
             {

@@ -22,6 +22,8 @@ typedef struct Entity
 	float                   muzzleY;
 	float                   speed;
 	float                   angle;
+	Weapon_Type             bullet_type;
+	Zombie_Type             zombie_type;
 
     int                     explosion_timer;
 	//should be a pointer? Not every entity has a hitbox (maybe)
@@ -56,9 +58,10 @@ void moveEntity(Entity* ent, float x, float y);
 void CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
 void CalculateVelocity(Entity* p, Entity* map, int map_size);
 Entity* Entity_Spawn();
+Entity Entity_SpawnOnStack();
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
 void Entity_LoseHealth(Entity* ent, int damage);
 void Entity_CollisionWithStuff(Entity* ent, World* world);
 void Entity_CalculateVelocityFromAngle(Entity* ent, int delta);
-void Entity_CollisionWithWalls(Entity* ent, Entity* map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched);
+void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched);
 #endif

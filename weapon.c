@@ -52,7 +52,16 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->name = "Fireball";
         w->magazine_max_bullets = 1;
         w->magazine_bullets = 1;
-        w->delay_between_shots = 1500;
+        w->delay_between_shots = 500;
+        w->reloading_time = 0;
+        //w->corresponding_pickup = GrenadeLauncher_bonus;
+    }
+    else if(type == TripleFireball_w)
+    {
+        w->name = "Triple Fireball";
+        w->magazine_max_bullets = 1;
+        w->magazine_bullets = 1;
+        w->delay_between_shots = 2000;
         w->reloading_time = 0;
         //w->corresponding_pickup = GrenadeLauncher_bonus;
     }

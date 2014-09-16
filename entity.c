@@ -29,8 +29,35 @@ Entity* Entity_Spawn()
 	ent->camera                    = NULL;
     ent->texture                   = No_texture;
     ent->damage                    = 0;
+    ent->zombie_type               = Not_a_zombie;
 	return ent;
 }
+
+Entity Entity_SpawnOnStack()
+{
+    Entity ent;
+    ent.t                         = Nothing;
+	ent.x                         = 0;
+	ent.y                         = 0;
+	ent.dx                        = 0;
+	ent.dy                        = 0;
+	ent.speed                     = 0;
+	ent.angle                     = 0;
+	//FUCK, this should be a pointer...
+	//ent. box                       = NULL;
+	ent.alive                     = Jtrue;
+	ent.hp                        = 0;
+    ent.weapons_component          = NULL;
+    ent.explosive_component = NULL;
+	ent.last_creation             = 0;
+	ent.camera                    = NULL;
+    ent.texture                   = No_texture;
+    ent.damage                    = 0;
+    ent.zombie_type               = Not_a_zombie;
+	return ent;
+}
+
+
 void moveEntity(Entity* ent, float x, float y)
 {
 	ent->x += x;
@@ -57,8 +84,6 @@ void Entity_CollisionWithStuff(Entity* ent, World* world)
     Entity_CollisionWithWalls(ent, world->map, world->map_size, temp, collision_wall, walls_touched);
 
     free(temp);
-
-
 
 
     Jbool flatBottomTop = Jfalse;
@@ -121,16 +146,16 @@ void Entity_CalculateVelocityFromAngle(Entity* ent, int delta)
     ent->dy = sin(ent->angle) * ent->speed * delta;
 }
 
-void Entity_CollisionWithWalls(Entity* ent, Entity* map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched)
+void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched)
 {
     for (int i = 0; i < map_size; i++)
 	{
-		if (map[i].t == Wall)
+		if (map[i] != NULL)
 		{
-			Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i].box);
+			Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
 			if (collision_direction != None)
 			{
-				collision_wall[collision_direction] = &map[i];
+				collision_wall[collision_direction] = map[i];
 				walls_touched[collision_direction]++;
 			}
 		}

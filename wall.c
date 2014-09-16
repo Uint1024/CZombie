@@ -7,7 +7,7 @@
 //create a plain wall at the tile x:y
 Entity* Wall_Create(int x_, int y_)
 {
-	Entity* ent = (Entity*)malloc(sizeof(Entity));
+	Entity* ent = Entity_Spawn();
 	ent->t = Wall;
 	ent->texture = Wall_tex;
 	ent->x = x_;
@@ -18,3 +18,27 @@ Entity* Wall_Create(int x_, int y_)
 
 	return ent;
 }
+
+Entity* Ground_Create(Ground_Type type, float x, float y)
+{
+    Entity* ent = Entity_Spawn();
+    ent->t = Ground;
+
+    switch(type)
+    {
+    case Grass_ground:
+        ent->texture = GrassGround_tex;
+        break;
+    case Dirt_ground:
+        ent->texture = DirtGround_tex;
+    }
+
+	ent->x = x;
+	ent->y = y;
+	ent->dx = 0;
+	ent->dy = 0;
+	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
+
+	return ent;
+}
+

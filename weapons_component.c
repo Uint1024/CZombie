@@ -121,15 +121,15 @@ void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float orig
     {
         if(weapon->type == AutomaticRifle_w || weapon->type == Handgun_w)
         {
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle, 1, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 1, wc->is_monster));
         }
         else if(weapon->type == Shotgun_w)
         {
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle, 1, wc->is_monster));
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle+0.05, 1, wc->is_monster));
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle+0.1, 1, wc->is_monster));
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle-0.1, 1, wc->is_monster));
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle-0.05, 1, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 1, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.05, 1, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.1, 1, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.1, 1, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.05, 1, wc->is_monster));
         }
         else if(weapon->type == GrenadeLauncher_w)
         {
@@ -137,7 +137,17 @@ void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float orig
         }
         else if(weapon->type == Fireball_w)
         {
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle, 0.2, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 0.4, wc->is_monster));
+        }
+        else if(weapon->type == TripleFireball_w)
+        {
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 0.4, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.1, 0.4, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.2, 0.4, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.3, 0.4, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.1, 0.4, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.2, 0.4, wc->is_monster));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.3, 0.4, wc->is_monster));
         }
 
         weapon->magazine_bullets -= wc->is_monster ? 0 : 1;

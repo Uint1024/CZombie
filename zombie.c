@@ -17,7 +17,7 @@ void Zombie_Update(Entity* z, int delta, World* world)
     Entity_CollisionWithStuff(z, world);
     Entity_CollisionWithExplosions(z, &world->explosions_vector);
 
-    if(z->t == Heavy_Zombie)
+    if(z->zombie_type == Heavy_Zombie || z->zombie_type == Trooper_Zombie)
     {
         Zombie_Shoot(z, world);
     }
@@ -42,7 +42,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
 	z->t = type;
     z->x = x;
 	z->y = y;
-
+    z->zombie_type = type;
     switch(type)
     {
     case Normal_Zombie:
@@ -57,7 +57,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->texture = FastZombie_tex;
         z->box.height = 20;
         z->box.width = 20;
-        z->speed = 0.6;
+        z->speed = 0.25;
         z->hp = 2;
         z->damage = 4;
         break;
@@ -72,6 +72,17 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         WeaponsComponent_AddWeaponToInventory(z->weapons_component,
                                               Weapon_Create(Fireball_w));
         break;
+    case Trooper_Zombie:
+        z->texture = TrooperZombie_tex;
+        z->box.height = 60;
+        z->box.width = 45;
+        z->speed = 0.1;
+        z->hp = 20;
+        z->damage = 10;
+        z->weapons_component = WeaponsComponent_Create(Jtrue);
+        WeaponsComponent_AddWeaponToInventory(z->weapons_component,
+                                              Weapon_Create(TripleFireball_w));
+        break;
     case Huge_Zombie:
         z->texture = HugeZombie_tex;
         z->box.height = 100;
@@ -82,7 +93,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         break;
 
     case NB_ZOMBIE_TYPES:
-        printf("Error in Zombie_Create, ttried to create zombie type \"NB_ZOMBIE_TYPES\"");
+        printf("Error in Zombie_Create, tried to create zombie type \"NB_ZOMBIE_TYPES\"");
         break;
     }
 

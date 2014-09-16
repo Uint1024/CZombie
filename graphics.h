@@ -10,10 +10,12 @@ typedef struct Vector   Vector;
 typedef struct Menu     Menu;
 typedef struct World    World;
 typedef struct Controls    Controls;
+typedef struct Window    Window;
 
 typedef struct Graphics
 {
-    SDL_Texture*            textures[35];
+    char*                   textures_names[NB_OF_TEXTURES];
+    SDL_Texture*            textures[NB_OF_TEXTURES];
     TTF_Font*               fonts[10];
     SDL_Window*             window;
     SDL_Renderer*           renderer;
@@ -22,6 +24,8 @@ typedef struct Graphics
     SDL_Surface*            text_surface;
     SDL_Texture*            text_texture;
 } Graphics;
+
+
 
 Graphics* Graphics_Create(  int screen_width, int screen_height);
 
@@ -36,10 +40,10 @@ void Graphics_RenderText(   Graphics* graphics, char* text, Font_Size size,
 
 void Graphics_RenderMenu(   Graphics* g, Menu* menu, Controls* controls);
 
-void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta);
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta, Window* level_editor);
 
 void Graphics_RenderGame(Graphics* g, World* world,
-                         Controls* controls, float fps, int delta);
+                         Controls* controls, float fps, int delta, Window* level_editor);
 
 
 #endif // GRAPHICS_H

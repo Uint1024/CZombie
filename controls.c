@@ -12,6 +12,7 @@
 #include "weapons_component.h"
 #include <stdio.h>
 #include "world.h"
+#include "window.h"
 
 Controls* CreateControls()
 {
@@ -24,10 +25,10 @@ Controls* CreateControls()
 	return controls;
 }
 
-void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world)
+void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor)
 {
     Inputs_PoolInputs(controls, world->player.camera);
-    Inputs_ApplyInputs(controls, delta, game_started, world);
+    Inputs_ApplyInputs(controls, delta, game_started, world, level_editor);
 }
 
 Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
@@ -89,14 +90,14 @@ Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
 
 void Inputs_ApplyInputs( Controls* controls, int delta,
                             Jbool* game_started,
-                            World* world)
+                            World* world, Window* level_editor)
 {
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
     //Vector* bonus_vector = &world->bonus_vector;
     Vector* monsters_vector = &world->monsters_vector;
     //Vector* explosions_vector = &world->explosions_vector;
-    Entity* map = world->map;
+    Entity** map = world->map;
 
     controls->timer_menu -= delta;
 
@@ -113,6 +114,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
         controls->timer_menu  = 100;
     }
 
+    //if()
     if(*game_started && controls->timer_menu < 0)
     {
 
@@ -224,12 +226,12 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                 int tileInPixelsX = controls->mouseTileX * TILE_SIZE;
                 int tileInPixelsY = controls->mouseTileY * TILE_SIZE;
 
-                Entity* wall = (Entity*)malloc(sizeof(Entity));
-                wall = Wall_Create(tileInPixelsX, tileInPixelsY);
+                //Entity* wall = (Entity*)malloc(sizeof(Entity));
+                //wall = Wall_Create(tileInPixelsX, tileInPixelsY);
 
                 int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
 
-                map[position_in_array] = *wall;
+                map[position_in_array] = Wall_Create(tileInPixelsX, tileInPixelsY);
                 printf("Created wall at %d:%d\n", tileInPixelsX, tileInPixelsY);
 
             }
@@ -256,4 +258,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
             player->last_creation = SDL_GetTicks();
         }
     }
+
+    for(int i = 0 ; i < 20 ; i++)
+        controls->previousPressedMouseButtons[i] = controls->pressedMouseButtons[i];
 }

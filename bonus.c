@@ -3,7 +3,7 @@
 
 void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
 {
-    Bonus_type type = rand() % 4;
+    Bonus_type type = rand() % NB_OF_BONUS_TYPES;
 
     Vector_Push(bonus_vector, Bonus_Create(type, source->x, source->y, source->angle));
 
@@ -17,15 +17,14 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     bonus->y = y;
     bonus->t = bonus_type;
     bonus->angle = angle;
-    //bonus->pos = {x, y };
 
-    if(bonus_type == Ammo_bonus)
+    /*if(bonus_type == Ammo_bonus)
     {
         bonus->texture = Ammo_Bonus_tex;
 
         BoundingBox_Create(bonus, 10, 10);
     }
-    else if(bonus_type == Shotgun_bonus)
+    else */if(bonus_type == Shotgun_bonus)
     {
         bonus->texture = Shotgun_Bonus_tex;
         bonus->corresponding_weapon = Shotgun_w;
