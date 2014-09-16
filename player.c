@@ -45,7 +45,7 @@ Entity Player_Create(float x, float y, int w, int h)
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   50;
-	p.speed                         =   0.6;
+	p.speed                         =   0.3;
     p.blinking_frame                =   0;
     p.blinking_timer                =   0;
     p.camera                        =   CreateCamera();
@@ -54,14 +54,15 @@ Entity Player_Create(float x, float y, int w, int h)
 
     BoundingBox_Create(&p, w, h);
 
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
-                                          Weapon_Create(AutomaticRifle_w));
+
     WeaponsComponent_AddWeaponToInventory(p.weapons_component,
                                           Weapon_Create(Handgun_w));
     WeaponsComponent_AddWeaponToInventory(p.weapons_component,
                                           Weapon_Create(Shotgun_w));
     WeaponsComponent_AddWeaponToInventory(p.weapons_component,
                                           Weapon_Create(GrenadeLauncher_w));
+    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+                                            Weapon_Create(AutomaticRifle_w));
 
     WeaponsComponent_ChangeWeapon(p.weapons_component,
                                   Handgun_w);
@@ -89,7 +90,7 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
     WeaponsComponent* wc = player->weapons_component;
-    if(bonus->t == Ammo_bonus)
+/*    if(bonus->t == Ammo_bonus)
     {
         WeaponsComponent_AddAmmo(player->weapons_component,
                                  player->weapons_component->current_weapon->type,
@@ -97,7 +98,7 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
     }
     else
     {
-
+*/
         if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
         {
             WeaponsComponent_AddAmmo(wc,
@@ -111,7 +112,7 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
         }
 
 
-    }
+    //}
 
     bonus->alive = Jfalse;
 }
@@ -145,7 +146,6 @@ void Player_TakeDamage(Entity* p, Entity** attacker)
         p->hp -= attacker[Bottom]->damage;
         Player_Move(p, 0,   -20);
     }
-
-    p->invulnerability_timer = 2000;
+p->invulnerability_timer = 2000;
 }
 

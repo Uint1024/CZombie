@@ -5,21 +5,56 @@
 #include "entity.h"
 #include "world.h"
 
-Entity* Bullet_Create(float x, float y, float angle, float speed, Jbool is_ennemy_bullet)
+Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float speed, Jbool is_ennemy_bullet)
 {
 	Entity* bullet = Entity_Spawn();
 
 	bullet->t = Bullet;
-	bullet->texture = Bullet_tex;
+	bullet->bullet_type = type;
 	bullet->x = x;
 	bullet->y = y;
-	bullet->box.height = 10;
-	bullet->box.width = 10;
 	bullet->angle = angle;
 	bullet->speed = speed;
 	bullet->is_ennemy_bullet = is_ennemy_bullet;
 	bullet->time_traveled = 0;
 	bullet->damage = 1;
+
+	switch(type)
+	{
+    case Handgun_w:
+        bullet->box.height = 10;
+        bullet->box.width = 10;
+        bullet->texture = Bullet_tex;
+        break;
+    case AutomaticRifle_w:
+        bullet->box.height = 10;
+        bullet->box.width = 10;
+        bullet->texture = Bullet_tex;
+        break;
+    case Shotgun_w:
+        bullet->box.height = 10;
+        bullet->box.width = 10;
+        bullet->texture = Bullet_tex;
+        break;
+    case Fireball_w:
+        bullet->box.height = 15;
+        bullet->box.width = 15;
+        bullet->texture = Fireball_tex;
+        break;
+    case TripleFireball_w:
+        bullet->box.height = 15;
+        bullet->box.width = 15;
+        bullet->texture = Fireball_tex;
+        break;
+    case No_Weapon:
+        printf("Error, trying to create a bullet without weapon type");
+        break;
+    case GrenadeLauncher_w:
+        printf("Error, trying to create a grenade launcher bullet");
+        break;
+	}
+
+    BoundingBox_Create(bullet, bullet->box.width, bullet->box.height);
 	return bullet;
 }
 
@@ -70,12 +105,11 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
             //and pass the attack direction to the player
             Box* temp = BoundingBox_CreateTemp(bullet);
             Direction bullet_coming_from = BoundingBox_CheckCollision(&bullet->box, temp, &world->player.box);
-            printf("coming from %d\n", bullet_coming_from);
-            if(bullet_coming_from != None)
+            if(bullet_coming_from != None && world->player.invulnerability_timer <= 0)
             {
                 Entity* collision_direction[5] = {NULL};
                 collision_direction[bullet_coming_from] = bullet;
-                //Player_TakeDamage(world->player, collision_direction);
+                Player_TakeDamage(&world->player, collision_direction);
 
                 bullet->alive = Jfalse;
             }
