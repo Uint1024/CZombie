@@ -39,6 +39,8 @@ Box BoundingBox_CreateBetter(int x, int y, int width, int height)
 	box.top = y;
 	box.right = x + width;
 	box.bottom = y + height;
+
+	return box;
 }
 void BoundingBox_CreateWindow(Window* ent, int width, int height)
 {
@@ -48,6 +50,7 @@ void BoundingBox_CreateWindow(Window* ent, int width, int height)
 	ent->box.top = ent->y;
 	ent->box.right = ent->x + width;
 	ent->box.bottom = ent->y + height;
+
 }
 
 
@@ -83,6 +86,14 @@ void BoundingBox_UpdateWindow(Box* box, int newX, int newY)
 {
 	box->left = newX;
 	box->top = newY;
+	box->right = box->left + box->width;
+    box->bottom = box->top + box->height;
+}
+
+void BoundingBox_UpdateNewSize(Box* box, int newW, int newH)
+{
+    box->width = newW;
+    box->height = newH;
 	box->right = box->left + box->width;
     box->bottom = box->top + box->height;
 }

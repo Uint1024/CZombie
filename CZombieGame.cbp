@@ -52,6 +52,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="bullet.h" />
+		<Unit filename="button.h" />
 		<Unit filename="camera.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -115,6 +116,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="thing.h" />
+		<Unit filename="ui.h" />
 		<Unit filename="vector.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -131,6 +133,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="weapons_component.h" />
+		<Unit filename="window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="window.h" />
 		<Unit filename="world.c">
 			<Option compilerVar="CC" />
 		</Unit>

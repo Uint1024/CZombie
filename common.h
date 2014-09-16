@@ -24,16 +24,19 @@ typedef enum { Grass_ground, Dirt_ground, NB_OF_GROUND_TYPES } Ground_Type;
 
 typedef enum { Rifle_bonus, Shotgun_bonus, GrenadeLauncher_bonus, NB_OF_BONUS_TYPES } Bonus_type;
 
-typedef enum { GrassGround_button, DirtGround_button, NormalZombie_button, FastZombie_button, HeavyZombie_button } LevelEditor_Button;
+typedef enum{   GrassGround_button, DirtGround_button,
+                NormalZombie_button, FastZombie_button, HeavyZombie_button, NB_OF_LEVEL_EDITOR_BUTTONS
+            } LevelEditor_Button;
 
-typedef enum { Normal_Zombie, Heavy_Zombie, Fast_Zombie, Huge_Zombie, Trooper_Zombie, NB_ZOMBIE_TYPES, Not_a_zombie } Zombie_Type;
+typedef enum {  Normal_Zombie, Heavy_Zombie, Fast_Zombie, Huge_Zombie, Trooper_Zombie,
+                NB_ZOMBIE_TYPES, Not_a_zombie } Zombie_Type;
 
 typedef enum {  Player_tex, Bullet_tex, Wall_tex, Fireball_tex,
                 Zombie_tex, FastZombie_tex, HeavyZombie_tex, HugeZombie_tex,
                 TrooperZombie_tex, GrassGround_tex, DirtGround_tex,
                 Ammo_Bonus_tex, GrenadeLauncher_Bonus_tex, Rifle_Bonus_tex,
                 Shotgun_Bonus_tex,
-                Explosion1_tex, Cursor_aiming_tex,
+                Explosion1_tex, Cursor_aiming_tex, Cursor_resize_up_down_tex, Cursor_resize_left_right_tex,
                 NB_OF_TEXTURES, No_texture } Texture_Type;
 
 typedef enum { Key_W, Key_A, Key_S, Key_D } Keyboard_Key;

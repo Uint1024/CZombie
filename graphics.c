@@ -57,6 +57,8 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[GrassGround_tex]              =   "ground_grass.png";
     g->textures_names[DirtGround_tex]               =   "ground_dirt.png";
     g->textures_names[GrenadeLauncher_Bonus_tex]    =   "grenadeLauncher.png";
+    g->textures_names[Cursor_resize_up_down_tex]    =   "resize_up_down.png";
+    g->textures_names[Cursor_resize_left_right_tex]  =   "resize_left_right.png";
 
     for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
     {
@@ -283,17 +285,35 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 
 void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta, Window* level_editor)
 {
-    SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.height, level_editor->box.width};
+    SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.width, level_editor->box.height};
     SDL_RenderFillRect(g->renderer, &editor_rect);
 
-    //====Cursor stuff
-    SDL_Rect cursor_rect;
-    cursor_rect.x = controls->mouseX - 10;
-    cursor_rect.y = controls->mouseY - 10;
-    cursor_rect.h = 21;
-    cursor_rect.w = 21;
+    for(int i = 0; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
+    {
+        SDL_Rect button_rect;
+        button_rect.x = level_editor->buttons[i].x;
+        button_rect.y = level_editor->buttons[i].y;
+        button_rect.h = level_editor->buttons[i].box.height;
+        button_rect.w = level_editor->buttons[i].box.width;
 
-    SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
+        SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
+                       NULL, &button_rect);
+    }
+    //====Cursor stuff
+    if(!controls->cursor_resize_left_right)
+    {
+        SDL_Rect cursor_rect;
+        cursor_rect.x = controls->mouseX - 10;
+        cursor_rect.y = controls->mouseY - 10;
+        cursor_rect.h = 21;
+        cursor_rect.w = 21;
+        SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
+    }
+    else if(controls->cursor_resize_left_right)
+    {
+        SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
+        SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
+    }
 
     //hp
     char hp[8];

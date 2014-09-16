@@ -27,4 +27,5 @@ Jbool BoundingBox_CheckPointCollision(int x, int y, Box* box2);
 void BoundingBox_CreateWindow(Window* ent, int width, int height);
 void BoundingBox_UpdateWindow(Box* box, int newX, int newY);
 Box BoundingBox_CreateBetter(int x, int y, int width, int height);
+void BoundingBox_UpdateNewSize(Box* box, int newW, int newH);
 #endif

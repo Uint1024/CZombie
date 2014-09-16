@@ -19,8 +19,15 @@ typedef struct Window
     int         y;
     Button      buttons[10];
     Box         box;
+    int         buttons_size;
+    int         margin;
+    int         space_between_buttons;
+    int         buttons_per_row;
 } Window;
 
 Window Window_CreateLevelEditor();
 Button Button_Create(LevelEditor_Button type, int x, int y, Window* parent_window);
+void Window_ResizeRight(Window *w, int changeW);
+void Window_ResizeLeft(Window *w, int changeW);
+void Window_UpdateButtonsPositions(Window* w);
 #endif // WINDOW_H

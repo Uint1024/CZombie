@@ -24,6 +24,12 @@ typedef struct Controls
 	int mouseWheelPos;
 	int timer_menu;
 	Window*     active_window;
+	Jbool       cursor_resize_left_right;
+	Jbool       cursor_resize_up_down;
+	Jbool       resizing_right;
+	Jbool       resizing_left;
+	Jbool       resizing_up;
+	Jbool       resizing_down;
 } Controls;
 
 Controls* CreateControls();

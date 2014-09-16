@@ -23,6 +23,8 @@ Controls* CreateControls()
 	}
     controls->mouseWheelPos = 0;
     controls->active_window = NULL;
+    controls->cursor_resize_left_right = Jfalse;
+    controls->cursor_resize_up_down = Jfalse;
 	return controls;
 }
 
@@ -128,11 +130,42 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
     {
        hovering_on_window = Jtrue;
 
+        if(controls->mouseX > level_editor->box.right - 10 ||
+           controls->mouseX < level_editor->box.left + 10 &&
+           controls->active_window == NULL)
+        {
+            controls->cursor_resize_left_right = Jtrue;
+
+            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+               controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+               controls->mouseX > level_editor->box.right - 10)
+            {
+                controls->resizing_right = Jtrue;
+            }
+
+            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+               controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+               controls->mouseX < level_editor->box.left + 10)
+            {
+                controls->resizing_left = Jtrue;
+            }
+        }
+        else
+        {
+            controls->cursor_resize_left_right = Jfalse;
+        }
+
        if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-            controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+            controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+            !controls->cursor_resize_left_right)
         {
             controls->active_window = level_editor;
         }
+    }
+    else
+    {
+        controls->cursor_resize_left_right = Jfalse;
+        controls->cursor_resize_up_down = Jfalse;
     }
 
 
@@ -142,9 +175,32 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
         controls->active_window = NULL;
     }
 
+    if(controls->resizing_right || controls->resizing_left)
+    {
+        controls->cursor_resize_left_right = Jtrue;
+
+        if(!controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+           !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+        {
+            controls->resizing_right = Jfalse;
+            controls->resizing_left = Jfalse;
+        }
+
+        if(controls->resizing_right)
+        {
+            Window_ResizeRight(level_editor, controls->mouseX - controls->previousMouseX);
+        }
+        else if(controls->resizing_left)
+        {
+            Window_ResizeLeft(level_editor, controls->mouseX - controls->previousMouseX);
+        }
+
+    }
+
     if(controls->active_window != NULL &&
        controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-       controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+       controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+       !controls->resizing_left && !controls->resizing_right)
     {
 
          Window_Move(level_editor,
