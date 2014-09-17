@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "menu_button.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 Menu* MainMenu_Create(Graphics* graphics)
 {
@@ -84,9 +85,10 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
 TextField* TextField_Create(int x, int y, int width, int height)
 {
     TextField* tf = (TextField*)malloc(sizeof(TextField));
-
-    tf->text = malloc(30 * sizeof(tf->text));
-
+    tf->input_delay = 70;
+    tf->input_timer = 0;
+    tf->max_char = 20;
+    tf->text = calloc(tf->max_char, tf->max_char);
 
     tf->box.left = x;
     tf->box.top = y;
@@ -103,4 +105,57 @@ TextField* TextField_Create(int x, int y, int width, int height)
     tf->caretWidth = 5;
     tf->caretHeight = 20;
     return tf;
+}
+
+void TextField_Input(TextField* tf, char c)
+{
+    if(tf->can_type)
+    {
+        size_t len = strlen(tf->text);
+        if(len < tf->max_char)
+        {
+            tf->text[len] = c;
+            tf->can_type = Jfalse;
+            tf->input_timer = 0;
+        }
+
+        printf("%s\n", tf->text);
+    }
+}
+
+void TextField_Update(TextField* tf, int delta, Controls* controls)
+{
+    TextField_Caret_Update(tf, delta);
+    size_t len = strlen(tf->text);
+
+    for(int i = 0 ; i < 200 ; i ++)
+    {
+        if(controls->pressedKeys[i] == Jtrue &&
+           (char)controls->pressedKeys[i] != tf->text[len])
+        {
+
+            TextField_Input(tf, (char)(i));
+        }
+    }
+
+    if(tf->input_timer < tf->input_delay)
+    {
+        tf->input_timer += delta;
+    }
+
+    if(tf->input_timer >= tf->input_delay)
+    {
+        tf->can_type = Jtrue;
+    }
+
+}
+
+void TextField_Caret_Update(TextField* tf, int delta)
+{
+    tf->caret_blinking_timer += delta;
+    if(tf->caret_blinking_timer > tf->caret_blinking_delay)
+    {
+        tf->visible_caret = tf->visible_caret ? Jfalse : Jtrue;
+        tf->caret_blinking_timer = 0;
+    }
 }

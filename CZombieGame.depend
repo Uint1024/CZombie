@@ -832,7 +832,7 @@
 	"camera.h"
 	"entity.h"
 
-1410985246 source:c:\users\john\documents\github\czombie\controls.c
+1410992402 source:c:\users\john\documents\github\czombie\controls.c
 	<SDL.h>
 	"entity.h"
 	"controls.h"
@@ -850,7 +850,7 @@
 	"window.h"
 	"gameManager.h"
 
-1410915367 c:\users\john\documents\github\czombie\controls.h
+1410992314 c:\users\john\documents\github\czombie\controls.h
 	"camera.h"
 	"entity.h"
 	"linkedList.h"
@@ -881,7 +881,7 @@
 1410601425 source:c:\users\john\documents\github\czombie\linkedlist.c
 	"linkedList.h"
 
-1410985568 source:c:\users\john\documents\github\czombie\main.c
+1410987557 source:c:\users\john\documents\github\czombie\main.c
 	<stdlib.h>
 	<stdio.h>
 	<time.h>
@@ -951,7 +951,7 @@
 	"world.h"
 	"weapon.h"
 
-1410985204 source:c:\users\john\documents\github\czombie\graphics.c
+1410994950 source:c:\users\john\documents\github\czombie\graphics.c
 	<SDL.h>
 	<SDL_image.h>
 	<stdio.h>
@@ -1040,17 +1040,20 @@
 	<SDL_ttf.h>
 	<stdlib.h>
 
-1410984476 source:c:\users\john\documents\github\czombie\menu.c
+1410995340 source:c:\users\john\documents\github\czombie\menu.c
 	"menu.h"
 	"menu_button.h"
 	<stdlib.h>
+	<stdio.h>
 
-1410984432 c:\users\john\documents\github\czombie\menu.h
+1410991991 c:\users\john\documents\github\czombie\menu.h
 	"menu_button.h"
 	"vector.h"
 	"boundingBox.h"
+	"controls.h"
 
-1410982606 source:c:\users\john\documents\github\czombie\menu_manager.c
+1410992211 source:c:\users\john\documents\github\czombie\menu_manager.c
+	<stdio.h>
 	"menu_manager.h"
 	"graphics.h"
 	"controls.h"

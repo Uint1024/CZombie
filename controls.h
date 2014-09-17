@@ -12,6 +12,7 @@ typedef struct GameManager GameManager;
 typedef struct Controls
 {
 	Jbool pressedKeys[200];
+	Jbool previousPressedKeys[200];
 	Jbool pressedMods[50];
 	Jbool pressedMouseButtons[20];
 	Jbool previousPressedMouseButtons[20];

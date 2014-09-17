@@ -285,11 +285,13 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
         SDL_SetRenderDrawColor(g->renderer, 155, 155, 155, 255);
         SDL_RenderDrawRect(g->renderer, &rect);
 
-        if(tf->visible_caret)
+        if(tf->visible_caret && tf == menu->active_textfield)
         {
             SDL_Rect caret_rect = {tf->caretX, tf->caretY, tf->caretWidth, tf->caretHeight};
             SDL_RenderFillRect(g->renderer, &caret_rect);
         }
+
+        Graphics_RenderText(g, tf->text, Medium, tf->box.left, tf->box.top);
     }
 
 

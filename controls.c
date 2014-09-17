@@ -71,13 +71,13 @@ Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
 
 		if (controls->e.type == SDL_KEYDOWN)
 		{
-			controls->pressedKeys[controls->e.key.keysym.scancode] = Jtrue;
+			controls->pressedKeys[controls->e.key.keysym.sym] = Jtrue;
 			controls->pressedMods[controls->e.key.keysym.mod] = Jtrue;
 		}
 
 		if (controls->e.type == SDL_KEYUP)
 		{
-			controls->pressedKeys[controls->e.key.keysym.scancode] = Jfalse;
+			controls->pressedKeys[controls->e.key.keysym.sym] = Jfalse;
 			controls->pressedMods[controls->e.key.keysym.mod] = Jfalse;
 		}
 
@@ -121,6 +121,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
     Entity** map = world->map;
 
     controls->timer_menu -= delta;
+
 
     //show menu
     if(controls->timer_menu <= 0 && controls->pressedKeys[SDL_SCANCODE_ESCAPE] == Jtrue)
@@ -403,6 +404,5 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
 
     }
-
 
 }

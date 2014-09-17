@@ -3,14 +3,14 @@
 #include "menu_button.h"
 #include "vector.h"
 #include "boundingBox.h"
+#include "controls.h"
 
 typedef struct TextField
 {
     char*           text;
     int             x;
     int             y;
-    int             width;
-    int             height;
+    int             max_char;
     Box             box;
     int             caret_blinking_timer;
     Jbool           visible_caret;
@@ -19,6 +19,9 @@ typedef struct TextField
     int             caretY;
     int             caretHeight;
     int             caretWidth;
+    int             input_timer;
+    int             input_delay;
+    int             can_type;
 } TextField;
 
 typedef struct Menu
@@ -37,5 +40,9 @@ typedef struct Menu
 Menu* OptionMenu_Create(Graphics* graphics);
 Menu* MainMenu_Create(Graphics* graphics);
 Menu* SaveLevelMenu_Create(Graphics* graphics);
+
 TextField* TextField_Create(int x, int y, int width, int height);
+void TextField_Update(TextField* tf, int delta, Controls* controls);
+void TextField_Caret_Update(TextField* tf, int delta);
+void TextField_Input(TextField* tf, char c);
 #endif // MENU_H

@@ -55,7 +55,7 @@ int main(int argc, char* args[])
     int time_last_frame_real = 0;
     int time_this_frame_real = 0;
 
-    Jbool game_started = Jtrue;
+    Jbool game_started = Jfalse;
 
     Window level_editor = Window_CreateLevelEditor();
     MenuManager menu_manager = MenuManager_Create(graphics);
