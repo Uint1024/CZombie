@@ -9,7 +9,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 {
 	Entity* bullet = Entity_Spawn();
 
-	bullet->t = Bullet_cat;
+	bullet->t = Cat_Bullet;
 	bullet->bullet_type = type;
 	bullet->x = x;
 	bullet->y = y;
@@ -24,27 +24,27 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
     case Handgun_w:
         bullet->box.height = 10;
         bullet->box.width = 10;
-        bullet->texture = Bullet_tex;
+        bullet->texture = Tex_Bullet;
         break;
     case AutomaticRifle_w:
         bullet->box.height = 10;
         bullet->box.width = 10;
-        bullet->texture = Bullet_tex;
+        bullet->texture = Tex_Bullet;
         break;
     case Shotgun_w:
         bullet->box.height = 10;
         bullet->box.width = 10;
-        bullet->texture = Bullet_tex;
+        bullet->texture = Tex_Bullet;
         break;
     case Fireball_w:
         bullet->box.height = 15;
         bullet->box.width = 15;
-        bullet->texture = Fireball_tex;
+        bullet->texture = Tex_Fireball;
         break;
     case TripleFireball_w:
         bullet->box.height = 15;
         bullet->box.width = 15;
-        bullet->texture = Fireball_tex;
+        bullet->texture = Tex_Fireball;
         break;
     case No_Weapon:
         printf("Error, trying to create a bullet without weapon type");

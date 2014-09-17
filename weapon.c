@@ -18,7 +18,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 50;
         w->delay_between_shots = 35;
         w->reloading_time = 3000;
-        w->corresponding_pickup = Rifle_bonus;
+        w->corresponding_pickup = Bonus_Rifle;
     }
     else if(type == Handgun_w)
     {
@@ -36,7 +36,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 15;
         w->delay_between_shots = 450;
         w->reloading_time = 2000;
-        w->corresponding_pickup = Shotgun_bonus;
+        w->corresponding_pickup = Bonus_Shotgun;
     }
     else if(type == GrenadeLauncher_w)
     {
@@ -45,7 +45,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 5;
         w->delay_between_shots = 500;
         w->reloading_time = 6000;
-        w->corresponding_pickup = GrenadeLauncher_bonus;
+        w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
     else if(type == Fireball_w)
     {
@@ -54,7 +54,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 1;
         w->delay_between_shots = 500;
         w->reloading_time = 0;
-        //w->corresponding_pickup = GrenadeLauncher_bonus;
+        //w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
     else if(type == TripleFireball_w)
     {
@@ -63,7 +63,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 1;
         w->delay_between_shots = 2000;
         w->reloading_time = 0;
-        //w->corresponding_pickup = GrenadeLauncher_bonus;
+        //w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
 
     w->last_shot = 0;

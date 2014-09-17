@@ -260,43 +260,8 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
             player->dy *= 0.707106781;
         }
 
-        /*if (controls->pressedKeys[SDL_SCANCODE_H] == Jtrue)
-        {
-            FILE *save_file;
-            save_file = fopen("test.txt", "wb");
-            if(!save_file)
-            {
-                printf("Can't open file");
 
-            }
-            for(int i = 0 ; i < world->map_size ; i++)
-            {
-                fwrite(&world->map[i], sizeof(Entity), 1, save_file);
-            }
 
-            fclose(save_file);
-        }
-
-        if (controls->pressedKeys[SDL_SCANCODE_G] == Jtrue)
-        {
-            FILE *save_file;
-            save_file = fopen("test.txt", "rb");
-            if(!save_file)
-            {
-                printf("Can't open file");
-
-            }
-            for(int i = 0 ; i < world->map_size ; i++)
-            {
-                fread(&world->map[i], sizeof(Entity), 1, save_file);
-            }
-
-            fclose(save_file);
-        }*/
-
-        /*float adjacent = controls->mousePositionInWorldX  - player->x;
-        float opposite = controls->mousePositionInWorldY - player->y;
-        float angle_to_mouse = atan2f(opposite, adjacent);*/
         float angle_to_mouse = C_AngleBetween2Points(
                                         player->x,
                                         player->y,
@@ -307,9 +272,6 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
         player->muzzleY = player->y + 10;
         player->angle = angle_to_mouse;
 
-
-        //adjacent = controls->mousePositionInWorldX  - player->muzzleX - 5;
-        //opposite = controls->mousePositionInWorldY - player->muzzleY - 5;
         float angle_from_muzzle_to_mouse = C_AngleBetween2Points(
                                         player->muzzleX,
                                         player->muzzleY,
@@ -350,25 +312,25 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
 
 
-                    if(controls->active_button->button_type == NormalWall_button)
+                    if(controls->active_button->button_type == Button_Wall_Normal)
                     {
-                        world->map[position_in_array] = Wall_Create(controls->tileInPixelsX, controls->tileInPixelsY);
+                        world->map[position_in_array] = Wall_Create(Wall_Normal, controls->tileInPixelsX, controls->tileInPixelsY);
                     }
 
                     if(controls->active_button->button_type == DirtGround_button)
                     {
-                        world->ground_map[position_in_array] = Ground_Create(Dirt_ground, controls->tileInPixelsX, controls->tileInPixelsY);
+                        world->ground_map[position_in_array] = Ground_Create(Ground_Dirt, controls->tileInPixelsX, controls->tileInPixelsY);
                     }
                     else if(controls->active_button->button_type == GrassGround_button)
                     {
-                        world->ground_map[position_in_array] = Ground_Create(Grass_ground, controls->tileInPixelsX, controls->tileInPixelsY);
+                        world->ground_map[position_in_array] = Ground_Create(Ground_Grass, controls->tileInPixelsX, controls->tileInPixelsY);
                     }
 
-                    if(controls->active_button->main_category == Zombie_cat &&
+                    if(controls->active_button->main_category == Cat_Zombie &&
                        (SDL_GetTicks() - player->last_creation > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
                     {
                         Vector_Push(monsters_vector,
-                                    CreateZombie(gm->button_object_type_correspondance[controls->active_button->button_type],
+                                    CreateZombie(button_object_type_g[controls->active_button->button_type],
                                                  controls->mousePositionInWorldX, controls->mousePositionInWorldY));
 
                         player->last_creation = SDL_GetTicks();
@@ -427,7 +389,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
             }
 
             if(!world->player.running &&
-               controls->pressedMods[SDL_SCANCODE_LSHIFT])
+               controls->pressedKeys[SDL_SCANCODE_LSHIFT])
             {
                 Player_StartRunning(&world->player);
             }

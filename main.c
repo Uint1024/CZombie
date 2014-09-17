@@ -30,6 +30,9 @@ Jbool debug_mode = Jfalse;
 
 int main(int argc, char* args[])
 {
+
+
+
     srand(time(NULL));
 	int screen_width = 1080;
 	int screen_height = 768;
@@ -37,10 +40,12 @@ int main(int argc, char* args[])
     Graphics* graphics = Graphics_Create(screen_width, screen_height);
 	Jbool running = Jtrue;
 
+    GameManager game_manager = GameManager_Create();
+
 	Controls* controls = CreateControls();
 
     World world = World_Initialize(140, 140, screen_width, screen_height);
-    GameManager game_manager = GameManager_Create();
+
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;
 	int delta = 1;
@@ -82,7 +87,7 @@ int main(int argc, char* args[])
             }
             else
             {
-                MenuManager_Update(&menu_manager, controls, &game_started, &running, delta);
+                MenuManager_Update(&menu_manager, controls, &game_started, &running, delta, &world);
                 Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
             }
 

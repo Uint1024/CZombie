@@ -16,8 +16,6 @@ typedef struct GameManager
     Wave        waves[20];
     Game_Mode   game_mode;
     int         wave_timer;
-    Entity*     zombie_templates[NB_ZOMBIE_TYPES];
-    int         button_object_type_correspondance[NB_OF_LEVEL_EDITOR_BUTTONS];
     Jbool       ai_on;
 } GameManager;
 

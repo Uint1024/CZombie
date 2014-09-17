@@ -32,8 +32,8 @@ void Player_Update(int delta, World* world)
     Entity_CollisionWithStuff(p, world);
     CollisionWithMonsters(p, &world->monsters_vector);
     Player_CheckBonusCollision(p, &world->bonus_vector);
-    p->dx = floor(p->dx);
-    p->dy = floor(p->dy);
+    //p->dx = floor(p->dx);
+    //p->dy = floor(p->dy);
 
     Player_Move(p, p->dx, p->dy);
 }
@@ -50,8 +50,8 @@ Entity Player_Create(float x, float y, int w, int h)
 {
     Entity p;
 
-	p.t                             =   Player_cat;
-	p.texture                       =   Player_tex;
+	p.t                             =   Cat_Player;
+	p.texture                       =   Tex_Player;
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   50;
@@ -119,7 +119,7 @@ void Player_StartRunning(Entity* p)
 {
     if(p->stamina > 0)
     {
-        p->speed = BASE_PLAYER_SPEED * 3;
+        p->speed = BASE_PLAYER_SPEED * 1.5f;
         p->running = Jtrue;
     }
 

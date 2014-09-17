@@ -12,7 +12,7 @@ typedef struct Weapon Weapon;
 typedef struct Entity
 {
     Texture_Type            texture;
-	Type                    t;
+	Main_Category                    t;
 	Vec2                    pos;
 	float                   x;
 	float                   y;

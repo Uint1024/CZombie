@@ -20,25 +20,25 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 
     /*if(bonus_type == Ammo_bonus)
     {
-        bonus->texture = Ammo_Bonus_tex;
+        bonus->texture = Tex_Bonus_Ammo;
 
         BoundingBox_Create(bonus, 10, 10);
     }
-    else */if(bonus_type == Shotgun_bonus)
+    else */if(bonus_type == Bonus_Shotgun)
     {
-        bonus->texture = Shotgun_Bonus_tex;
+        bonus->texture = Tex_Bonus_Shotgun;
         bonus->corresponding_weapon = Shotgun_w;
         BoundingBox_Create(bonus, 30, 15);
     }
-    else if(bonus_type == Rifle_bonus)
+    else if(bonus_type == Bonus_Rifle)
     {
-        bonus->texture = Rifle_Bonus_tex;
+        bonus->texture = Tex_Bonus_Rifle;
         bonus->corresponding_weapon = AutomaticRifle_w;
         BoundingBox_Create(bonus, 30, 15);
     }
-    else if(bonus_type == GrenadeLauncher_bonus)
+    else if(bonus_type == Bonus_GrenadeLauncher)
     {
-        bonus->texture = GrenadeLauncher_Bonus_tex;
+        bonus->texture = Tex_Bonus_GrenadeLauncher;
         bonus->corresponding_weapon = GrenadeLauncher_w;
         BoundingBox_Create(bonus, 30, 15);
     }

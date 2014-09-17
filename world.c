@@ -29,7 +29,7 @@ World World_Initialize(int map_width, int map_height,
 
     for(int i = 0 ; i < world.map_size ; i++)
     {
-        world.ground_map[i] = Ground_Create(Grass_ground,
+        world.ground_map[i] = Ground_Create(Ground_Grass,
                                             (i % map_width) * TILE_SIZE,
                                             TILE_SIZE*(i/map_width));
 

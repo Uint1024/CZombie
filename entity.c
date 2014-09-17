@@ -176,8 +176,8 @@ void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* tem
 
 void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
-    if(ent->t != Player_cat ||
-       (ent->t == Player_cat && ent->invulnerability_timer <= 0))
+    if(ent->t != Cat_Player ||
+       (ent->t == Cat_Player && ent->invulnerability_timer <= 0))
     {
         Box* temp = BoundingBox_CreateTemp(ent);
 
@@ -214,7 +214,7 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
             ent->dx = 0;
         }
 
-        if(collision && ent->t == Player_cat)
+        if(collision && ent->t == Cat_Player)
         {
 
             Player_TakeDamage(ent, collision_sides);

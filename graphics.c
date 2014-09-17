@@ -42,23 +42,23 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
                                     );
 
 
-    g->textures_names[Player_tex]                   =   "player.png";
-    g->textures_names[Zombie_tex]                   =   "zombie.png";
-    g->textures_names[FastZombie_tex]               =   "fastzombie.png";
-    g->textures_names[HeavyZombie_tex]              =   "heavyzombie.png";
-    g->textures_names[TrooperZombie_tex]            =   "trooperzombie.png";
-    g->textures_names[HugeZombie_tex]               =   "hugezombie.png";
-    g->textures_names[Ammo_Bonus_tex]               =   "bullet_bonus.png";
-    g->textures_names[Rifle_Bonus_tex]              =   "rifle.png";
-    g->textures_names[Shotgun_Bonus_tex]            =   "shotgun.png";
-    g->textures_names[Bullet_tex]                   =   "bullet.png";
-    g->textures_names[Fireball_tex]                 =   "fireball.png";
-    g->textures_names[Wall_tex]                     =   "wall.png";
+    g->textures_names[Tex_Player]                   =   "player.png";
+    g->textures_names[Tex_NormalZombie]                   =   "zombie.png";
+    g->textures_names[Tex_FastZombie]               =   "fastzombie.png";
+    g->textures_names[Tex_HeavyZombie]              =   "heavyzombie.png";
+    g->textures_names[Tex_TrooperZombie]            =   "trooperzombie.png";
+    g->textures_names[Tex_HugeZombie]               =   "hugezombie.png";
+    g->textures_names[Tex_Bonus_Ammo]               =   "bullet_bonus.png";
+    g->textures_names[Tex_Bonus_Rifle]              =   "rifle.png";
+    g->textures_names[Tex_Bonus_Shotgun]            =   "shotgun.png";
+    g->textures_names[Tex_Bullet]                   =   "bullet.png";
+    g->textures_names[Tex_Fireball]                 =   "fireball.png";
+    g->textures_names[Tex_Wall_Normal]                     =   "wall.png";
     g->textures_names[Explosion1_tex]               =   "explosion.png";
-    g->textures_names[Cursor_aiming_tex]            =   "aim.png";
-    g->textures_names[GrassGround_tex]              =   "ground_grass.png";
-    g->textures_names[DirtGround_tex]               =   "ground_dirt.png";
-    g->textures_names[GrenadeLauncher_Bonus_tex]    =   "grenadeLauncher.png";
+    g->textures_names[Tex_Cursor_Aiming]            =   "aim.png";
+    g->textures_names[Tex_Ground_Grass]              =   "ground_grass.png";
+    g->textures_names[Tex_Ground_Dirt]               =   "ground_dirt.png";
+    g->textures_names[Tex_Bonus_GrenadeLauncher]    =   "grenadeLauncher.png";
     g->textures_names[Cursor_resize_up_down_tex]    =   "resize_up_down.png";
     g->textures_names[Cursor_resize_left_right_tex]  =   "resize_left_right.png";
 
@@ -163,7 +163,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
 
 void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
 {
-    if(object->t == Player_cat)
+    if(object->t == Cat_Player)
     {
         int alpha_value = 255;
         if(object->invulnerability_timer > 0)
@@ -273,9 +273,25 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             underline.h = 10;
             underline.w = button->text_rect.w;
 
-            SDL_RenderCopy(g->renderer, g->textures[Wall_tex], NULL, &underline);
+            SDL_RenderCopy(g->renderer, g->textures[Tex_Wall_Normal], NULL, &underline);
         }
     }
+
+    for(int i = 0 ; i < Vector_Count(&menu->textfields) ; i++)
+    {
+        TextField* tf = (TextField*)Vector_Get(&menu->textfields, i);
+
+        SDL_Rect rect = BoundingBox_GetSDLRect(&tf->box);
+        SDL_SetRenderDrawColor(g->renderer, 155, 155, 155, 255);
+        SDL_RenderDrawRect(g->renderer, &rect);
+
+        if(tf->visible_caret)
+        {
+            SDL_Rect caret_rect = {tf->caretX, tf->caretY, tf->caretWidth, tf->caretHeight};
+            SDL_RenderFillRect(g->renderer, &caret_rect);
+        }
+    }
+
 
     SDL_Rect cursor_rect;
     cursor_rect.x = controls->mouseX - 10;
@@ -283,7 +299,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     cursor_rect.h = 21;
     cursor_rect.w = 21;
 
-    SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
+    SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
 
     Graphics_Flip(g);
 }
@@ -301,30 +317,42 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
             int obj_h = 5;
             int obj_y = 5;
             int obj_x = 5;
+            LevelEditor_Button button_type = controls->active_button->button_type;
+            int object_type = button_object_type_g[button_type];
 
-            if(controls->active_button->main_category == Ground_cat ||
-               controls->active_button->main_category == Wall_cat)
+            Texture_Type texture_type = No_texture;
+
+
+            if(controls->active_button->main_category == Cat_Ground ||
+               controls->active_button->main_category == Cat_Wall)
             {
                 obj_w = TILE_SIZE;
                 obj_h = TILE_SIZE;
                 obj_x = controls->tileInPixelsX - world->player.camera->x;
                 obj_y = controls->tileInPixelsY - world->player.camera->y;
             }
-            else if(controls->active_button->main_category == Zombie_cat)
+            else if(controls->active_button->main_category == Cat_Zombie)
             {
-                LevelEditor_Button button_type = controls->active_button->button_type;
-                Zombie_Type zombie_type = gm->button_object_type_correspondance[button_type];
+                texture_type = zombie_templates_g[object_type]->texture;
 
-
-                obj_w = gm->zombie_templates[zombie_type]->box.width;
-                obj_h = gm->zombie_templates[zombie_type]->box.height;
+                obj_w = zombie_templates_g[object_type]->box.width;
+                obj_h = zombie_templates_g[object_type]->box.height;
 
                 obj_x = controls->mousePositionInWorldX - world->player.camera->x;
                 obj_y = controls->mousePositionInWorldY - world->player.camera->y;
             }
 
+            if(controls->active_button->main_category == Cat_Ground)
+            {
+                texture_type = ground_textures_g[object_type];
+            }
+            else if(controls->active_button->main_category == Cat_Wall)
+            {
+                texture_type = wall_textures_g[object_type];
+            }
+
             SDL_Rect blueprint_rect = {obj_x, obj_y, obj_w, obj_h };
-        SDL_RenderCopy(g->renderer, g->textures[controls->active_button->texture],
+            SDL_RenderCopy(g->renderer, g->textures[texture_type],
                            NULL, &blueprint_rect);
         }
 
@@ -345,7 +373,24 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
         button_rect.h = level_editor->buttons[i].box.height;
         button_rect.w = level_editor->buttons[i].box.width;
 
-        SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
+        Main_Category button_category = level_editor->buttons[i].main_category;
+        LevelEditor_Button button_type = level_editor->buttons[i].button_type;
+        int object_type = button_object_type_g[button_type];
+        Texture_Type texture_type = No_texture;
+
+        if(button_category == Cat_Zombie)
+        {
+            texture_type = zombie_templates_g[object_type]->texture;
+        }
+        else if(button_category == Cat_Wall)
+        {
+            texture_type = wall_textures_g[object_type];
+        }
+        else if(button_category == Cat_Ground)
+        {
+            texture_type = ground_textures_g[object_type];
+        }
+        SDL_RenderCopy(g->renderer, g->textures[texture_type],
                        NULL, &button_rect);
     }
 
@@ -368,7 +413,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
         cursor_rect.y = controls->mouseY - 10;
         cursor_rect.h = 21;
         cursor_rect.w = 21;
-        SDL_RenderCopy(g->renderer, g->textures[Cursor_aiming_tex], NULL, &cursor_rect);
+        SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
     }
     else if(controls->cursor_resize_left_right)
     {

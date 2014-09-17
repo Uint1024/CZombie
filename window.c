@@ -50,7 +50,6 @@ void Window_ResizeRight(Window *w, int changeW)
 void Window_ResizeLeft(Window *w, int changeW)
 {
     //changeW is negative because the mouse moved to left
-
     int newW = w->box.width - changeW;
 
     //move window to left and then increase its width
@@ -85,48 +84,6 @@ Button Button_Create(LevelEditor_Button type, int x, int y, Window* parent_windo
     button.x = x + parent_window->x;
     button.y = y + parent_window->y;
     button.box = BoundingBox_CreateBetter(x, y, 20, 20);
-    printf("%d", button.button_type);
-    switch(type)
-    {
-    case NormalWall_button:
-        button.texture = Wall_tex;
-        break;
-    case GrassGround_button:
-        button.texture = GrassGround_tex;
-        break;
-    case DirtGround_button:
-        button.texture = DirtGround_tex;
-        break;
-    case NormalZombie_button:
-        button.texture = Zombie_tex;
-        break;
-    case FastZombie_button:
-        button.texture = FastZombie_tex;
-        break;
-    case HeavyZombie_button:
-        button.texture = HeavyZombie_tex;
-        break;
-    case TrooperZombie_button:
-        button.texture = TrooperZombie_tex;
-        break;
-    case HugeZombie_button:
-        button.texture = HugeZombie_tex;
-        break;
-    }
-
-    if(type == GrassGround_button || type == DirtGround_button)
-    {
-        button.main_category = Ground_cat;
-    }
-    else if(type == NormalZombie_button || type == FastZombie_button || type == HeavyZombie_button ||
-            type == TrooperZombie_button || type == HugeZombie_button)
-    {
-        button.main_category = Zombie_cat;
-    }
-    else if(type == NormalWall_button)
-    {
-        button.main_category = Wall_cat;
-    }
-
+    button.main_category = button_category_g[type];
     return button;
 }

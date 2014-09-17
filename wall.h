@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "entity.h"
 
-Entity* Wall_Create(int x_, int y_);
+
 Entity* Ground_Create(Ground_Type type, float x, float y);
+Entity* Wall_Create(Wall_Type type, int x_, int y_);
 #endif

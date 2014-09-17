@@ -26,8 +26,8 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
 {
     Entity* grenade = Entity_Spawn();
 
-    grenade->t = Grenade_cat;
-	grenade->texture = Bullet_tex;
+    grenade->t = Cat_Grenade;
+	grenade->texture = Tex_Bullet;
 	grenade->x = x;
 	grenade->y = y;
 	grenade->box.height = 10;
