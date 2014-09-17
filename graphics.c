@@ -12,6 +12,8 @@
 #include "weapons_component.h"
 #include "weapon.h"
 #include "window.h"
+#include "zombie.h"
+#include "gameManager.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
@@ -78,12 +80,13 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 
 
 void Graphics_RenderGame(Graphics* g, World* world,
-                         Controls* controls, float fps, int delta, Window* level_editor)
+                         Controls* controls, float fps, int delta, Window* level_editor,
+                         GameManager* gm)
  {
      SDL_SetRenderDrawColor(g->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
      SDL_RenderClear(g->renderer);
      Graphics_RenderWorld(g, world);
-     Graphics_RenderUI(g, world, controls, fps, delta, level_editor);
+     Graphics_RenderUI(g, world, controls, fps, delta, level_editor, gm);
      Graphics_Flip(g);
  }
 
@@ -101,7 +104,8 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     {
         if (world->ground_map[i] != NULL)
         {
-            Graphics_RenderObject(graphics, world->ground_map[i], camera);
+            if(Entity_CheckNear(&world->player, world->ground_map[i]))
+                Graphics_RenderObject(graphics, world->ground_map[i], camera);
         }
     }
 
@@ -109,7 +113,8 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     {
         if (world->map[i] != NULL)
         {
-            Graphics_RenderObject(graphics, world->map[i], camera);
+            if(Entity_CheckNear(&world->player, world->map[i]))
+                Graphics_RenderObject(graphics, world->map[i], camera);
         }
     }
     Graphics_RenderObject(graphics, &world->player, camera);
@@ -118,7 +123,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     {
 
             Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
-        if(BoundingBox_CheckOutOfScreen(&bullet->box, camera) == None)
+        if(Entity_CheckNear(&world->player, bullet))
             Graphics_RenderObject(graphics, bullet, camera);
 
     }
@@ -129,7 +134,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
 
-            if(BoundingBox_CheckOutOfScreen(&bonus->box, camera) == None)
+            if(Entity_CheckNear(&world->player, bonus))
             Graphics_RenderObject(graphics, bonus, camera);
         }
     }
@@ -140,7 +145,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         {
             Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 
-            if(BoundingBox_CheckOutOfScreen(&mob->box, camera) == None)
+           if(Entity_CheckNear(&world->player, mob))
             Graphics_RenderObject(graphics, mob, camera);
 
         }
@@ -158,7 +163,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
 
 void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
 {
-    if(object->t == Player)
+    if(object->t == Player_cat)
     {
         int alpha_value = 255;
         if(object->invulnerability_timer > 0)
@@ -283,11 +288,55 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     Graphics_Flip(g);
 }
 
-void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta, Window* level_editor)
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
+                       float fps, int delta, Window* level_editor,
+                       GameManager* gm)
 {
+    if(controls->active_button != NULL)
+    {
+        if(!controls->hovering_on_window)
+        {
+            //-------render temp object on the map
+            int obj_w = 5;
+            int obj_h = 5;
+            int obj_y = 5;
+            int obj_x = 5;
+
+            if(controls->active_button->main_category == Ground_cat ||
+               controls->active_button->main_category == Wall_cat)
+            {
+                obj_w = TILE_SIZE;
+                obj_h = TILE_SIZE;
+                obj_x = controls->tileInPixelsX - world->player.camera->x;
+                obj_y = controls->tileInPixelsY - world->player.camera->y;
+            }
+            else if(controls->active_button->main_category == Zombie_cat)
+            {
+                LevelEditor_Button button_type = controls->active_button->button_type;
+                Zombie_Type zombie_type = gm->button_object_type_correspondance[button_type];
+
+
+                obj_w = gm->zombie_templates[zombie_type]->box.width;
+                obj_h = gm->zombie_templates[zombie_type]->box.height;
+
+                obj_x = controls->mousePositionInWorldX - world->player.camera->x;
+                obj_y = controls->mousePositionInWorldY - world->player.camera->y;
+            }
+
+            SDL_Rect blueprint_rect = {obj_x, obj_y, obj_w, obj_h };
+        SDL_RenderCopy(g->renderer, g->textures[controls->active_button->texture],
+                           NULL, &blueprint_rect);
+        }
+
+
+    }
+
+    //---render level editor window
+    SDL_SetRenderDrawColor(g->renderer, 255, 255,255, 255);
     SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.width, level_editor->box.height};
     SDL_RenderFillRect(g->renderer, &editor_rect);
 
+    //--render level editor icons
     for(int i = 0; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
     {
         SDL_Rect button_rect;
@@ -298,25 +347,17 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps,
 
         SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
                        NULL, &button_rect);
-
-        if(&level_editor->buttons[i] == controls->active_button)
-        {
-            SDL_SetRenderDrawColor(g->renderer, 255, 0,0, 255);
-            SDL_RenderDrawRect(g->renderer, &button_rect);
-
-            int tex_w;
-            int tex_h;
-
-            SDL_QueryTexture(g->textures[level_editor->buttons[i].texture], 0, 0, &tex_w, &tex_h);
-
-            SDL_Rect blueprint_rect = {controls->tileInPixelsX - world->player.camera->x, controls->tileInPixelsY, TILE_SIZE, TILE_SIZE };
-
-            SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
-                           NULL, &blueprint_rect);
-        }
     }
 
-    //render level editor
+    if(controls->active_button)
+    {
+     //-------render rectangle around selected icon
+        SDL_SetRenderDrawColor(g->renderer, 255, 0,0, 255);
+        SDL_Rect rect = BoundingBox_GetSDLRect(&controls->active_button->box);
+        SDL_RenderDrawRect(g->renderer, &rect);
+    }
+
+
 
 
     //====Cursor stuff
@@ -334,6 +375,26 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps,
         SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
         SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
     }
+
+    if(!gm->ai_on)
+    {
+        char deactivated[] = "AI deactivated";
+
+        Graphics_RenderText(g, deactivated, Medium, 300, 20);
+    }
+
+    //stamina
+    char stamina[] = "Stamina";
+    Graphics_RenderText(g, stamina, Medium, 50, 700);
+
+    SDL_Rect stamina_rect_back = {150,700,100,20};
+    SDL_Rect stamina_rect_front = {150,700,world->player.stamina,20};
+
+    SDL_SetRenderDrawColor(g->renderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(g->renderer, &stamina_rect_back);
+
+    SDL_SetRenderDrawColor(g->renderer, 0, 255, 50, 255);
+    SDL_RenderFillRect(g->renderer, &stamina_rect_front);
 
     //hp
     char hp[8];

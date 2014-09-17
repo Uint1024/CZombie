@@ -49,7 +49,9 @@ typedef struct Entity
 	int                     invulnerability_timer;
 	int                     blinking_timer;
 	int                     blinking_frame;
-
+    float                   stamina;
+    float                     max_stamina;
+    Jbool                   running;
 } Entity;
 
 

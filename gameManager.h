@@ -4,6 +4,7 @@
 typedef struct World World;
 typedef struct Window Window;
 
+
 typedef struct Wave
 {
     int         zombies[NB_ZOMBIE_TYPES];
@@ -15,11 +16,14 @@ typedef struct GameManager
     Wave        waves[20];
     Game_Mode   game_mode;
     int         wave_timer;
+    Entity*     zombie_templates[NB_ZOMBIE_TYPES];
+    int         button_object_type_correspondance[NB_OF_LEVEL_EDITOR_BUTTONS];
+    Jbool       ai_on;
 } GameManager;
 
 GameManager GameManager_Create();
 void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_editor);
-void GameManage_UpdateWorldEntities(int delta, World* world);
+void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world);
 Wave Wave_Create(int normal_zombies, int fast_zombies,
                  int heavy_zombies, int huge_zombies,
                  int trooper_zombies);

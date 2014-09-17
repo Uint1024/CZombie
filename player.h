@@ -11,5 +11,7 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector);
 void Player_TakeDamage(Entity* p, Entity** attacker);
 void Player_Move(Entity* p,float dx, float dy);
 void Player_PickUpBonus(Entity* player, Entity* bonus);
-
+void Player_Run(Entity* p, int delta);
+void Player_StartRunning(Entity* p);
+void Player_StopRunning(Entity* p);
 #endif

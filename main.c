@@ -39,7 +39,7 @@ int main(int argc, char* args[])
 
 	Controls* controls = CreateControls();
 
-    World world = World_Initialize(50, 50, screen_width, screen_height);
+    World world = World_Initialize(140, 140, screen_width, screen_height);
     GameManager game_manager = GameManager_Create();
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;
@@ -73,12 +73,12 @@ int main(int argc, char* args[])
 
             chrono_update = 0;
 
-            Inputs_ProcessInputs(controls, delta, &game_started, &world, &level_editor);
+            Inputs_ProcessInputs(controls, delta, &game_started, &world, &level_editor, &game_manager);
 
             if(game_started)
             {
                 GameManager_Update(&game_manager, &world, delta, &level_editor);
-                Graphics_RenderGame(graphics,&world, controls, fps, delta, &level_editor);
+                Graphics_RenderGame(graphics,&world, controls, fps, delta, &level_editor, &game_manager);
             }
             else
             {

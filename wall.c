@@ -8,7 +8,7 @@
 Entity* Wall_Create(int x_, int y_)
 {
 	Entity* ent = Entity_Spawn();
-	ent->t = Wall;
+	ent->t = Wall_cat;
 	ent->texture = Wall_tex;
 	ent->x = x_;
 	ent->y = y_;
@@ -22,7 +22,7 @@ Entity* Wall_Create(int x_, int y_)
 Entity* Ground_Create(Ground_Type type, float x, float y)
 {
     Entity* ent = Entity_Spawn();
-    ent->t = Ground;
+    ent->t = Ground_cat;
 
     switch(type)
     {

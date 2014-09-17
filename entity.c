@@ -8,10 +8,13 @@
 #include "boundingBox.h"
 #include "player.h"
 #include "world.h"
+#include <math.h>
 
 Entity* Entity_Spawn()
 {
     Entity* ent = (Entity*)malloc(sizeof(Entity));
+
+
     ent->t                         = Nothing;
 	ent->x                         = 0;
 	ent->y                         = 0;
@@ -30,6 +33,8 @@ Entity* Entity_Spawn()
     ent->texture                   = No_texture;
     ent->damage                    = 0;
     ent->zombie_type               = Not_a_zombie;
+    ent->stamina                   = 0;
+
 	return ent;
 }
 
@@ -57,6 +62,10 @@ Entity Entity_SpawnOnStack()
 	return ent;
 }
 
+Jbool Entity_CheckNear(Entity* ent1, Entity* ent2)
+{
+    return (abs(ent1->x - ent2->x) < 600 && abs(ent1->y - ent2->y) < 600);
+}
 
 void moveEntity(Entity* ent, float x, float y)
 {
@@ -152,20 +161,23 @@ void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* tem
 	{
 		if (map[i] != NULL)
 		{
-			Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
-			if (collision_direction != None)
-			{
-				collision_wall[collision_direction] = map[i];
-				walls_touched[collision_direction]++;
-			}
+		    if(Entity_CheckNear(ent, map[i]))
+            {
+                Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
+                if (collision_direction != None)
+                {
+                    collision_wall[collision_direction] = map[i];
+                    walls_touched[collision_direction]++;
+                }
+            }
 		}
 	}
 }
 
 void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
-    if(ent->t != Player ||
-       (ent->t == Player && ent->invulnerability_timer <= 0))
+    if(ent->t != Player_cat ||
+       (ent->t == Player_cat && ent->invulnerability_timer <= 0))
     {
         Box* temp = BoundingBox_CreateTemp(ent);
 
@@ -176,11 +188,14 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
             if(Vector_Get(monsters_vector, i) != ent)
             {
                 Entity* mob_to_check = (struct Entity*)Vector_Get(monsters_vector, i);
-                Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &mob_to_check->box);
-                if (collision_direction != None)
+                if(Entity_CheckNear(ent, mob_to_check))
                 {
-                    collision = Jtrue;
-                    collision_sides[collision_direction] = mob_to_check;
+                    Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &mob_to_check->box);
+                    if (collision_direction != None)
+                    {
+                        collision = Jtrue;
+                        collision_sides[collision_direction] = mob_to_check;
+                    }
                 }
             }
         }
@@ -199,7 +214,7 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
             ent->dx = 0;
         }
 
-        if(collision && ent->t == Player)
+        if(collision && ent->t == Player_cat)
         {
 
             Player_TakeDamage(ent, collision_sides);

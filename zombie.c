@@ -43,6 +43,8 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     z->x = x;
 	z->y = y;
     z->zombie_type = type;
+
+    BoundingBox_Create(z, 0,0);
     switch(type)
     {
     case Normal_Zombie:

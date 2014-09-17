@@ -11,6 +11,8 @@ typedef struct Menu     Menu;
 typedef struct World    World;
 typedef struct Controls    Controls;
 typedef struct Window    Window;
+typedef struct GameManager GameManager;
+
 
 typedef struct Graphics
 {
@@ -40,10 +42,10 @@ void Graphics_RenderText(   Graphics* graphics, char* text, Font_Size size,
 
 void Graphics_RenderMenu(   Graphics* g, Menu* menu, Controls* controls);
 
-void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta, Window* level_editor);
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, int delta, Window* level_editor, GameManager* gm);
 
 void Graphics_RenderGame(Graphics* g, World* world,
-                         Controls* controls, float fps, int delta, Window* level_editor);
+                         Controls* controls, float fps, int delta, Window* level_editor, GameManager* gm);
 
 
 #endif // GRAPHICS_H

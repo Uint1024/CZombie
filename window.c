@@ -20,21 +20,6 @@ Window Window_CreateLevelEditor()
 
     Window_UpdateButtonsPositions(&w);
 
-    /*w.buttons_per_row = ((float)(w.box.width - w.buttons_size) /
-                        ((float)(w.buttons_size + w.space_between_buttons)));
-
-    for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
-    {
-        int row = i / w.buttons_per_row;
-
-        int y = row * (w.buttons_size + w.space_between_buttons) + w.margin;
-        int x = ((w.buttons_size + w.space_between_buttons) * i) -
-                    (w.box.width * row) + w.margin +
-                    (w.buttons_per_row * w.space_between_buttons * row);
-
-        w.buttons[i] = Button_Create(i, x, y, &w);
-    }*/
-
     return w;
 }
 
@@ -100,9 +85,12 @@ Button Button_Create(LevelEditor_Button type, int x, int y, Window* parent_windo
     button.x = x + parent_window->x;
     button.y = y + parent_window->y;
     button.box = BoundingBox_CreateBetter(x, y, 20, 20);
-
+    printf("%d", button.button_type);
     switch(type)
     {
+    case NormalWall_button:
+        button.texture = Wall_tex;
+        break;
     case GrassGround_button:
         button.texture = GrassGround_tex;
         break;
@@ -118,6 +106,26 @@ Button Button_Create(LevelEditor_Button type, int x, int y, Window* parent_windo
     case HeavyZombie_button:
         button.texture = HeavyZombie_tex;
         break;
+    case TrooperZombie_button:
+        button.texture = TrooperZombie_tex;
+        break;
+    case HugeZombie_button:
+        button.texture = HugeZombie_tex;
+        break;
+    }
+
+    if(type == GrassGround_button || type == DirtGround_button)
+    {
+        button.main_category = Ground_cat;
+    }
+    else if(type == NormalZombie_button || type == FastZombie_button || type == HeavyZombie_button ||
+            type == TrooperZombie_button || type == HugeZombie_button)
+    {
+        button.main_category = Zombie_cat;
+    }
+    else if(type == NormalWall_button)
+    {
+        button.main_category = Wall_cat;
     }
 
     return button;

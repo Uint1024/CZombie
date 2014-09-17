@@ -17,15 +17,18 @@ typedef enum { Jfalse, Jtrue } Jbool;
 
 typedef enum { Left, Top, Bottom, Right, None } Direction;
 
-//unused I think
-typedef enum { Nothing, Ball, Paddle, Square, Bullet, Wall, Zombie, Handgun, AutomaticRifle, Health, Ammo, Player, Grenade, Ground  } Type;
+
+typedef enum { Wall_cat, Ground_cat, Zombie_cat,
+                Player_cat, Weapon_cat, Bonus_cat,
+                Texture_cat, Bullet_cat, Grenade_cat, Nothing  } Type;
 
 typedef enum { Grass_ground, Dirt_ground, NB_OF_GROUND_TYPES } Ground_Type;
 
 typedef enum { Rifle_bonus, Shotgun_bonus, GrenadeLauncher_bonus, NB_OF_BONUS_TYPES } Bonus_type;
 
-typedef enum{   GrassGround_button, DirtGround_button,
-                NormalZombie_button, FastZombie_button, HeavyZombie_button, NB_OF_LEVEL_EDITOR_BUTTONS
+typedef enum{   NormalWall_button, GrassGround_button, DirtGround_button,
+                NormalZombie_button, FastZombie_button, HeavyZombie_button, TrooperZombie_button, NB_OF_LEVEL_EDITOR_BUTTONS,
+                HugeZombie_button
             } LevelEditor_Button;
 
 typedef enum {  Normal_Zombie, Heavy_Zombie, Fast_Zombie, Huge_Zombie, Trooper_Zombie,
@@ -60,4 +63,6 @@ typedef struct Vec2
 } Vec2;
 
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
+
+#define BASE_PLAYER_SPEED 0.3
 #endif

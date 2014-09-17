@@ -2,6 +2,7 @@
 #define BOUNDINGBOX_H
 
 #include "common.h"
+#include <SDL.h>
 typedef struct Entity Entity;
 typedef struct Window Window;
 
@@ -28,4 +29,5 @@ void BoundingBox_CreateWindow(Window* ent, int width, int height);
 void BoundingBox_UpdateWindow(Box* box, int newX, int newY);
 Box BoundingBox_CreateBetter(int x, int y, int width, int height);
 void BoundingBox_UpdateNewSize(Box* box, int newW, int newH);
+SDL_Rect BoundingBox_GetSDLRect(Box* box);
 #endif

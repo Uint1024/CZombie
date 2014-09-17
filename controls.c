@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include "world.h"
 #include "window.h"
+#include "gameManager.h"
 
 Controls* CreateControls()
 {
@@ -29,13 +30,16 @@ Controls* CreateControls()
 
     controls->tileInPixelsX = 0;
     controls->tileInPixelsY = 0;
+    controls->hovering_on_window = Jfalse;
+    controls->last_ai_switch = 0;
 	return controls;
 }
 
-void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor)
+void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor,
+                          GameManager* game_manager)
 {
     Inputs_PoolInputs(controls, world->player.camera);
-    Inputs_ApplyInputs(controls, delta, game_started, world, level_editor);
+    Inputs_ApplyInputs(controls, delta, game_started, world, level_editor, game_manager);
 
     for(int i = 0 ; i < 20 ; i++)
         controls->previousPressedMouseButtons[i] = controls->pressedMouseButtons[i];
@@ -68,11 +72,13 @@ Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
 		if (controls->e.type == SDL_KEYDOWN)
 		{
 			controls->pressedKeys[controls->e.key.keysym.scancode] = Jtrue;
+			controls->pressedMods[controls->e.key.keysym.mod] = Jtrue;
 		}
 
 		if (controls->e.type == SDL_KEYUP)
 		{
 			controls->pressedKeys[controls->e.key.keysym.scancode] = Jfalse;
+			controls->pressedMods[controls->e.key.keysym.mod] = Jfalse;
 		}
 
 		if (controls->e.type == SDL_MOUSEBUTTONDOWN)
@@ -104,9 +110,9 @@ Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
 
 void Inputs_ApplyInputs( Controls* controls, int delta,
                             Jbool* game_started,
-                            World* world, Window* level_editor)
+                            World* world, Window* level_editor,
+                            GameManager* gm)
 {
-    Jbool hovering_on_window = Jfalse;
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
     //Vector* bonus_vector = &world->bonus_vector;
@@ -132,21 +138,20 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
     if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
     {
-       hovering_on_window = Jtrue;
+       controls->hovering_on_window = Jtrue;
 
-        if(!controls->active_window)
-        {
-            for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
+            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
             {
-                if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->buttons[i].box))
+                for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
                 {
-                    if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
+                    if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->buttons[i].box))
                     {
-                        controls->active_button = &level_editor->buttons[i];
+
+                            controls->active_button = &level_editor->buttons[i];
+
                     }
                 }
             }
-        }
 
         if(controls->mouseX > level_editor->box.right - 10 ||
            controls->mouseX < level_editor->box.left + 10 &&
@@ -184,6 +189,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
     {
         controls->cursor_resize_left_right = Jfalse;
         controls->cursor_resize_up_down = Jfalse;
+        controls->hovering_on_window = Jfalse;
     }
 
 
@@ -311,7 +317,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                                         controls->mousePositionInWorldY  );
 
 
-        if(!controls->active_window && !hovering_on_window)
+        if(!controls->active_window && !controls->hovering_on_window)
         {
             if(controls->mouseWheelPos != 0)
             {
@@ -331,7 +337,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
             controls->tileInPixelsX = controls->mouseTileX * TILE_SIZE;
             controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;
-
+            int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
             if (controls->active_button != NULL &&
                 controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
             {
@@ -341,7 +347,13 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                     //converting tile position to real position on screen
 
 
-                    int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
+
+
+
+                    if(controls->active_button->button_type == NormalWall_button)
+                    {
+                        world->map[position_in_array] = Wall_Create(controls->tileInPixelsX, controls->tileInPixelsY);
+                    }
 
                     if(controls->active_button->button_type == DirtGround_button)
                     {
@@ -351,30 +363,79 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                     {
                         world->ground_map[position_in_array] = Ground_Create(Grass_ground, controls->tileInPixelsX, controls->tileInPixelsY);
                     }
-                    //world->map[position_in_array] = Wall_Create(tileInPixelsX, tileInPixelsY);
 
+                    if(controls->active_button->main_category == Zombie_cat &&
+                       (SDL_GetTicks() - player->last_creation > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
+                    {
+                        Vector_Push(monsters_vector,
+                                    CreateZombie(gm->button_object_type_correspondance[controls->active_button->button_type],
+                                                 controls->mousePositionInWorldX, controls->mousePositionInWorldY));
+
+                        player->last_creation = SDL_GetTicks();
+                    }
                 }
                 else
                     printf("out of bound!!!");
             }
+
+
 
             if(controls->pressedKeys[SDL_SCANCODE_R])
             {
                 WeaponsComponent_Reload(player->weapons_component, delta);
             }
 
-            if(SDL_GetTicks() - player->last_creation > 50)
+            if(controls->pressedKeys[SDL_SCANCODE_X])
             {
-                if (controls->pressedKeys[SDL_SCANCODE_C] == Jtrue)
+                for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
                 {
-                    Entity* zombie;
-                    zombie = CreateZombie(Normal_Zombie, controls->mousePositionInWorldX , controls->mousePositionInWorldY);
-                    Vector_Push(monsters_vector, zombie);
+                    Entity* mob = (Entity*)Vector_Get(&world->monsters_vector, i);
+                    if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
+                                                       controls->mousePositionInWorldY,
+                                                       &mob->box))
+                    {
+                        //mob->alive = Jfalse;
+                        Vector_Delete(&world->monsters_vector, i);
+                    }
+                }
+            }
 
+            if(controls->pressedKeys[SDL_SCANCODE_C])
+            {
+                world->map[position_in_array] = NULL;
+            }
 
+            if(controls->pressedKeys[SDL_SCANCODE_E])
+            {
+                controls->active_button = NULL;
+            }
+
+            if(controls->pressedKeys[SDL_SCANCODE_Q] &&
+               SDL_GetTicks() - controls->last_ai_switch > 150)
+            {
+                if(gm->ai_on)
+                {
+                    gm->ai_on = Jfalse;
+                }
+                else
+                {
+                    gm->ai_on = Jtrue;
                 }
 
-                player->last_creation = SDL_GetTicks();
+                controls->last_ai_switch = SDL_GetTicks();
+
+            }
+
+            if(!world->player.running &&
+               controls->pressedMods[SDL_SCANCODE_LSHIFT])
+            {
+                Player_StartRunning(&world->player);
+            }
+
+            if(world->player.running &&
+               !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+            {
+                Player_StopRunning(&world->player);
             }
         }
 

@@ -11,7 +11,7 @@
 GameManager GameManager_Create()
 {
     GameManager gm;
-
+    gm.ai_on = Jtrue;
     gm.wave_id = 0;
     gm.game_mode = Survival_mode;
     gm.wave_timer = 40000;
@@ -29,7 +29,74 @@ GameManager GameManager_Create()
     gm.waves[11] = Wave_Create(5, 0, 0, 0, 0);
     gm.waves[12] = Wave_Create(5, 0, 0, 0, 0);
     gm.waves[13] = Wave_Create(5, 0, 0, 0, 0);
+
+
+    for(int type = 0 ; type < NB_ZOMBIE_TYPES ; type ++)
+    {
+        Entity* z = Entity_Spawn();
+        BoundingBox_Create(z, 0,0);
+        switch(type)
+        {
+         case Normal_Zombie:
+            z->texture = Zombie_tex;
+            z->box.height = 20;
+            z->box.width = 20;
+            z->speed = 0.2;
+            z->hp = 2;
+            z->damage = 2;
+            break;
+        case Fast_Zombie:
+            z->texture = FastZombie_tex;
+            z->box.height = 20;
+            z->box.width = 20;
+            z->speed = 0.25;
+            z->hp = 2;
+            z->damage = 4;
+            break;
+        case Heavy_Zombie:
+            z->texture = HeavyZombie_tex;
+            z->box.height = 40;
+            z->box.width = 40;
+            z->speed = 0.1;
+            z->hp = 20;
+            z->damage = 10;
+            z->weapons_component = WeaponsComponent_Create(Jtrue);
+            WeaponsComponent_AddWeaponToInventory(z->weapons_component,
+                                                  Weapon_Create(Fireball_w));
+            break;
+        case Trooper_Zombie:
+            z->texture = TrooperZombie_tex;
+            z->box.height = 60;
+            z->box.width = 45;
+            z->speed = 0.1;
+            z->hp = 20;
+            z->damage = 10;
+            z->weapons_component = WeaponsComponent_Create(Jtrue);
+            WeaponsComponent_AddWeaponToInventory(z->weapons_component,
+                                                  Weapon_Create(TripleFireball_w));
+            break;
+        case Huge_Zombie:
+            z->texture = HugeZombie_tex;
+            z->box.height = 100;
+            z->box.width = 100;
+            z->speed = 0.2;
+            z->hp = 150;
+            z->damage = 20;
+            break;
+        }
+
+        gm.zombie_templates[type] = z;
+    }
+
+    gm.button_object_type_correspondance[NormalZombie_button] = Normal_Zombie;
+    gm.button_object_type_correspondance[HeavyZombie_button] = Heavy_Zombie;
+    gm.button_object_type_correspondance[FastZombie_button] = Fast_Zombie;
+    gm.button_object_type_correspondance[HugeZombie_button] = Huge_Zombie;
+    gm.button_object_type_correspondance[TrooperZombie_button] = Trooper_Zombie;
+    gm.button_object_type_correspondance[GrassGround_button] = Grass_ground;
+    gm.button_object_type_correspondance[DirtGround_button] = Dirt_ground;
     return gm;
+
 }
 
 Wave Wave_Create(int normal_zombies, int fast_zombies,
@@ -49,8 +116,8 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
 
 void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_editor)
 {
-    GameManage_UpdateWorldEntities(delta, world);
-    GameManager_UpdateEnnemyWaves(gm, world, delta);
+    GameManage_UpdateWorldEntities(gm, delta, world);
+    //GameManager_UpdateEnnemyWaves(gm, world, delta);
     //GameManager_UpdateUI(level_editor);
 }
 
@@ -59,7 +126,7 @@ void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_
     //if(BoundingBox_CheckPointCollision())
 }*/
 
-void GameManage_UpdateWorldEntities(int delta, World* world)
+void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
 {
     //because I don't want to type world-> 50 times
     Vector* bullets_vector = &world->bullets_vector;
@@ -75,11 +142,11 @@ void GameManage_UpdateWorldEntities(int delta, World* world)
         {
             Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
 
-            if(projectile->t == Bullet)
+            if(projectile->t == Bullet_cat)
             {
                  Bullet_Update(projectile, delta, world);
             }
-            else if(projectile->t == Grenade)
+            else if(projectile->t == Grenade_cat)
             {
                 Grenade_Update(projectile, delta, world);
 
@@ -117,26 +184,30 @@ void GameManage_UpdateWorldEntities(int delta, World* world)
         }
     }
 
-    for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
+    if(gm->ai_on)
     {
-        if(Vector_Get(monsters_vector, i) != NULL)
+        for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
         {
-            Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
+            if(Vector_Get(monsters_vector, i) != NULL)
+            {
+                Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 
-                Zombie_Update(mob, delta, world);
+                    Zombie_Update(mob, delta, world);
 
-                if (mob->alive == Jfalse)
-                {
-                    Zombie_Die(mob, bonus_vector);
-                    Vector_Delete(monsters_vector, i);
+                    if (mob->alive == Jfalse)
+                    {
+                        Zombie_Die(mob, bonus_vector);
+                        Vector_Delete(monsters_vector, i);
 
-                }
-        }
-        else
-        {
-            printf("Error during update of monsters vector : monster = NULL");
+                    }
+            }
+            else
+            {
+                printf("Error during update of monsters vector : monster = NULL");
+            }
         }
     }
+
 
     for(int i = 0 ; i < Vector_Count(explosions_vector) ; i++)
     {

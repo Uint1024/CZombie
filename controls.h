@@ -7,10 +7,12 @@
 
 typedef struct World World;
 typedef struct Button Button;
+typedef struct GameManager GameManager;
 
 typedef struct Controls
 {
 	Jbool pressedKeys[200];
+	Jbool pressedMods[50];
 	Jbool pressedMouseButtons[20];
 	Jbool previousPressedMouseButtons[20];
 	SDL_Event e;
@@ -34,12 +36,14 @@ typedef struct Controls
 	Jbool       resizing_up;
 	Jbool       resizing_down;
 	Button*     active_button;
+	Jbool       hovering_on_window;
+	int         last_ai_switch;
 } Controls;
 
 Controls* CreateControls();
 Jbool   Inputs_PoolInputs(Controls* controls, Entity* camera);
 void    Inputs_ApplyInputs( Controls* controls, int delta,
                             Jbool* game_started,
-                            World* world, Window* level_editor);
-void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor);
+                            World* world, Window* level_editor, GameManager* gm);
+void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor, GameManager* game_manager);
 #endif

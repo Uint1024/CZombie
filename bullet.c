@@ -9,7 +9,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 {
 	Entity* bullet = Entity_Spawn();
 
-	bullet->t = Bullet;
+	bullet->t = Bullet_cat;
 	bullet->bullet_type = type;
 	bullet->x = x;
 	bullet->y = y;
@@ -61,8 +61,8 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 void Bullet_Update(Entity* bullet, int delta, World* world)
 {
 
-    bullet->time_traveled += delta;
-    if(bullet->time_traveled > 30000)
+    bullet->time_traveled += bullet->speed * delta;
+    if(bullet->time_traveled > 1000)
     {
         bullet->alive = Jfalse;
     }
@@ -70,23 +70,11 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
 
     if(bullet->alive)
     {
-        //Entity* camera = world->player.camera;
-
         bullet->dx = cos(bullet->angle) * bullet->speed * delta;
         bullet->dy = sin(bullet->angle) * bullet->speed  * delta;
         moveEntity(bullet, bullet->dx, bullet->dy);
 
-        //set alive to false if out of screen
-        /*Direction out_of_screen = BoundingBox_CheckOutOfScreen(&bullet->box, camera);
-        if (out_of_screen != None)
-            bullet->alive = Jfalse;
-
-        for (int i = 0; i < world->map_size && bullet->alive == Jtrue; i++)
-        {
-            bullet->alive = !BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i].box);
-        }*/
-
-        if(!bullet->is_ennemy_bullet)
+       if(!bullet->is_ennemy_bullet)
         {
             for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
             {
@@ -115,6 +103,22 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
             }
 
             free(temp);
+        }
+
+        for(int i = 0 ; i < world->map_size ; i++)
+        {
+            if(world->map[i] != NULL)
+            {
+                if(Entity_CheckNear(bullet, world->map[i]))
+                {
+                    if(BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
+                    {
+                        bullet->alive = Jfalse;
+                    }
+                }
+
+            }
+
         }
 
     }

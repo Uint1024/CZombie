@@ -29,6 +29,16 @@ void BoundingBox_Create(Entity* ent, int width, int height)
 	ent->box.bottom = ent->y + height;
 }
 
+SDL_Rect BoundingBox_GetSDLRect(Box* box)
+{
+     SDL_Rect rect = {box->left,
+                        box->top,
+                        box->width,
+                        box->height };
+
+    return rect;
+}
+
 //struct agnostic = better
 Box BoundingBox_CreateBetter(int x, int y, int width, int height)
 {

@@ -10,6 +10,7 @@ typedef struct Button
     Box                     box;
     LevelEditor_Button      button_type;
     Texture_Type            texture;
+    Type                    main_category;
 } Button;
 
 

@@ -11,6 +11,16 @@
 void Player_Update(int delta, World* world)
 {
     Entity* p = &world->player;
+
+    if(p->running)
+    {
+        Player_Run(p, delta);
+    }
+    else
+    {
+        Player_Walk(p, delta);
+    }
+
     p->invulnerability_timer -= delta;
     if(p->weapons_component->reloading)
     {
@@ -40,7 +50,7 @@ Entity Player_Create(float x, float y, int w, int h)
 {
     Entity p;
 
-	p.t                             =   Player;
+	p.t                             =   Player_cat;
 	p.texture                       =   Player_tex;
 	p.x                             =   x;
 	p.y                             =   y;
@@ -51,7 +61,9 @@ Entity Player_Create(float x, float y, int w, int h)
     p.camera                        =   CreateCamera();
     p.invulnerability_timer         =   0;
     p.weapons_component             =   WeaponsComponent_Create();
-
+    p.stamina                       =   100;
+    p.max_stamina                       =   100;
+    p.running = Jfalse;
     BoundingBox_Create(&p, w, h);
 
 
@@ -87,18 +99,40 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
     }
 }
 
+void Player_Run(Entity* p, int delta)
+{
+    p->stamina -= 0.03 * delta;
+    if(p->stamina <= 0)
+        Player_StopRunning(p);
+
+}
+
+void Player_Walk(Entity* p, int delta)
+{
+    if(p->stamina < p->max_stamina)
+        p->stamina += 0.01 * delta;
+
+}
+
+
+void Player_StartRunning(Entity* p)
+{
+    if(p->stamina > 0)
+    {
+        p->speed = BASE_PLAYER_SPEED * 3;
+        p->running = Jtrue;
+    }
+
+}
+
+void Player_StopRunning(Entity* p)
+{
+    p->speed = BASE_PLAYER_SPEED;
+    p->running = Jfalse;
+}
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
     WeaponsComponent* wc = player->weapons_component;
-/*    if(bonus->t == Ammo_bonus)
-    {
-        WeaponsComponent_AddAmmo(player->weapons_component,
-                                 player->weapons_component->current_weapon->type,
-                                 50);
-    }
-    else
-    {
-*/
         if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
         {
             WeaponsComponent_AddAmmo(wc,
@@ -111,8 +145,6 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
                     wc, Weapon_Create(bonus->corresponding_weapon));
         }
 
-
-    //}
 
     bonus->alive = Jfalse;
 }
