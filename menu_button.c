@@ -11,7 +11,6 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
     int textH = 0;
     int textW = 0;
     SDL_Color text_color = { 40, 40, 40, 255 };
-    //SDL_Color shading_color = { 0, 0, 0, 150 };
     SDL_Surface* text_surface = TTF_RenderText_Solid(graphics->fonts[Menu_font],
                                                      text, text_color);
 
@@ -33,6 +32,26 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
 
     button->box          =   BoundingBox_CreateFromAllValues(textW, textH, button->x, button->y);
     SDL_Rect text_rect   =   { button->x , button->y, textW, textH };
+    button->text_rect    =   text_rect;
+    button->hover        =   Jfalse;
+
+
+
+    return button;
+}
+
+MenuButton* FileNameButton_Create(float y, char* text)
+{
+    MenuButton* button = (MenuButton*)malloc(sizeof(MenuButton));
+
+    button->name         =   FILE_NAME_BUTTON;
+    button->text         =   text;
+
+    button->x            =   100;
+    button->y            =   y;
+
+    button->box          =   BoundingBox_CreateFromAllValues(500, 100, 100, button->y);
+    SDL_Rect text_rect   =   { 100 , button->y, 500, 100 };
     button->text_rect    =   text_rect;
     button->hover        =   Jfalse;
 

@@ -69,6 +69,17 @@ void* Vector_Get(Vector *v, int index)
 	return v->data[index];
 }
 
+void Vector_Clear(Vector* v)
+{
+    for(int i = 0 ; i < v->count ; i++)
+    {
+        free(v->data[i]);
+    }
+    free(v->data);
+    v->size = 0;
+    v->count = 0;
+    v->data = NULL;
+}
 void Vector_Delete(Vector *v, int index)
 {
 

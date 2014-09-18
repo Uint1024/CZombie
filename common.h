@@ -6,13 +6,22 @@
 #include <SDL.h>
 
 
-typedef enum { Play_button, SaveLevel_button, Options_button, Quit_button, Back_button } Menu_Button_Name;
+typedef enum {
+    Play_button,
+    SaveLevel_button,
+    LoadLevel_button,
+    Options_button,
+    Quit_button,
+    Back_button,
+    FILE_NAME_BUTTON
+} Menu_Button_Name;
 
-typedef enum { Survival_mode } Game_Mode;
+
 
 typedef enum {
     Main_Menu_menu,
     SaveLevel_menu,
+    LoadLevel_menu,
     Options_menu,
     NBMENUS
 } Menu_Name;
@@ -23,6 +32,7 @@ typedef enum { Jfalse, Jtrue } Jbool;
 
 typedef enum { Left, Top, Bottom, Right, None } Direction;
 
+typedef enum { Survival_mode } Game_Mode;
 
 //main category of objets
 typedef enum {
@@ -42,7 +52,6 @@ typedef enum {
 
 
 //---sub categories : wall, ground, bonus, buttons, zombies, textures, weapons
-
 //Ground_Type
 typedef enum {
     Ground_Grass,

@@ -35,6 +35,7 @@ typedef struct Menu
     int             total_buttons;
     int             total_texts;
     TextField*      active_textfield;
+    Vector          file_list;
 } Menu;
 
 

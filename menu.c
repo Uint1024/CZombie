@@ -14,20 +14,25 @@ Menu* MainMenu_Create(Graphics* graphics)
                                                               graphics);
 
     MenuButton* save_level_button       =   MenuButton_Create(SaveLevel_button,
-                                                              100.0f, 250.0f,
+                                                              100.0f, 220.0f,
                                                               "Save Level", Jtrue,
                                                               graphics);
+    MenuButton* load_level_button       =   MenuButton_Create(LoadLevel_button,
+                                                              100.0f, 340.0f,
+                                                              "Load Level", Jtrue,
+                                                              graphics);
     MenuButton* options_button          =   MenuButton_Create(Options_button,
-                                                              100.0f, 400.0f,
+                                                              100.0f, 460.0f,
                                                               "Options", Jtrue,
                                                               graphics);
     MenuButton* quit_button              =   MenuButton_Create(Quit_button,
-                                                               100.0f, 550.0f,
+                                                               100.0f, 580.0f,
                                                               "Quit", Jtrue,
                                                               graphics);
     mainMenu->buttons = Vector_Create();
     Vector_Push(&mainMenu->buttons, play_button);
     Vector_Push(&mainMenu->buttons, save_level_button);
+    Vector_Push(&mainMenu->buttons, load_level_button);
     Vector_Push(&mainMenu->buttons, options_button);
     Vector_Push(&mainMenu->buttons, quit_button);
 
@@ -81,6 +86,26 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
     return saveMenu;
 }
 
+Menu* LoadLevelMenu_Create(Graphics* graphics)
+{
+    Menu* optionsMenu = (Menu*)malloc(sizeof(Menu));
+
+
+    optionsMenu->buttons = Vector_Create();
+    optionsMenu->texts = Vector_Create();
+    optionsMenu->file_list = Vector_Create();
+
+    optionsMenu->name                       =   LoadLevel_menu;
+
+    MenuButton* back_button     =   MenuButton_Create(Back_button,
+                                                      100, 400,
+                                                      "Back",
+                                                      Jtrue, graphics);
+
+    Vector_Push(&optionsMenu->buttons, back_button);
+    optionsMenu->active_textfield = NULL;
+    return optionsMenu;
+}
 
 TextField* TextField_Create(int x, int y, int width, int height)
 {

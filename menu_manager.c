@@ -14,6 +14,7 @@ MenuManager MenuManager_Create(Graphics* graphics)
     mm.sub_menus[Main_Menu_menu]    =   MainMenu_Create(graphics);
     mm.sub_menus[Options_menu]      =   OptionMenu_Create(graphics);
    mm.sub_menus[SaveLevel_menu]      =   SaveLevelMenu_Create(graphics);
+   mm.sub_menus[LoadLevel_menu]      =   LoadLevelMenu_Create(graphics);
     mm.active_menu                  =   mm.sub_menus[Main_Menu_menu];
     mm.click_timer                  =   0;
 
@@ -50,20 +51,6 @@ void MenuManager_Update(MenuManager* mm,
        menu->active_textfield != NULL)
     {
         TextField_Update( menu->active_textfield , delta, controls);
-
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir ("saves\\")) != NULL) {
-          /* print all the files and directories within directory */
-          while ((ent = readdir (dir)) != NULL) {
-            printf ("%s\n", ent->d_name);
-          }
-          closedir (dir);
-        } else {
-          /* could not open directory */
-          perror ("");
-          return EXIT_FAILURE;
-        }
 
         if(controls->pressedKeys[SDLK_RETURN])
         {
@@ -104,7 +91,33 @@ void MenuManager_Update(MenuManager* mm,
             fclose(save_file);
         }
     }
+    else if(menu->name == LoadLevel_menu)
+    {
+        Vector_Clear(&menu->file_list);
 
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir ("saves\\")) != NULL) {
+                int i = 0;
+          while ((ent = readdir (dir)) != NULL) {
+                if(ent->d_name[0] != '.')
+                {
+                    char** name = malloc(sizeof(ent->d_name));
+                    strcpy(name, ent->d_name);
+
+                    Vector_Push(&menu->file_list, FileNameButton_Create(i * 80 + 50, name));
+                    i++;
+                }
+
+          }
+          closedir (dir);
+        } else {
+          perror ("");
+          return EXIT_FAILURE;
+        }
+
+
+    }
 
     if(mm->click_timer <= 0)
     {
@@ -141,6 +154,11 @@ void MenuManager_Update(MenuManager* mm,
                             mm->active_menu = mm->sub_menus[SaveLevel_menu];
                             button->hover = Jfalse;
                         }
+                        else if(button->name == LoadLevel_button)
+                        {
+                            mm->active_menu = mm->sub_menus[LoadLevel_menu];
+                            button->hover = Jfalse;
+                        }
                         else if(button->name == Quit_button)
                         {
                             *running = Jfalse;
@@ -156,6 +174,15 @@ void MenuManager_Update(MenuManager* mm,
                     }
 
                     if(menu->name == SaveLevel_menu)
+                    {
+                        if(button->name == Back_button)
+                        {
+                            mm->active_menu = mm->sub_menus[Main_Menu_menu];
+                            button->hover = Jfalse;
+                        }
+                    }
+
+                    if(menu->name == LoadLevel_menu)
                     {
                         if(button->name == Back_button)
                         {

@@ -21,5 +21,5 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
                               float x, float y,
                               char* text, Jbool centered,
                               Graphics* graphics);
-
+MenuButton* FileNameButton_Create(float y, char* text);
 #endif // MAIN_MENU_H

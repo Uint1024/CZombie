@@ -70,6 +70,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 
     g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
 	g->fonts[Medium]            =   TTF_OpenFont("cour.ttf", 16);
+	g->fonts[Large]            =   TTF_OpenFont("cour.ttf", 28);
 	g->fonts[Menu_font]         =   TTF_OpenFont("verdana.ttf", 46);
 
 	g->text_surface             =   NULL;
@@ -308,6 +309,18 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
         }
 
         Graphics_RenderText(g, tf->text, Medium, tf->first_caretX, tf->caretY, Jfalse, Black);
+    }
+
+    if(menu->name == LoadLevel_menu)
+    {
+        for(int i = 0 ; i < Vector_Count(&menu->file_list) ; i++)
+        {
+            MenuButton* button = (char*)Vector_Get(&menu->file_list, i);
+
+            Graphics_RenderText(g, button->text, Large,
+                                button->box.left, button->box.top,
+                                Jtrue, White);
+        }
     }
 
 
