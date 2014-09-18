@@ -124,7 +124,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
 
     //show menu
-    if(controls->timer_menu <= 0 && controls->pressedKeys[SDL_SCANCODE_ESCAPE] == Jtrue)
+    if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == Jtrue)
     {   if(*game_started)
         {
            *game_started = Jfalse;

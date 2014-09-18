@@ -320,6 +320,8 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             Graphics_RenderText(g, button->text, Large,
                                 button->box.left, button->box.top,
                                 Jtrue, White);
+            SDL_Rect rect = BoundingBox_GetSDLRect(&button->box);
+            SDL_RenderDrawRect(g->renderer, &rect);
         }
     }
 

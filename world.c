@@ -23,7 +23,7 @@ World World_Initialize(int map_width, int map_height,
 
     for(int i = 0 ; i < world.map_size ; i++)
     {
-        //world.map[i].t = None;
+        world.map[i] = Entity_Spawn();
 
     }
 
