@@ -16,6 +16,8 @@ $RECYCLE.BIN/
 *.exe
 *.ttf
 *.o
+*.layout
+*.depend
 
 obj/
 bin/
