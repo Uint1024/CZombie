@@ -87,8 +87,6 @@ void *List_shift(List *list)
 
 void *List_remove(List *list, ListNode *node)
 {
-	void *result = NULL;
-
 	if (node == list->first && node == list->last) {
 		list->first = NULL;
 		list->last = NULL;
@@ -112,8 +110,6 @@ void *List_remove(List *list, ListNode *node)
 
 	list->count--;
 
-
-	result = node->value;
 	free(node);
 
 }

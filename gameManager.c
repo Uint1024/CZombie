@@ -7,6 +7,7 @@
 #include "player.h"
 #include "bullet.h"
 #include "bonus.h"
+#include "weapon.h"
 
 GameManager GameManager_Create()
 {

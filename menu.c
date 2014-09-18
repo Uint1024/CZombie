@@ -2,7 +2,8 @@
 #include "menu_button.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
+#include <stdio.h>
 Menu* MainMenu_Create(Graphics* graphics)
 {
     Menu* mainMenu = (Menu*)malloc(sizeof(Menu));

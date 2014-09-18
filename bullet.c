@@ -4,6 +4,8 @@
 #include "bullet.h"
 #include "entity.h"
 #include "world.h"
+#include "stdio.h"
+#include "player.h"
 
 Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float speed, Jbool is_ennemy_bullet)
 {
@@ -51,6 +53,8 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
         break;
     case GrenadeLauncher_w:
         printf("Error, trying to create a grenade launcher bullet");
+     case NB_WEAPON_TYPES:
+        printf("Error, trying to create undefined weapon");
         break;
 	}
 

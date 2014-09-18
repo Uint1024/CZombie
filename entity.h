@@ -66,4 +66,5 @@ void Entity_LoseHealth(Entity* ent, int damage);
 void Entity_CollisionWithStuff(Entity* ent, World* world);
 void Entity_CalculateVelocityFromAngle(Entity* ent, int delta);
 void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched);
+Jbool Entity_CheckNear(Entity* ent1, Entity* ent2);
 #endif

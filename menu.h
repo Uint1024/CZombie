@@ -43,6 +43,7 @@ typedef struct Menu
 Menu* OptionMenu_Create(Graphics* graphics);
 Menu* MainMenu_Create(Graphics* graphics);
 Menu* SaveLevelMenu_Create(Graphics* graphics);
+Menu* LoadLevelMenu_Create(Graphics* graphics);
 
 TextField* TextField_Create(int x, int y, int width, int height);
 void TextField_Update(TextField* tf, int delta, Controls* controls);

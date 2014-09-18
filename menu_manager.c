@@ -119,8 +119,7 @@ void MenuManager_Update(MenuManager* mm,
           }
           closedir (dir);
         } else {
-          perror ("");
-          return EXIT_FAILURE;
+          printf ("Can't find file\n");
         }
 
         for(int i = 0 ; i < Vector_Count(&menu->file_list) ; i++)

@@ -14,4 +14,6 @@ void Player_PickUpBonus(Entity* player, Entity* bonus);
 void Player_Run(Entity* p, int delta);
 void Player_StartRunning(Entity* p);
 void Player_StopRunning(Entity* p);
+void Player_Walk(Entity* p, int delta);
+
 #endif

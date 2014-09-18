@@ -1,6 +1,8 @@
 #include "vector.h"
 #include <stdlib.h>
 #include "entity.h"
+#include "stdio.h"
+#include <string.h>
 
 Vector Vector_Create()
 {
@@ -20,19 +22,13 @@ int Vector_Count(Vector *v)
 
 void Vector_Push(Vector *v, void *e)
 {
-    //printf("push\n");
-    Entity* to_push = (Entity*)e;
-    Zombie_Type type = to_push->zombie_type;
-
-
-
     if(e != NULL)
     {
         if (v->size == 0)
         {
             v->size = 20;
             v->data = malloc(sizeof(void*) * v->size);
-            memset(v->data, NULL, sizeof(void*) * v->size);
+            memset(v->data, 1, sizeof(void*) * v->size);
         }
 
         if(v->data == NULL)
@@ -63,7 +59,7 @@ void* Vector_Get(Vector *v, int index)
 	if (index >= v->count)
     {
         printf("Index too high");
-		return;
+		return NULL;
 	}
 
 	return v->data[index];
@@ -84,7 +80,6 @@ void Vector_Delete(Vector *v, int index)
 {
 
     Entity* to_delete = (Entity*)Vector_Get(v, index);
-    Zombie_Type type = to_delete->zombie_type;
 
 	if (index >= v->count)
     {

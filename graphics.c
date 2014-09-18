@@ -315,7 +315,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     {
         for(int i = 0 ; i < Vector_Count(&menu->file_list) ; i++)
         {
-            MenuButton* button = (char*)Vector_Get(&menu->file_list, i);
+            MenuButton* button = (MenuButton*)Vector_Get(&menu->file_list, i);
 
             Graphics_RenderText(g, button->text, Large,
                                 button->box.left, button->box.top,

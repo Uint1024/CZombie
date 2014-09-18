@@ -31,4 +31,5 @@ Button Button_Create(LevelEditor_Button type, int x, int y, Window* parent_windo
 void Window_ResizeRight(Window *w, int changeW);
 void Window_ResizeLeft(Window *w, int changeW);
 void Window_UpdateButtonsPositions(Window* w);
+void Window_Move(Window* w, int dx, int dy);
 #endif // WINDOW_H

@@ -14,6 +14,7 @@
 #include "world.h"
 #include "window.h"
 #include "gameManager.h"
+#include "player.h"
 
 Controls* CreateControls()
 {
@@ -118,7 +119,6 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
     //Vector* bonus_vector = &world->bonus_vector;
     Vector* monsters_vector = &world->monsters_vector;
     //Vector* explosions_vector = &world->explosions_vector;
-    Entity** map = world->map;
 
     controls->timer_menu -= delta;
 
@@ -154,8 +154,8 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                 }
             }
 
-        if(controls->mouseX > level_editor->box.right - 10 ||
-           controls->mouseX < level_editor->box.left + 10 &&
+        if((controls->mouseX > level_editor->box.right - 10 ||
+           controls->mouseX < level_editor->box.left + 10) &&
            controls->active_window == NULL)
         {
             controls->cursor_resize_left_right = Jtrue;
