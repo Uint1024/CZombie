@@ -100,10 +100,11 @@ TextField* TextField_Create(int x, int y, int width, int height)
     tf->caret_blinking_delay = 400;
     tf->caret_blinking_timer = 0;
     tf->visible_caret = Jtrue;
-    tf->caretX = x + 20;
+    tf->caretX = x + 24;
+    tf->first_caretX = tf->caretX;
     tf->caretY = y + 20;
     tf->caretWidth = 5;
-    tf->caretHeight = 20;
+    tf->caretHeight = 19;
     return tf;
 }
 
@@ -117,6 +118,7 @@ void TextField_Input(TextField* tf, char c)
             tf->text[len] = c;
             tf->can_type = Jfalse;
             tf->input_timer = 0;
+            tf->caretX += 10;
         }
 
         printf("%s\n", tf->text);
@@ -131,10 +133,16 @@ void TextField_Update(TextField* tf, int delta, Controls* controls)
     for(int i = 0 ; i < 200 ; i ++)
     {
         if(controls->pressedKeys[i] == Jtrue &&
-           (char)controls->pressedKeys[i] != tf->text[len])
+           (char)controls->pressedKeys[i] != tf->text[len] &&
+           !controls->pressedKeys[SDLK_RETURN] &&
+           !controls->pressedKeys[SDLK_BACKSPACE] &&
+           !controls->pressedKeys[SDLK_RETURN2])
         {
-
             TextField_Input(tf, (char)(i));
+        }
+        else if(controls->pressedKeys[SDLK_BACKSPACE])
+        {
+            //TextField_Backspace(tf);
         }
     }
 

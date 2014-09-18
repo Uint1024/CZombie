@@ -10,7 +10,8 @@
 
 GameManager GameManager_Create()
 {
-    button_category_g[GrassGround_button] = Cat_Ground;
+    GameManager gm;
+   button_category_g[GrassGround_button] = Cat_Ground;
     button_category_g[DirtGround_button] = Cat_Ground;
     button_category_g[NormalZombie_button] = Cat_Zombie;
     button_category_g[FastZombie_button] = Cat_Zombie;
@@ -20,7 +21,7 @@ GameManager GameManager_Create()
     button_category_g[Button_Wall_Normal] = Cat_Wall;
 
 
-    GameManager gm;
+
     gm.ai_on = Jtrue;
     gm.wave_id = 0;
     gm.game_mode = Survival_mode;
@@ -110,6 +111,11 @@ GameManager GameManager_Create()
     button_object_type_g[GrassGround_button] = Ground_Grass;
     button_object_type_g[DirtGround_button] = Ground_Dirt;
     button_object_type_g[Button_Wall_Normal] = Wall_Normal;
+
+    SDL_Color black = {0,0,0,255};
+    SDL_Color white = {255,255,255,255};
+    font_color_g[Black] = black;
+    font_color_g[White] = white;
     return gm;
 
 }

@@ -37,8 +37,8 @@ void Graphics_RenderWorld(  Graphics* graphics, World* world);
 
 void Graphics_RenderObject( Graphics* graphics, Entity* object, Entity* camera);
 
-void Graphics_RenderText(   Graphics* graphics, char* text, Font_Size size,
-                            int x, int y);
+void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
+                         int x, int y, Jbool shaded,Font_Color color);
 
 void Graphics_RenderMenu(   Graphics* g, Menu* menu, Controls* controls);
 

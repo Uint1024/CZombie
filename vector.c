@@ -55,9 +55,6 @@ void Vector_Push(Vector *v, void *e)
         v->data[v->count] = e;
         v->count++;
     }
-
-    /*if(type == Normal_Zombie || type == Fast_Zombie || type == Heavy_Zombie)
-        //printf("adding zombie of type %d at %f:%f, count after addition = %d size = %d\n", type, to_push->x, to_push->y, v->count, v->size);*/
 }
 
 

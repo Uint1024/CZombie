@@ -3,6 +3,7 @@
 
 #define TOTAL_MAIN_MENU_BUTTONS 3
 #define TILE_SIZE 32
+#include <SDL.h>
 
 
 typedef enum { Play_button, SaveLevel_button, Options_button, Quit_button, Back_button } Menu_Button_Name;
@@ -142,6 +143,17 @@ typedef enum {
     Menu_font
 } Font_Size;
 
+typedef enum{
+    Black,
+    Grey,
+    Dark_Grey,
+    White,
+    Blue,
+    Red,
+    Green,
+    NBCOLORS
+} Font_Color;
+
 extern Jbool debug_mode;
 
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb);
@@ -160,6 +172,7 @@ Entity*         zombie_templates_g[NB_ZOMBIE_TYPES];
 int             button_object_type_g[NB_OF_LEVEL_EDITOR_BUTTONS];
 Texture_Type    wall_textures_g[NB_OF_WALL_TYPES];
 Texture_Type    ground_textures_g[NB_OF_GROUND_TYPES];
+SDL_Color       font_color_g[NBCOLORS];
 
 
 

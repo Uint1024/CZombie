@@ -15,6 +15,7 @@ typedef struct TextField
     int             caret_blinking_timer;
     Jbool           visible_caret;
     int             caret_blinking_delay;
+    int             first_caretX;
     int             caretX;
     int             caretY;
     int             caretHeight;
@@ -22,6 +23,7 @@ typedef struct TextField
     int             input_timer;
     int             input_delay;
     int             can_type;
+
 } TextField;
 
 typedef struct Menu

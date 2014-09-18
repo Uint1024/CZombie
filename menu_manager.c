@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include "string.h"
 #include "menu_manager.h"
 #include "graphics.h"
 #include "controls.h"
 #include "menu_button.h"
 #include "menu.h"
+#include "dirent.h"
 
 MenuManager MenuManager_Create(Graphics* graphics)
 {
@@ -49,10 +51,28 @@ void MenuManager_Update(MenuManager* mm,
     {
         TextField_Update( menu->active_textfield , delta, controls);
 
+        DIR *dir;
+        struct dirent *ent;
+        if ((dir = opendir ("saves\\")) != NULL) {
+          /* print all the files and directories within directory */
+          while ((ent = readdir (dir)) != NULL) {
+            printf ("%s\n", ent->d_name);
+          }
+          closedir (dir);
+        } else {
+          /* could not open directory */
+          perror ("");
+          return EXIT_FAILURE;
+        }
+
         if(controls->pressedKeys[SDLK_RETURN])
         {
+            char file_name[50];
+            strcpy(file_name, "saves/");
+            strcat(file_name, menu->active_textfield->text);
+
             FILE *save_file;
-            save_file = fopen(menu->active_textfield->text, "wb");
+            save_file = fopen(file_name, "w");
             if(!save_file)
             {
                 printf("Can't open file");
@@ -65,22 +85,7 @@ void MenuManager_Update(MenuManager* mm,
 
             fclose(save_file);
         }
-        /*if (controls->pressedKeys[SDL_SCANCODE_H] == Jtrue)
-        {
-            FILE *save_file;
-            save_file = fopen("test.txt", "wb");
-            if(!save_file)
-            {
-                printf("Can't open file");
 
-            }
-            for(int i = 0 ; i < world->map_size ; i++)
-            {
-                fwrite(&world->map[i], sizeof(Entity), 1, save_file);
-            }
-
-            fclose(save_file);
-        }
 
         if (controls->pressedKeys[SDL_SCANCODE_G] == Jtrue)
         {
@@ -97,7 +102,7 @@ void MenuManager_Update(MenuManager* mm,
             }
 
             fclose(save_file);
-        }*/
+        }
     }
 
 

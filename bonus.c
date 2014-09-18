@@ -18,13 +18,7 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     bonus->t = bonus_type;
     bonus->angle = angle;
 
-    /*if(bonus_type == Ammo_bonus)
-    {
-        bonus->texture = Tex_Bonus_Ammo;
-
-        BoundingBox_Create(bonus, 10, 10);
-    }
-    else */if(bonus_type == Bonus_Shotgun)
+if(bonus_type == Bonus_Shotgun)
     {
         bonus->texture = Tex_Bonus_Shotgun;
         bonus->corresponding_weapon = Shotgun_w;

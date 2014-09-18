@@ -217,27 +217,42 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
                             positionX_str,
                             Small,
                             object->x - camera->x,
-                            object->y - camera->y
+                            object->y - camera->y,
+                            Jtrue,
+                            White
                             );
 
         Graphics_RenderText(graphics,
                             positionY_str,
                             Small,
                             object->x - camera->x,
-                            object->y - camera->y + 10
-                            );
+                            object->y - camera->y + 10,
+                            Jtrue,
+                            White
+                                                        );
     }
 }
 
-void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size, int x, int y)
+void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
+                         int x, int y, Jbool shaded, Font_Color color)
 {
 
-    SDL_Color text_color = { 50, 255, 250, 255 };
+    SDL_Color text_color = font_color_g[color];
     SDL_Color shading_color = { 0, 0, 0, 150 };
 
-    graphics->text_surface = TTF_RenderText_Shaded(graphics->fonts[size], text, text_color, shading_color);
+    if(shaded)
+    {
+        graphics->text_surface = TTF_RenderText_Shaded(graphics->fonts[size], text,
+                                                        text_color, shading_color);
+    }
+    else
+    {
+        graphics->text_surface = TTF_RenderText_Solid(graphics->fonts[size], text,
+                                                        text_color);
+    }
 
-    graphics->text_texture = SDL_CreateTextureFromSurface(graphics->renderer, graphics->text_surface);
+    graphics->text_texture = SDL_CreateTextureFromSurface(graphics->renderer,
+                                                          graphics->text_surface);
     int textH = 0;
     int textW = 0;
 
@@ -287,11 +302,12 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 
         if(tf->visible_caret && tf == menu->active_textfield)
         {
+            SDL_SetRenderDrawColor(g->renderer, 0, 0, 0, 255);
             SDL_Rect caret_rect = {tf->caretX, tf->caretY, tf->caretWidth, tf->caretHeight};
             SDL_RenderFillRect(g->renderer, &caret_rect);
         }
 
-        Graphics_RenderText(g, tf->text, Medium, tf->box.left, tf->box.top);
+        Graphics_RenderText(g, tf->text, Medium, tf->first_caretX, tf->caretY, Jfalse, Black);
     }
 
 
@@ -427,12 +443,12 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     {
         char deactivated[] = "AI deactivated";
 
-        Graphics_RenderText(g, deactivated, Medium, 300, 20);
+        Graphics_RenderText(g, deactivated, Medium, 300, 20, Jtrue, Black);
     }
 
     //stamina
     char stamina[] = "Stamina";
-    Graphics_RenderText(g, stamina, Medium, 50, 700);
+    Graphics_RenderText(g, stamina, Medium, 50, 700, Jtrue, White);
 
     SDL_Rect stamina_rect_back = {150,700,100,20};
     SDL_Rect stamina_rect_front = {150,700,world->player.stamina,20};
@@ -446,10 +462,10 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     //hp
     char hp[8];
     snprintf(hp, sizeof(hp), "%d hp", world->player.hp);
-    Graphics_RenderText(g, hp, Medium, 700, 110);
+    Graphics_RenderText(g, hp, Medium, 700, 110, Jtrue, White);
 
     //name of weapon
-    Graphics_RenderText(g, world->player.weapons_component->current_weapon->name, Medium, 700, 130);
+    Graphics_RenderText(g, world->player.weapons_component->current_weapon->name, Medium, 700, 130, Jtrue, White);
 
     //bullets left
     char nb_of_bullets_on_player[70];
@@ -458,7 +474,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
              world->player.weapons_component->current_weapon->magazine_max_bullets, " / ",
              world->player.weapons_component->bullets[world->player.weapons_component->current_weapon->type]
              );
-    Graphics_RenderText(g, nb_of_bullets_on_player, Medium, 700, 150);
+    Graphics_RenderText(g, nb_of_bullets_on_player, Medium, 700, 150, Jtrue, White);
 
     //reloading! text
     if(world->player.weapons_component->reloading)
@@ -469,7 +485,8 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
         Graphics_RenderText(g, reloading_str,
                             Medium,
                             world->player.x - world->player.camera->x - 20,
-                            world->player.y - 20 - world->player.camera->y);
+                            world->player.y - 20 - world->player.camera->y
+                            , Jtrue, White);
     }
 
 
@@ -479,7 +496,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     {
         char full_txt_fps[80];
         snprintf(full_txt_fps, sizeof full_txt_fps, "%f%s%d%s", fps, " FPS (", delta, " ms)");
-        Graphics_RenderText(g, full_txt_fps, Medium, 700, 50);
+        Graphics_RenderText(g, full_txt_fps, Medium, 700, 50, Jtrue, White);
     }
 
     //debug stuff
@@ -487,11 +504,11 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     {
         char nb_of_monsters[50];
         snprintf(nb_of_monsters, sizeof(nb_of_monsters), "%d%s", Vector_Count(&world->monsters_vector), " monsters on screen.");
-        Graphics_RenderText(g, nb_of_monsters, Medium, 700, 100);
+        Graphics_RenderText(g, nb_of_monsters, Medium, 700, 100, Jtrue, White);
 
         char nb_of_bullets_on_screen[50];
         snprintf(nb_of_bullets_on_screen, sizeof(nb_of_bullets_on_screen), "%d%s", Vector_Count(&world->bullets_vector), " bullets on screen.");
-        Graphics_RenderText(g, nb_of_bullets_on_screen, Medium, 700, 120);
+        Graphics_RenderText(g, nb_of_bullets_on_screen, Medium, 700, 120, Jtrue, White);
     }
 }
 void Graphics_Flip(Graphics* graphics)

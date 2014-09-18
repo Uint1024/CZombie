@@ -238,19 +238,19 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
         player->dx = 0;
         player->dy = 0;
-        if (controls->pressedKeys[SDL_SCANCODE_W] == Jtrue)
+        if (controls->pressedKeys[SDLK_z] == Jtrue)
         {
             player->dy = -1 * player->speed * delta;
         }
-        if (controls->pressedKeys[SDL_SCANCODE_S] == Jtrue)
+        if (controls->pressedKeys[SDLK_s] == Jtrue)
         {
             player->dy = 1 * player->speed * delta;
         }
-        if (controls->pressedKeys[SDL_SCANCODE_D] == Jtrue)
+        if (controls->pressedKeys[SDLK_d] == Jtrue)
         {
             player->dx = 1 * player->speed * delta;
         }
-        if (controls->pressedKeys[SDL_SCANCODE_A] == Jtrue)
+        if (controls->pressedKeys[SDLK_q] == Jtrue)
         {
             player->dx = -1 * player->speed * delta;
         }
@@ -343,12 +343,12 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
 
 
 
-            if(controls->pressedKeys[SDL_SCANCODE_R])
+            if(controls->pressedKeys[SDLK_r])
             {
                 WeaponsComponent_Reload(player->weapons_component, delta);
             }
 
-            if(controls->pressedKeys[SDL_SCANCODE_X])
+            if(controls->pressedKeys[SDLK_x])
             {
                 for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
                 {
@@ -363,17 +363,17 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                 }
             }
 
-            if(controls->pressedKeys[SDL_SCANCODE_C])
+            if(controls->pressedKeys[SDLK_c])
             {
                 world->map[position_in_array] = NULL;
             }
 
-            if(controls->pressedKeys[SDL_SCANCODE_E])
+            if(controls->pressedKeys[SDLK_e])
             {
                 controls->active_button = NULL;
             }
 
-            if(controls->pressedKeys[SDL_SCANCODE_Q] &&
+            if(controls->pressedKeys[SDLK_a] &&
                SDL_GetTicks() - controls->last_ai_switch > 150)
             {
                 if(gm->ai_on)
