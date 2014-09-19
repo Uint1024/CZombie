@@ -86,10 +86,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics.h" />
-		<Unit filename="linkedList.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="linkedList.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

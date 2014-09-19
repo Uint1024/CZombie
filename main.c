@@ -27,7 +27,7 @@
 #include "window.h"
 
 Jbool debug_mode = Jfalse;
-
+int delta_g = 0;
 int main(int argc, char* args[])
 {
 
@@ -55,7 +55,7 @@ int main(int argc, char* args[])
     int time_last_frame_real = 0;
     int time_this_frame_real = 0;
 
-    Jbool game_started = Jfalse;
+    Jbool game_started = Jtrue;
 
     Window level_editor = Window_CreateLevelEditor();
     MenuManager menu_manager = MenuManager_Create(graphics);
@@ -70,7 +70,7 @@ int main(int argc, char* args[])
         {
             time_now = SDL_GetTicks();
             delta = time_now - time_last_frame;
-
+            delta_g = time_now - time_last_frame;
             if(delta > 0)
             {
                 fps = 1000 / chrono_update;

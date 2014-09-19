@@ -204,6 +204,17 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
                      NULL,
                      SDL_FLIP_NONE);
 
+    /*if(object->vision_distance != 0)
+    {
+        for(int i = 0 ; i < 10 ; i++)
+        {
+            SDL_RenderDrawLine(graphics->renderer, object->x + object->box.width /2 - camera->x,
+                                object->y + object->box.height /2 - camera->y,
+                                object->vision_points[i].x - camera->x, object->vision_points[i].y - camera->y);
+        }
+
+        //printf("wtf");
+    }*/
 	if(debug_mode)
     {
 

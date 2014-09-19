@@ -22,8 +22,15 @@ Entity* Entity_Spawn()
 	ent->dy                        = 0;
 	ent->speed                     = 0;
 	ent->angle                     = 0;
+	ent->aggressive = Jfalse;
 	//FUCK, this should be a pointer...
-	//ent-> box                       = NULL;
+
+	ent-> box.top = 0;
+	ent->box.left = 0;
+	ent->box.width = 0;
+	ent->box.height = 0;
+	ent->box.right = 0;
+	ent->box.bottom = 0;
 	ent->alive                     = Jtrue;
 	ent->hp                        = 0;
     ent->weapons_component          = NULL;
@@ -34,7 +41,7 @@ Entity* Entity_Spawn()
     ent->damage                    = 0;
     ent->zombie_type               = Not_a_zombie;
     ent->stamina                   = 0;
-
+    ent->vision_distance           = 0;
 	return ent;
 }
 
@@ -82,7 +89,18 @@ void moveToPosition(Entity* ent, float x, float y)
 	BoundingBox_Update(ent);
 }
 
+Jbool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
+{
+    float distanceX =  ent2->x - ent1->x;
+    float distanceY = ent2->y - ent1->y;
+    float pythDistance = sqrt(distanceX * distanceX +
+                                distanceY * distanceY);
 
+    if(pythDistance < distance)
+        return Jtrue;
+    else
+        return Jfalse;
+}
 void Entity_CollisionWithStuff(Entity* ent, World* world)
 {
     Entity* collision_wall[5];
@@ -157,6 +175,56 @@ void Entity_CalculateVelocityFromAngle(Entity* ent, int delta)
 
 void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched)
 {
+
+    /*if(ent->vision_distance != 0)
+    {
+        for(int i = 0 ; i < 10 ; i++)
+        {
+            ent->vision_points[i].x = ent->x + ent->box.width / 2;
+            ent->vision_points[i].y = ent->y + ent->box.height / 2;
+            float angle = ent->angle;
+            if(i < 5)
+            {
+                angle = ent->angle - 0.05 * i;
+            }
+            if(i == 5)
+            {
+                angle = ent->angle;
+            }
+            if(i > 5)
+            {
+                angle = ent->angle + 0.05 * i;
+            }
+
+
+            float distance = 0;
+            while(distance < ent->vision_distance)
+            {
+                ent->vision_points[i].x += cos(angle) * ent->speed * (float)(delta_g);
+                ent->vision_points[i].y += sin(angle) * ent->speed * (float)(delta_g);
+
+                distance += ent->speed * (float)(delta_g);
+
+                for (int j = 0; j < map_size; j++)
+                {
+                    if (map[j] != NULL)
+                    {
+                        if(Entity_CheckNear(ent, map[j]))
+                        {
+                            if (BoundingBox_CheckPointCollision(ent->vision_points[i].x, ent->vision_points[i].y, &map[j]->box))
+                            {
+
+                                distance = ent->vision_distance;
+                            }
+                        }
+                    }
+                }
+            }
+
+           // printf("%f", ent->vision_distance);
+        }
+    }*/
+
     for (int i = 0; i < map_size; i++)
 	{
 		if (map[i] != NULL)

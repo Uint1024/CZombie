@@ -53,7 +53,7 @@ GameManager GameManager_Create()
         z->texture = Tex_NormalZombie;
         z->box.height = 20;
         z->box.width = 20;
-        z->speed = 0.35;
+        z->speed = 0.05;
         z->hp = 2;
         z->damage = 2;
         break;

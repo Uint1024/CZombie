@@ -32,8 +32,7 @@ void Player_Update(int delta, World* world)
     Entity_CollisionWithStuff(p, world);
     CollisionWithMonsters(p, &world->monsters_vector);
     Player_CheckBonusCollision(p, &world->bonus_vector);
-    //p->dx = floor(p->dx);
-    //p->dy = floor(p->dy);
+
 
     Player_Move(p, p->dx, p->dy);
 }
@@ -65,6 +64,9 @@ Entity Player_Create(float x, float y, int w, int h)
     p.max_stamina                       =   100;
     p.running = Jfalse;
     BoundingBox_Create(&p, w, h);
+    p.dx = 0;
+    p.dy = 0;
+    p.vision_distance = 0;
 
 
     WeaponsComponent_AddWeaponToInventory(p.weapons_component,

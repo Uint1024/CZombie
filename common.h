@@ -164,6 +164,7 @@ typedef enum{
 } Font_Color;
 
 extern Jbool debug_mode;
+extern int delta_g;
 
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb);
 
@@ -189,4 +190,6 @@ SDL_Color       font_color_g[NBCOLORS];
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
 #define BASE_PLAYER_SPEED 0.3
+
+#define PI 3.14159265359
 #endif
