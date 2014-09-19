@@ -23,8 +23,10 @@ Entity* Entity_Spawn()
 	ent->speed                     = 0;
 	ent->angle                     = 0;
 	ent->aggressive = Jfalse;
+	ent->idling = Jfalse;
 	//FUCK, this should be a pointer...
-
+	ent->rand_move_timer = 0;
+	ent->rand_move_every = 5000;
 	ent-> box.top = 0;
 	ent->box.left = 0;
 	ent->box.width = 0;
@@ -74,6 +76,18 @@ Jbool Entity_CheckNear(Entity* ent1, Entity* ent2)
     return (abs(ent1->x - ent2->x) < 600 && abs(ent1->y - ent2->y) < 600);
 }
 
+void Entity_CalculateVelocity(Entity* ent)
+{
+    ent->dx = cos(ent->angle ) * ent->speed * delta_g;
+    ent->dy = sin(ent->angle ) * ent->speed * delta_g;
+}
+
+void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY)
+{
+    *middleX = (float)(ent->x + ent->box.width / 2);
+    *middleY = (float)(ent->y + ent->box.height / 2);
+}
+
 void moveEntity(Entity* ent, float x, float y)
 {
 	ent->x += x;
@@ -89,28 +103,123 @@ void moveToPosition(Entity* ent, float x, float y)
 	BoundingBox_Update(ent);
 }
 
-Jbool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
+float Entity_DistanceBetweenTwoEntities(Entity* ent1, Entity* ent2)
 {
-    float distanceX =  ent2->x - ent1->x;
-    float distanceY = ent2->y - ent1->y;
+    float ent1_middleX = 0;
+    float ent1_middleY = 0;
+    float ent2_middleX = 0;
+    float ent2_middleY = 0;
+
+    Entity_GetMiddleCoordinates(ent1, &ent1_middleX, &ent1_middleY);
+    Entity_GetMiddleCoordinates(ent2, &ent2_middleX, &ent2_middleY);
+
+    float distanceX =  ent2_middleX - ent1_middleX;
+    float distanceY = ent2_middleY - ent1_middleY;
     float pythDistance = sqrt(distanceX * distanceX +
                                 distanceY * distanceY);
+
+    return pythDistance;
+
+}
+
+Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
+{
+    //middle of ent1, does not change
+    float ent1MiddleX = 0;
+    float ent1MiddleY = 0;
+    Entity_GetMiddleCoordinates(ent1, &ent1MiddleX, &ent1MiddleY);
+
+    //the next position of the end of the line
+    //will change until we reach a wall or the target
+    float pointX = ent1MiddleX;
+    float pointY = ent1MiddleY;
+
+    //distance calculated from ent1 to the end of the line at each loop
+    float line_distance = 0;
+
+    //will not change
+    float distance_to_ent2 = Entity_DistanceBetweenTwoEntities(ent1, ent2);
+
+    //become false if we hit a wall
+    Jbool can_see = Jtrue;
+
+    float angle_to_ent2 = C_AngleBetween2Entities(ent1, ent2);
+
+    while(line_distance <= distance_to_ent2 &&
+          can_see == Jtrue)
+    {
+        pointX += cos(angle_to_ent2) * 10;//magic number yay!!
+        pointY += sin(angle_to_ent2) * 10;
+        line_distance = C_DistanceBetween2Points(ent1MiddleX, ent1MiddleY,
+                                                 pointX, pointY);
+
+        //looping every walls close to the zombie
+        for(int i = 0 ; i < world->map_size ; i++)
+        {
+            if(Entity_CheckNear(ent1, world->map[i]))
+            {
+                //if the end of the line hits a wall, the zombie can't see the player
+                if(BoundingBox_CheckPointCollision(pointX, pointY, &world->map[i]->box))
+                {
+                    can_see = Jfalse;
+                }
+            }
+        }
+    }
+
+    return can_see;
+}
+
+Jbool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
+{
+
+    float pythDistance = Entity_DistanceBetweenTwoEntities(ent1, ent2);
 
     if(pythDistance < distance)
         return Jtrue;
     else
         return Jfalse;
 }
-void Entity_CollisionWithStuff(Entity* ent, World* world)
+
+Jbool Entity_CollisionWithStuff(Entity* ent, World* world)
 {
+
+    Jbool collision_with_walls = Entity_CollisionWithWalls(ent, world->map, world->map_size);
+    Jbool collision_with_mobs = Entity_CollisionWithMonsters(ent, &world->monsters_vector);
+
+    return (collision_with_walls || collision_with_mobs);
+}
+
+void Entity_CalculateVelocityFromAngle(Entity* ent, int delta)
+{
+    ent->dx = cos(ent->angle) * ent->speed * delta;
+    ent->dy = sin(ent->angle) * ent->speed * delta;
+}
+
+Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
+{
+    Box* temp = BoundingBox_CreateTemp(ent);
     Entity* collision_wall[5];
 	int walls_touched[5] = { 0 };
 
-	Box* temp = BoundingBox_CreateTemp(ent);
-
-    Entity_CollisionWithWalls(ent, world->map, world->map_size, temp, collision_wall, walls_touched);
-
-    free(temp);
+    Jbool collision = Jfalse;
+    for (int i = 0; i < map_size; i++)
+	{
+		if (map[i] != NULL)
+		{
+		    if(Entity_CheckNear(ent, map[i]))
+            {
+                Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
+                if (collision_direction != None)
+                {
+                    collision = Jtrue;
+                    collision_wall[collision_direction] = map[i];
+                    walls_touched[collision_direction]++;
+                    ent->collision_direction = collision_direction;
+                }
+            }
+		}
+	}
 
 
     Jbool flatBottomTop = Jfalse;
@@ -165,92 +274,22 @@ void Entity_CollisionWithStuff(Entity* ent, World* world)
 		}
 	}
 
+	free(temp);
+
+	return collision;
 }
 
-void Entity_CalculateVelocityFromAngle(Entity* ent, int delta)
+
+
+Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
-    ent->dx = cos(ent->angle) * ent->speed * delta;
-    ent->dy = sin(ent->angle) * ent->speed * delta;
-}
+    Jbool collision = Jfalse;
+    Box* temp = BoundingBox_CreateTemp(ent);
 
-void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched)
-{
-
-    /*if(ent->vision_distance != 0)
-    {
-        for(int i = 0 ; i < 10 ; i++)
-        {
-            ent->vision_points[i].x = ent->x + ent->box.width / 2;
-            ent->vision_points[i].y = ent->y + ent->box.height / 2;
-            float angle = ent->angle;
-            if(i < 5)
-            {
-                angle = ent->angle - 0.05 * i;
-            }
-            if(i == 5)
-            {
-                angle = ent->angle;
-            }
-            if(i > 5)
-            {
-                angle = ent->angle + 0.05 * i;
-            }
-
-
-            float distance = 0;
-            while(distance < ent->vision_distance)
-            {
-                ent->vision_points[i].x += cos(angle) * ent->speed * (float)(delta_g);
-                ent->vision_points[i].y += sin(angle) * ent->speed * (float)(delta_g);
-
-                distance += ent->speed * (float)(delta_g);
-
-                for (int j = 0; j < map_size; j++)
-                {
-                    if (map[j] != NULL)
-                    {
-                        if(Entity_CheckNear(ent, map[j]))
-                        {
-                            if (BoundingBox_CheckPointCollision(ent->vision_points[i].x, ent->vision_points[i].y, &map[j]->box))
-                            {
-
-                                distance = ent->vision_distance;
-                            }
-                        }
-                    }
-                }
-            }
-
-           // printf("%f", ent->vision_distance);
-        }
-    }*/
-
-    for (int i = 0; i < map_size; i++)
-	{
-		if (map[i] != NULL)
-		{
-		    if(Entity_CheckNear(ent, map[i]))
-            {
-                Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
-                if (collision_direction != None)
-                {
-                    collision_wall[collision_direction] = map[i];
-                    walls_touched[collision_direction]++;
-                }
-            }
-		}
-	}
-}
-
-void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
-{
     if(ent->t != Cat_Player ||
        (ent->t == Cat_Player && ent->invulnerability_timer <= 0))
     {
-        Box* temp = BoundingBox_CreateTemp(ent);
-
         Entity* collision_sides[5] = {Jfalse};
-        Jbool collision = Jfalse;
         for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
         {
             if(Vector_Get(monsters_vector, i) != ent)
@@ -263,12 +302,11 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
                     {
                         collision = Jtrue;
                         collision_sides[collision_direction] = mob_to_check;
+                        ent->collision_direction = collision_direction;
                     }
                 }
             }
         }
-
-        free(temp);
 
         if ((collision_sides[Bottom] && ent->dy > 0) ||
             (collision_sides[Top] && ent->dy < 0))
@@ -290,7 +328,9 @@ void CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
         }
     }
 
+    free(temp);
 
+    return collision;
 }
 
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions)

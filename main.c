@@ -44,7 +44,7 @@ int main(int argc, char* args[])
 
 	Controls* controls = CreateControls();
 
-    World world = World_Initialize(20, 20, screen_width, screen_height);
+    World world = World_Initialize(70, 70, screen_width, screen_height);
 
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;

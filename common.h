@@ -170,6 +170,11 @@ float C_AngleBetween2Points(int xa, int ya, int xb, int yb);
 
 typedef struct Entity Entity;
 float C_AngleBetween2Entities(Entity* a, Entity* b);
+float C_DistanceBetween2Points(int xa, int ya, int xb, int yb);
+float C_GenerateRandomAngle();
+float C_GenerateAngleInOppositeDirection(Direction direction);
+float C_DifferenceBetweenAngles(float angle1, float angle2);
+float C_ConvertAngle2PiCirlce(float angle);
 
 typedef struct Vec2
 {
@@ -184,7 +189,8 @@ Texture_Type    wall_textures_g[NB_OF_WALL_TYPES];
 Texture_Type    ground_textures_g[NB_OF_GROUND_TYPES];
 SDL_Color       font_color_g[NBCOLORS];
 
-
+extern float   calm_speed_g[NB_ZOMBIE_TYPES];
+extern float   angry_speed_g[NB_ZOMBIE_TYPES];
 
 
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
@@ -192,4 +198,5 @@ SDL_Color       font_color_g[NBCOLORS];
 #define BASE_PLAYER_SPEED 0.3
 
 #define PI 3.14159265359
+#define HALF_PI 1.5707963267
 #endif

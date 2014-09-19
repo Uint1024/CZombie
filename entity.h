@@ -21,7 +21,8 @@ typedef struct Entity
 	float                   muzzleX;
 	float                   muzzleY;
 	float                   speed;
-	float                   angle;
+
+
 	Weapon_Type             bullet_type;
 	Zombie_Type             zombie_type;
 
@@ -57,20 +58,36 @@ typedef struct Entity
     float                   vision_width;
     Vec2                    vision_points[10];
     Jbool                   aggressive;
+    int                     rand_move_timer;
+    int                     rand_move_every;
+    Jbool                   idling;
+
+    float                   angle;
+    float                   movement_angle;
+
+    Direction               collision_direction;
 } Entity;
 
 
 
 void moveEntity(Entity* ent, float x, float y);
-void CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
-void CalculateVelocity(Entity* p, Entity* map, int map_size);
+
+//void CalculateVelocity(Entity* p, Entity* map, int map_size);
 Entity* Entity_Spawn();
 Entity Entity_SpawnOnStack();
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
 void Entity_LoseHealth(Entity* ent, int damage);
-void Entity_CollisionWithStuff(Entity* ent, World* world);
+Jbool Entity_CollisionWithStuff(Entity* ent, World* world);
 void Entity_CalculateVelocityFromAngle(Entity* ent, int delta);
-void Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size, Box* temp, Entity** collision_wall, int* walls_touched);
+
+Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size);
+Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
+
 Jbool Entity_CheckNear(Entity* ent1, Entity* ent2);
 Jbool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance);
+
+void Entity_CalculateVelocity(Entity* ent);
+void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY);
+float Entity_DistanceBetweenTwoEntities(Entity* ent1, Entity* ent2);
+Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world);
 #endif

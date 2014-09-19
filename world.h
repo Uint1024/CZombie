@@ -11,6 +11,7 @@ typedef struct World
     Vector      explosions_vector;
     Entity      player;
 
+
     //"foreground" layer of the map
     Entity**     map;
     int         map_width;

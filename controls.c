@@ -359,13 +359,20 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                     {
                         //mob->alive = Jfalse;
                         Vector_Delete(&world->monsters_vector, i);
+
                     }
                 }
             }
 
+            if(controls->pressedKeys[SDLK_u])
+            {
+                Vector_Clear(&world->monsters_vector);
+
+            }
+
             if(controls->pressedKeys[SDLK_c])
             {
-                world->map[position_in_array] = NULL;
+                world->map[position_in_array] = Entity_Spawn();
             }
 
             if(controls->pressedKeys[SDLK_e])

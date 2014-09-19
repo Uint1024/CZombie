@@ -85,7 +85,7 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
                 Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
-                    Entity_LoseHealth(mob, bullet->damage);
+                    Zombie_GetAttacked(mob, bullet->damage, world);
                     bullet->alive = Jfalse;
                 }
             }

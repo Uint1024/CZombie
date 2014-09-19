@@ -30,7 +30,7 @@ void Player_Update(int delta, World* world)
 	p->camera->dx = 0;
 	p->camera->dy = 0;
     Entity_CollisionWithStuff(p, world);
-    CollisionWithMonsters(p, &world->monsters_vector);
+    //CollisionWithMonsters(p, &world->monsters_vector);
     Player_CheckBonusCollision(p, &world->bonus_vector);
 
 

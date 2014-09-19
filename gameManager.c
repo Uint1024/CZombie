@@ -49,11 +49,11 @@ GameManager GameManager_Create()
         BoundingBox_Create(z, 0,0);
         switch(type)
         {
-             case Normal_Zombie:
+        case Normal_Zombie:
         z->texture = Tex_NormalZombie;
         z->box.height = 20;
         z->box.width = 20;
-        z->speed = 0.05;
+        z->speed = calm_speed_g[type];
         z->hp = 2;
         z->damage = 2;
         break;
@@ -61,7 +61,7 @@ GameManager GameManager_Create()
         z->texture = Tex_FastZombie;
         z->box.height = 20;
         z->box.width = 20;
-        z->speed = 0.45;
+        z->speed = calm_speed_g[type];
         z->hp = 2;
         z->damage = 4;
         break;
@@ -69,7 +69,7 @@ GameManager GameManager_Create()
         z->texture = Tex_HeavyZombie;
         z->box.height = 40;
         z->box.width = 40;
-        z->speed = 0.3;
+        z->speed = calm_speed_g[type];
         z->hp = 20;
         z->damage = 10;
         z->weapons_component = WeaponsComponent_Create(Jtrue);
@@ -80,7 +80,7 @@ GameManager GameManager_Create()
         z->texture = Tex_TrooperZombie;
         z->box.height = 60;
         z->box.width = 45;
-        z->speed = 0.25;
+        z->speed = calm_speed_g[type];
         z->hp = 20;
         z->damage = 10;
         z->weapons_component = WeaponsComponent_Create(Jtrue);
@@ -91,7 +91,7 @@ GameManager GameManager_Create()
         z->texture = Tex_HugeZombie;
         z->box.height = 100;
         z->box.width = 100;
-        z->speed = 0.2;
+        z->speed = calm_speed_g[type];
         z->hp = 150;
         z->damage = 20;
         break;
