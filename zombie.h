@@ -6,6 +6,20 @@
 typedef struct Entity Entity;
 typedef struct World World;
 
+typedef struct ZombieC
+{
+    Zombie_Type             zombie_type;
+    int                     vision_distance;
+    float                   vision_width;
+    Jbool                   aggressive;
+    int                     rand_move_timer;
+    int                     rand_move_every;
+    Jbool                   idling;
+
+} ZombieC;
+
+ZombieC* ZombieC_Create();
+
 void Zombie_Update(Entity* z, int delta, World* world);
 
 Entity* CreateZombie(Zombie_Type type, float x, float y);

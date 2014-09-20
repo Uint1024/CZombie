@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "string.h"
+#include "levelEditor.h"
 #include "menu_manager.h"
 #include "graphics.h"
 #include "controls.h"
 #include "menu_button.h"
 #include "menu.h"
 #include "dirent.h"
+
 
 MenuManager MenuManager_Create(Graphics* graphics)
 {
@@ -57,46 +59,10 @@ void MenuManager_Update(MenuManager* mm,
             char file_name[50];
             strcpy(file_name, "saves/");
             strcat(file_name, menu->active_textfield->text);
+            strcat(file_name, ".sav");
+            Level_Save(file_name, world);
 
-            FILE *save_file;
-            save_file = fopen(file_name, "w");
-            if(!save_file)
-            {
-                printf("Can't open file");
-
-            }
-            for(int i = 0 ; i < world->map_size ; i++)
-            {
-                fwrite(world->map[i], sizeof(Entity), 1, save_file);
-                printf("writing walls %d\n", ftell(save_file));
-            }
-            for(int i = 0 ; i < world->map_size ; i++)
-            {
-                fwrite(world->ground_map[i], sizeof(Entity), 1, save_file);
-                printf("writing ground %d\n", ftell(save_file));
-
-            }
-
-            int num_of_zombies = Vector_Count(&world->monsters_vector);
-            fwrite(&num_of_zombies, sizeof(int), 1, save_file);
-
-            for(int i = 0 ; i < num_of_zombies ; i++)
-            {
-                Entity* buffer = (Entity*)Vector_Get(&world->monsters_vector, i);
-
-                fwrite(buffer, sizeof(Entity), 1, save_file);
-                if(buffer->weapons_component != NULL)
-                {
-                    fwrite(buffer->weapons_component, sizeof(WeaponsComponent),
-                            1, save_file);
-                }
-            }
-
-            fclose(save_file);
         }
-
-
-
     }
     else if(menu->name == LoadLevel_menu)
     {
@@ -130,61 +96,11 @@ void MenuManager_Update(MenuManager* mm,
             if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
                BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &button->box))
             {
-                Vector_Clear(&world->monsters_vector);
-                Vector_Clear(&world->bonus_vector);
-
-                //LOADING LEVEL
-                FILE *save_file;
                 char* complete_name = malloc(sizeof(button->text) + 6);
                 strcpy(complete_name, "saves/");
                 strcat(complete_name, button->text);
-                save_file = fopen(complete_name, "r");
-                if(!save_file)
-                {
-                    printf("Can't open file");
 
-                }
-
-                for(int i = 0 ; i < world->map_size ; i++)
-                {
-                    Entity* buffer = Entity_Spawn();
-                    fread(buffer, sizeof(Entity), 1, save_file);
-
-                    world->map[i] = buffer;
-                }
-
-                for(int i = 0 ; i < world->map_size ; i++)
-                {
-                    Entity* buffer = Entity_Spawn();
-                    fread(buffer, sizeof(Entity), 1, save_file);
-
-
-                    world->ground_map[i] = buffer;
-                }
-
-                int num_of_zombies = 0;
-                fread(&num_of_zombies, sizeof(int), 1, save_file);
-
-                for(int i = 0 ; i < num_of_zombies ; i++)
-                {
-                    Entity* buffer = Entity_Spawn();
-
-                    //(Entity*)Vector_Get(&world->monsters_vector, i);
-
-                    fread(buffer, sizeof(Entity), 1, save_file);
-                    if(buffer->weapons_component != NULL)
-                    {
-                        WeaponsComponent* wc_buffer = WeaponsComponent_Create(Jtrue);
-                        fread(wc_buffer, sizeof(WeaponsComponent), 1, save_file);
-                        buffer->weapons_component = wc_buffer;
-                    }
-
-                    Vector_Push(&world->monsters_vector, buffer);
-                }
-
-                printf("loading");
-                fclose(save_file);
-
+                Level_Load(complete_name, world);
             }
         }
 

@@ -54,7 +54,7 @@ Entity Player_Create(float x, float y, int w, int h)
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   50;
-	p.speed                         =   0.3;
+	p.speed                         =   0.2;
     p.blinking_frame                =   0;
     p.blinking_timer                =   0;
     p.camera                        =   CreateCamera();
@@ -66,7 +66,6 @@ Entity Player_Create(float x, float y, int w, int h)
     BoundingBox_Create(&p, w, h);
     p.dx = 0;
     p.dy = 0;
-    p.vision_distance = 0;
 
 
     WeaponsComponent_AddWeaponToInventory(p.weapons_component,
@@ -135,7 +134,7 @@ void Player_StopRunning(Entity* p)
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
     WeaponsComponent* wc = player->weapons_component;
-        if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
+    /*    if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
         {
             WeaponsComponent_AddAmmo(wc,
                                  bonus->corresponding_weapon,
@@ -147,7 +146,7 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
                     wc, Weapon_Create(bonus->corresponding_weapon));
         }
 
-
+*/
     bonus->alive = Jfalse;
 }
 

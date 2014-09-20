@@ -9,66 +9,59 @@
 #include "player.h"
 #include "world.h"
 #include <math.h>
+#include "zombie.h"
 
 Entity* Entity_Spawn()
 {
     Entity* ent = (Entity*)malloc(sizeof(Entity));
 
 
-    ent->t                         = Nothing;
-	ent->x                         = 0;
-	ent->y                         = 0;
-	ent->dx                        = 0;
-	ent->dy                        = 0;
-	ent->speed                     = 0;
-	ent->angle                     = 0;
-	ent->aggressive = Jfalse;
-	ent->idling = Jfalse;
-	//FUCK, this should be a pointer...
-	ent->rand_move_timer = 0;
-	ent->rand_move_every = 5000;
-	ent-> box.top = 0;
-	ent->box.left = 0;
-	ent->box.width = 0;
-	ent->box.height = 0;
-	ent->box.right = 0;
-	ent->box.bottom = 0;
-	ent->alive                     = Jtrue;
-	ent->hp                        = 0;
+    ent->t                          = Nothing;
+    //position, box and texture should be in a physical component?
+	ent->x                          = 0;
+	ent->y                          = 0;
+	ent-> box.top                   = 0;
+	ent->box.left                   = 0;
+	ent->box.width                  = 0;
+	ent->box.height                 = 0;
+	ent->box.right                  = 0;
+	ent->box.bottom                 = 0;
+    ent->solid = Jtrue;
+    ent->texture                    = No_texture;
+
+	//speed, angle, and velocity should be in a movement component?
+	ent->dx                         = 0;
+	ent->dy                         = 0;
+	ent->speed                      = 0;
+	ent->angle                      = 0;
+
+
+	ent->alive                      = Jtrue;
+	ent->hp                         = 0;
+	ent->last_creation              = 0;
+
+
+    ent->damage                     = 0;
+    ent->stamina                    = 0;
+    ent->door_opening_timer         = 0;
+
+	//components
     ent->weapons_component          = NULL;
-    ent->explosive_component = NULL;
-	ent->last_creation             = 0;
-	ent->camera                    = NULL;
-    ent->texture                   = No_texture;
-    ent->damage                    = 0;
-    ent->zombie_type               = Not_a_zombie;
-    ent->stamina                   = 0;
-    ent->vision_distance           = 0;
+    ent->explosive_component        = NULL;
+    ent->zombieC                    = NULL;
+    ent->camera                     = NULL;
+
+
+
 	return ent;
 }
 
-Entity Entity_SpawnOnStack()
+void Entity_Destroy(Entity* ent)
 {
-    Entity ent;
-    ent.t                         = Nothing;
-	ent.x                         = 0;
-	ent.y                         = 0;
-	ent.dx                        = 0;
-	ent.dy                        = 0;
-	ent.speed                     = 0;
-	ent.angle                     = 0;
-	//FUCK, this should be a pointer...
-	//ent. box                       = NULL;
-	ent.alive                     = Jtrue;
-	ent.hp                        = 0;
-    ent.weapons_component          = NULL;
-    ent.explosive_component = NULL;
-	ent.last_creation             = 0;
-	ent.camera                    = NULL;
-    ent.texture                   = No_texture;
-    ent.damage                    = 0;
-    ent.zombie_type               = Not_a_zombie;
-	return ent;
+    free(ent->weapons_component);
+    free(ent->explosive_component);
+    free(ent->zombieC);
+    free(ent->camera);
 }
 
 Jbool Entity_CheckNear(Entity* ent1, Entity* ent2)
@@ -88,12 +81,25 @@ void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY)
     *middleY = (float)(ent->y + ent->box.height / 2);
 }
 
+float Entity_GetMiddleY(Entity* ent)
+{
+    return (float)(ent->y + ent->box.height / 2);
+}
+
+float Entity_GetMiddleX(Entity* ent)
+{
+    return (float)(ent->x + ent->box.width / 2);
+}
+
+
 void moveEntity(Entity* ent, float x, float y)
 {
 	ent->x += x;
 	ent->y += y;
 
 	BoundingBox_Update(ent);
+
+
 }
 
 void moveToPosition(Entity* ent, float x, float y)
@@ -156,7 +162,7 @@ Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
         //looping every walls close to the zombie
         for(int i = 0 ; i < world->map_size ; i++)
         {
-            if(Entity_CheckNear(ent1, world->map[i]))
+            if(world->map[i]->solid && Entity_CheckNear(ent1, world->map[i]))
             {
                 //if the end of the line hits a wall, the zombie can't see the player
                 if(BoundingBox_CheckPointCollision(pointX, pointY, &world->map[i]->box))
@@ -207,7 +213,7 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 	{
 		if (map[i] != NULL)
 		{
-		    if(Entity_CheckNear(ent, map[i]))
+		    if(Entity_CheckNear(ent, map[i]) && map[i]->x != 0 && map[i]->solid)
             {
                 Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
                 if (collision_direction != None)
@@ -216,10 +222,75 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
                     collision_wall[collision_direction] = map[i];
                     walls_touched[collision_direction]++;
                     ent->collision_direction = collision_direction;
+
+                    if(ent->t == Cat_Zombie && ent->zombieC->aggressive &&
+                       map[i]->solid && map[i]->t == Cat_Door)
+                    {
+                        Door_GetAttacked(map[i], ent);
+                    }
                 }
             }
 		}
 	}
+
+
+    if(ent->dy == 0)
+    {
+        if(walls_touched[Right] == 1 &&
+           ent->dx > 0 &&
+           ent->box.right <= collision_wall[Right]->x)
+        {
+            if(ent->box.top < collision_wall[Right]->box.top)
+            {
+                ent->dy = -1;
+            }
+            else if(ent->box.bottom > collision_wall[Right]->box.bottom)
+            {
+                ent->dy = 1;
+            }
+        }
+        else if(walls_touched[Left] == 1 &&
+                ent->dx < 0 &&
+                ent->box.left >= collision_wall[Left]->x)
+        {
+            if(ent->box.top < collision_wall[Left]->box.top)
+            {
+                ent->dy = -1;
+            }
+            else if(ent->box.bottom > collision_wall[Left]->box.bottom)
+            {
+                ent->dy = 1;
+            }
+        }
+    }
+
+    if(ent->dx == 0)
+    {
+        if(walls_touched[Top] == 1 && ent->dy < 0
+                && ent->box.top >= collision_wall[Top]->box.bottom)
+        {
+            if(ent->box.left < collision_wall[Top]->box.left)
+            {
+                ent->dx = -1;
+            }
+            else if(ent->box.right > collision_wall[Top]->box.right)
+            {
+                ent->dx = 1;
+            }
+        }
+        else if(walls_touched[Bottom] == 1 && ent->dy > 0
+                && ent->box.bottom <= collision_wall[Bottom]->box.top)
+        {
+            if(ent->box.left < collision_wall[Bottom]->box.left)
+            {
+                ent->dx = -1;
+            }
+            else if(ent->box.right > collision_wall[Bottom]->box.right)
+            {
+                ent->dx = 1;
+            }
+        }
+    }
 
 
     Jbool flatBottomTop = Jfalse;
@@ -259,6 +330,8 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 
 		ent->dy = collision_wall[Top]->box.bottom - ent->box.top;
 	}
+
+
 
 
 	if (!flatBottomTop)

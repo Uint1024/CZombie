@@ -31,7 +31,7 @@ int delta_g = 0;
 int main(int argc, char* args[])
 {
 
-
+    Game_InitData();
 
     srand(time(NULL));
 	int screen_width = 1080;
@@ -44,7 +44,7 @@ int main(int argc, char* args[])
 
 	Controls* controls = CreateControls();
 
-    World world = World_Initialize(70, 70, screen_width, screen_height);
+    World world = World_Initialize(30, 30, screen_width, screen_height);
 
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;
@@ -80,6 +80,7 @@ int main(int argc, char* args[])
 
             Inputs_ProcessInputs(controls, delta, &game_started, &world, &level_editor, &game_manager);
 
+
             if(game_started)
             {
                 GameManager_Update(&game_manager, &world, delta, &level_editor);
@@ -91,6 +92,10 @@ int main(int argc, char* args[])
                 Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
             }
 
+                for(int i = 0 ; i < 200 ; i++)
+    {
+        previousPressedKeys_g[i] = controls->pressedKeys[i];
+    }
             time_last_frame = time_now;
         }
 

@@ -113,7 +113,7 @@ Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 {
 
 	if (nextBox1->right >= box2->left && nextBox1->left <= box2->left &&
-		currentBox1->right - 5 <= box2->left &&
+		currentBox1->right  <= box2->left &&
 		nextBox1->bottom >= box2->top && nextBox1->top <= box2->bottom)
 	{
 
@@ -121,7 +121,7 @@ Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 
 	}
 	else if (nextBox1->left <= box2->right && nextBox1->right >= box2->right &&
-		currentBox1->left + 5 >= box2->right &&
+		currentBox1->left >= box2->right &&
 		nextBox1->bottom >= box2->top && nextBox1->top <= box2->bottom)
 	{
 		return Left;

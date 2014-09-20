@@ -9,10 +9,12 @@ typedef struct World World;
 typedef struct Button Button;
 typedef struct GameManager GameManager;
 
+extern Jbool previousPressedKeys_g[200];
+
 typedef struct Controls
 {
 	Jbool pressedKeys[200];
-	Jbool previousPressedKeys[200];
+
 	Jbool pressedMods[50];
 	Jbool pressedMouseButtons[20];
 	Jbool previousPressedMouseButtons[20];

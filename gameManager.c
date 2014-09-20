@@ -12,16 +12,6 @@
 GameManager GameManager_Create()
 {
     GameManager gm;
-   button_category_g[GrassGround_button] = Cat_Ground;
-    button_category_g[DirtGround_button] = Cat_Ground;
-    button_category_g[NormalZombie_button] = Cat_Zombie;
-    button_category_g[FastZombie_button] = Cat_Zombie;
-    button_category_g[HeavyZombie_button] = Cat_Zombie;
-    button_category_g[TrooperZombie_button] = Cat_Zombie;
-    button_category_g[HugeZombie_button] = Cat_Zombie;
-    button_category_g[Button_Wall_Normal] = Cat_Wall;
-
-
 
     gm.ai_on = Jtrue;
     gm.wave_id = 0;
@@ -43,80 +33,8 @@ GameManager GameManager_Create()
     gm.waves[13] = Wave_Create(5, 0, 0, 0, 0);
 
 
-    for(int type = 0 ; type < NB_ZOMBIE_TYPES ; type ++)
-    {
-        Entity* z = Entity_Spawn();
-        BoundingBox_Create(z, 0,0);
-        switch(type)
-        {
-        case Normal_Zombie:
-        z->texture = Tex_NormalZombie;
-        z->box.height = 20;
-        z->box.width = 20;
-        z->speed = calm_speed_g[type];
-        z->hp = 2;
-        z->damage = 2;
-        break;
-    case Fast_Zombie:
-        z->texture = Tex_FastZombie;
-        z->box.height = 20;
-        z->box.width = 20;
-        z->speed = calm_speed_g[type];
-        z->hp = 2;
-        z->damage = 4;
-        break;
-    case Heavy_Zombie:
-        z->texture = Tex_HeavyZombie;
-        z->box.height = 40;
-        z->box.width = 40;
-        z->speed = calm_speed_g[type];
-        z->hp = 20;
-        z->damage = 10;
-        z->weapons_component = WeaponsComponent_Create(Jtrue);
-        WeaponsComponent_AddWeaponToInventory(z->weapons_component,
-                                              Weapon_Create(Fireball_w));
-        break;
-    case Trooper_Zombie:
-        z->texture = Tex_TrooperZombie;
-        z->box.height = 60;
-        z->box.width = 45;
-        z->speed = calm_speed_g[type];
-        z->hp = 20;
-        z->damage = 10;
-        z->weapons_component = WeaponsComponent_Create(Jtrue);
-        WeaponsComponent_AddWeaponToInventory(z->weapons_component,
-                                              Weapon_Create(TripleFireball_w));
-        break;
-    case Huge_Zombie:
-        z->texture = Tex_HugeZombie;
-        z->box.height = 100;
-        z->box.width = 100;
-        z->speed = calm_speed_g[type];
-        z->hp = 150;
-        z->damage = 20;
-        break;
-        }
-        zombie_templates_g[type] = z;
-    }
 
-    ground_textures_g[Ground_Dirt] = Tex_Ground_Dirt;
-    ground_textures_g[Ground_Grass] = Tex_Ground_Grass;
 
-    wall_textures_g[Wall_Normal] = Tex_Wall_Normal;
-
-    button_object_type_g[NormalZombie_button] = Normal_Zombie;
-    button_object_type_g[HeavyZombie_button] = Heavy_Zombie;
-    button_object_type_g[FastZombie_button] = Fast_Zombie;
-    button_object_type_g[HugeZombie_button] = Huge_Zombie;
-    button_object_type_g[TrooperZombie_button] = Trooper_Zombie;
-    button_object_type_g[GrassGround_button] = Ground_Grass;
-    button_object_type_g[DirtGround_button] = Ground_Dirt;
-    button_object_type_g[Button_Wall_Normal] = Wall_Normal;
-
-    SDL_Color black = {0,0,0,255};
-    SDL_Color white = {255,255,255,255};
-    font_color_g[Black] = black;
-    font_color_g[White] = white;
     return gm;
 
 }
@@ -160,12 +78,15 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
+
         if(Vector_Get(bullets_vector, i) != NULL)
         {
+
             Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
 
             if(projectile->t == Cat_Bullet)
             {
+
                  Bullet_Update(projectile, delta, world);
             }
             else if(projectile->t == Cat_Grenade)

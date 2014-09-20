@@ -66,6 +66,10 @@
 		</Unit>
 		<Unit filename="controls.h" />
 		<Unit filename="dirent.h" />
+		<Unit filename="door.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="door.h" />
 		<Unit filename="entity.c">
 			<Option compilerVar="CC" />
 		</Unit>

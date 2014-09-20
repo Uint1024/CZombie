@@ -37,6 +37,7 @@ typedef enum { Survival_mode } Game_Mode;
 //main category of objets
 typedef enum {
     Cat_Wall,
+    Cat_Door,
     Cat_Ground,
     Cat_Zombie,
     Cat_Player,
@@ -63,7 +64,15 @@ typedef enum {
 typedef enum {
     Wall_Normal,
     NB_OF_WALL_TYPES
-} Wall_Type;
+} Wall_Type
+;
+
+//Door_Type
+typedef enum {
+    Door_Normal,
+    Door_Dead,
+    NB_OF_DOOR_TYPES
+} Door_Type;
 
 //Bonus_Type
 typedef enum {
@@ -76,6 +85,7 @@ typedef enum {
 //LevelEditor_Button
 typedef enum{
     Button_Wall_Normal,
+    Button_Door_Normal,
     GrassGround_button,
     DirtGround_button,
     NormalZombie_button,
@@ -106,6 +116,8 @@ typedef enum {
 
     Tex_Wall_Normal,
 
+    Tex_Door_Normal,
+    Tex_Door_Dead,
 
     Tex_NormalZombie,
     Tex_FastZombie,
@@ -182,15 +194,38 @@ typedef struct Vec2
     float y;
 } Vec2;
 
-Main_Category   button_category_g[NB_OF_LEVEL_EDITOR_BUTTONS];
-Entity*         zombie_templates_g[NB_ZOMBIE_TYPES];
-int             button_object_type_g[NB_OF_LEVEL_EDITOR_BUTTONS];
-Texture_Type    wall_textures_g[NB_OF_WALL_TYPES];
-Texture_Type    ground_textures_g[NB_OF_GROUND_TYPES];
-SDL_Color       font_color_g[NBCOLORS];
+/*
+    Main category of each button in the level editor, the categories are
+    Cat_Wall, Cat_Door, Cat_Zombie etc.
+*/
+//extern Main_Category    button_category_g[NB_OF_LEVEL_EDITOR_BUTTONS];
 
-extern float   calm_speed_g[NB_ZOMBIE_TYPES];
-extern float   angry_speed_g[NB_ZOMBIE_TYPES];
+/*
+    The type inside of the button category
+    For example if the button is a Ground Dirt button, its object type is int = 1,
+    because Ground Dirt is 2nd in the Ground enum
+*/
+extern int              buttons_wall_types_g[NB_OF_WALL_TYPES];
+
+
+/*Textures corresponding to each object in each category*/
+extern Texture_Type     wall_textures_g[NB_OF_WALL_TYPES];
+extern Texture_Type     door_textures_g[NB_OF_DOOR_TYPES];
+extern Texture_Type     ground_textures_g[NB_OF_GROUND_TYPES];
+
+extern SDL_Color        font_color_g[NBCOLORS];
+
+
+/*zombies definition*/
+extern Texture_Type     zombie_textures_g[NB_ZOMBIE_TYPES];
+extern float            calm_speed_g[NB_ZOMBIE_TYPES];
+extern float            angry_speed_g[NB_ZOMBIE_TYPES];
+extern int              zombie_width_g[NB_ZOMBIE_TYPES];
+extern int              zombie_height_g[NB_ZOMBIE_TYPES];
+extern int              zombie_hp_g[NB_ZOMBIE_TYPES];
+extern int              zombie_damage_g[NB_ZOMBIE_TYPES];
+extern int              zombie_weapon_g[NB_ZOMBIE_TYPES];
+
 
 
 #define NB_OF_WEAPONS NB_WEAPON_TYPES

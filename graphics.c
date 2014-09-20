@@ -61,6 +61,9 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Tex_Bonus_GrenadeLauncher]    =   "grenadeLauncher.png";
     g->textures_names[Cursor_resize_up_down_tex]    =   "resize_up_down.png";
     g->textures_names[Cursor_resize_left_right_tex]  =   "resize_left_right.png";
+    g->textures_names[Tex_Door_Normal]              =   "door.png";
+    g->textures_names[Tex_Door_Dead]              =   "broken_door.png";
+
 
     for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
     {
@@ -191,6 +194,12 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
         }
     }
 
+    if(object->t == Cat_Door && !object->solid)
+    {
+        SDL_SetTextureBlendMode(graphics->textures[object->texture], SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(graphics->textures[object->texture], 50);
+    }
+
     const SDL_Rect rect = { object->box.left - camera->x,
                             object->box.top - camera->y,
                             object->box.width,
@@ -243,6 +252,9 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
                             White
                                                         );
     }
+
+    SDL_SetTextureBlendMode(graphics->textures[object->texture], SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(graphics->textures[object->texture], 255);
 }
 
 void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
@@ -335,6 +347,12 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             SDL_RenderDrawRect(g->renderer, &rect);
         }
     }
+    else if(menu->name == SaveLevel_menu)
+    {
+        Graphics_RenderText(g, "Save map", Large,
+                                400, 50,
+                                Jfalse, Black);
+    }
 
 
     SDL_Rect cursor_rect;
@@ -361,38 +379,42 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
             int obj_h = 5;
             int obj_y = 5;
             int obj_x = 5;
-            LevelEditor_Button button_type = controls->active_button->button_type;
-            int object_type = button_object_type_g[button_type];
 
+            Main_Category cat = controls->active_button->main_category;
+            int object_type = controls->active_button->button_type;
             Texture_Type texture_type = No_texture;
 
-
-            if(controls->active_button->main_category == Cat_Ground ||
-               controls->active_button->main_category == Cat_Wall)
+            if(cat == Cat_Ground ||
+               cat == Cat_Wall ||
+               cat == Cat_Door)
             {
                 obj_w = TILE_SIZE;
                 obj_h = TILE_SIZE;
                 obj_x = controls->tileInPixelsX - world->player.camera->x;
                 obj_y = controls->tileInPixelsY - world->player.camera->y;
             }
-            else if(controls->active_button->main_category == Cat_Zombie)
+            else if(cat == Cat_Zombie)
             {
-                texture_type = zombie_templates_g[object_type]->texture;
+                texture_type = zombie_textures_g[object_type];
 
-                obj_w = zombie_templates_g[object_type]->box.width;
-                obj_h = zombie_templates_g[object_type]->box.height;
+                obj_w = zombie_width_g[object_type];
+                obj_h = zombie_height_g[object_type];
 
                 obj_x = controls->mousePositionInWorldX - world->player.camera->x;
                 obj_y = controls->mousePositionInWorldY - world->player.camera->y;
             }
 
-            if(controls->active_button->main_category == Cat_Ground)
+            if(cat == Cat_Ground)
             {
                 texture_type = ground_textures_g[object_type];
             }
-            else if(controls->active_button->main_category == Cat_Wall)
+            else if(cat == Cat_Wall)
             {
                 texture_type = wall_textures_g[object_type];
+            }
+            else if(cat == Cat_Door)
+            {
+                texture_type = door_textures_g[object_type];
             }
 
             SDL_Rect blueprint_rect = {obj_x, obj_y, obj_w, obj_h };
@@ -409,7 +431,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     SDL_RenderFillRect(g->renderer, &editor_rect);
 
     //--render level editor icons
-    for(int i = 0; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
+    for(int i = 0; i < level_editor->nb_of_buttons ; i++)
     {
         SDL_Rect button_rect;
         button_rect.x = level_editor->buttons[i].x;
@@ -417,24 +439,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
         button_rect.h = level_editor->buttons[i].box.height;
         button_rect.w = level_editor->buttons[i].box.width;
 
-        Main_Category button_category = level_editor->buttons[i].main_category;
-        LevelEditor_Button button_type = level_editor->buttons[i].button_type;
-        int object_type = button_object_type_g[button_type];
-        Texture_Type texture_type = No_texture;
-
-        if(button_category == Cat_Zombie)
-        {
-            texture_type = zombie_templates_g[object_type]->texture;
-        }
-        else if(button_category == Cat_Wall)
-        {
-            texture_type = wall_textures_g[object_type];
-        }
-        else if(button_category == Cat_Ground)
-        {
-            texture_type = ground_textures_g[object_type];
-        }
-        SDL_RenderCopy(g->renderer, g->textures[texture_type],
+        SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
                        NULL, &button_rect);
     }
 

@@ -16,8 +16,12 @@
 #include "gameManager.h"
 #include "player.h"
 
+    Jbool previousPressedKeys_g[200] = {Jfalse};
+
 Controls* CreateControls()
 {
+
+
 	Controls* controls = (Controls*)malloc(sizeof(Controls));
 	for (int i = 0; i < 200; i++)
 	{
@@ -44,6 +48,7 @@ void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, Wo
 
     for(int i = 0 ; i < 20 ; i++)
         controls->previousPressedMouseButtons[i] = controls->pressedMouseButtons[i];
+
 
 
     controls->previousMouseX = controls->mouseX;
@@ -106,9 +111,14 @@ Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
 
 	controls->mouseTileY = (controls->mousePositionInWorldY - controls->mousePositionInWorldY % TILE_SIZE) / TILE_SIZE;
 
+    controls->tileInPixelsX = controls->mouseTileX * TILE_SIZE;
+    controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;
+
+
 	return Jtrue;
 }
 
+//wow this is a mess
 void Inputs_ApplyInputs( Controls* controls, int delta,
                             Jbool* game_started,
                             World* world, Window* level_editor,
@@ -123,7 +133,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
     controls->timer_menu -= delta;
 
 
-    //show menu
+    //press ESC to show menu
     if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == Jtrue)
     {   if(*game_started)
         {
@@ -136,108 +146,31 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
         controls->timer_menu  = 100;
     }
 
-
-    if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
-    {
-       controls->hovering_on_window = Jtrue;
-
-            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
-            {
-                for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
-                {
-                    if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->buttons[i].box))
-                    {
-
-                            controls->active_button = &level_editor->buttons[i];
-
-                    }
-                }
-            }
-
-        if((controls->mouseX > level_editor->box.right - 10 ||
-           controls->mouseX < level_editor->box.left + 10) &&
-           controls->active_window == NULL)
-        {
-            controls->cursor_resize_left_right = Jtrue;
-
-            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-               controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
-               controls->mouseX > level_editor->box.right - 10)
-            {
-                controls->resizing_right = Jtrue;
-            }
-
-            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-               controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
-               controls->mouseX < level_editor->box.left + 10)
-            {
-                controls->resizing_left = Jtrue;
-            }
-        }
-        else
-        {
-            controls->cursor_resize_left_right = Jfalse;
-        }
-
-       if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-            controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
-            !controls->cursor_resize_left_right)
-        {
-            controls->active_window = level_editor;
-        }
-    }
-    else
-    {
-        controls->cursor_resize_left_right = Jfalse;
-        controls->cursor_resize_up_down = Jfalse;
-        controls->hovering_on_window = Jfalse;
-    }
-
-
-    if(controls->active_window != NULL &&
-       !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
-    {
-        controls->active_window = NULL;
-    }
-
-    if(controls->resizing_right || controls->resizing_left)
-    {
-        controls->cursor_resize_left_right = Jtrue;
-
-        if(!controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-           !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
-        {
-            controls->resizing_right = Jfalse;
-            controls->resizing_left = Jfalse;
-        }
-
-        if(controls->resizing_right)
-        {
-            Window_ResizeRight(level_editor, controls->mouseX - controls->previousMouseX);
-        }
-        else if(controls->resizing_left)
-        {
-            Window_ResizeLeft(level_editor, controls->mouseX - controls->previousMouseX);
-        }
-
-    }
-
-    if(controls->active_window != NULL &&
-       controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
-       controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
-       !controls->resizing_left && !controls->resizing_right)
-    {
-
-         Window_Move(level_editor,
-                     controls->mouseX - controls->previousMouseX,
-                     controls->mouseY - controls->previousMouseY);
-    }
-
     if(*game_started && controls->timer_menu < 0)
     {
 
+        /*
+        PLAYER CONTROL STUFF
+        */
+
+        /*MOVEMENT*/
+        //cancel current velocity
         player->dx = 0;
         player->dy = 0;
+
+        //determine if running
+        if(!world->player.running &&
+               controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+        {
+            Player_StartRunning(&world->player);
+        }
+        else if(world->player.running &&
+               !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+        {
+            Player_StopRunning(&world->player);
+        }
+
+        //apply controls to player movement
         if (controls->pressedKeys[SDLK_z] == Jtrue)
         {
             player->dy = -1 * player->speed * delta;
@@ -261,78 +194,200 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
             player->dy *= 0.707106781;
         }
 
+        //reloading
+        if(controls->pressedKeys[SDLK_r])
+        {
+            WeaponsComponent_Reload(player->weapons_component, delta);
+        }
 
-
-        float angle_to_mouse = C_AngleBetween2Points(
-                                        player->x,
-                                        player->y,
-                                        controls->mousePositionInWorldX,
-                                        controls->mousePositionInWorldY);
-
-        player->muzzleX = player->x + 10;
-        player->muzzleY = player->y + 10;
-        player->angle = angle_to_mouse;
-
-        float angle_from_muzzle_to_mouse = C_AngleBetween2Points(
-                                        player->muzzleX,
-                                        player->muzzleY,
+        //calculating angle to mouse
+        float muzzleX = 0;
+        float muzzleY = 0;
+        Entity_GetMiddleCoordinates(player, &muzzleX, &muzzleY);
+        float mouse_angle = C_AngleBetween2Points(
+                                        muzzleX,
+                                        muzzleY,
                                         controls->mousePositionInWorldX,
                                         controls->mousePositionInWorldY  );
+        player->angle = mouse_angle;
+
+
+        //position of the targeted position in the map array
+        int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
+
+
+        //opening/closing doors
+        if(controls->pressedKeys[SDLK_SPACE])
+        {
+            if(world->map[position_in_array]->t == Cat_Door &&
+               Entity_CheckDistance(player, world->map[position_in_array], 60))
+            {
+                Door_Switch(world->map[position_in_array]);
+            }
+        }
+
+
+        if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
+        {
+           controls->hovering_on_window = Jtrue;
+
+                if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
+                {
+                    for(int i = 0 ; i < level_editor->nb_of_buttons ; i++)
+                    {
+
+                        if(BoundingBox_CheckPointCollision(controls->mouseX,
+                                                           controls->mouseY,
+                                                           &level_editor->buttons[i].box))
+                        {
+                            printf("%d\n", i);
+                            controls->active_button = &level_editor->buttons[i];
+
+                        }
+                    }
+                }
+
+            if((controls->mouseX > level_editor->box.right - 10 ||
+               controls->mouseX < level_editor->box.left + 10) &&
+               controls->active_window == NULL)
+            {
+                controls->cursor_resize_left_right = Jtrue;
+
+                if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+                   controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+                   controls->mouseX > level_editor->box.right - 10)
+                {
+                    controls->resizing_right = Jtrue;
+                }
+
+                if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+                   controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+                   controls->mouseX < level_editor->box.left + 10)
+                {
+                    controls->resizing_left = Jtrue;
+                }
+            }
+            else
+            {
+                controls->cursor_resize_left_right = Jfalse;
+            }
+
+           if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+                controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+                !controls->cursor_resize_left_right)
+            {
+                controls->active_window = level_editor;
+            }
+        }
+        else
+        {
+            controls->cursor_resize_left_right = Jfalse;
+            controls->cursor_resize_up_down = Jfalse;
+            controls->hovering_on_window = Jfalse;
+
+        }
+
+
+        if(controls->active_window != NULL &&
+           !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+        {
+            controls->active_window = NULL;
+        }
+
+        if(controls->resizing_right || controls->resizing_left)
+        {
+            controls->cursor_resize_left_right = Jtrue;
+
+            if(!controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+               !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
+            {
+                controls->resizing_right = Jfalse;
+                controls->resizing_left = Jfalse;
+            }
+
+            if(controls->resizing_right)
+            {
+                Window_ResizeRight(level_editor, controls->mouseX - controls->previousMouseX);
+            }
+            else if(controls->resizing_left)
+            {
+                Window_ResizeLeft(level_editor, controls->mouseX - controls->previousMouseX);
+            }
+
+        }
+
+        if(controls->active_window != NULL &&
+           controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+           controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
+           !controls->resizing_left && !controls->resizing_right)
+        {
+
+             Window_Move(level_editor,
+                         controls->mouseX - controls->previousMouseX,
+                         controls->mouseY - controls->previousMouseY);
+        }
 
 
         if(!controls->active_window && !controls->hovering_on_window)
         {
+            //weapon scrolling
             if(controls->mouseWheelPos != 0)
             {
                 WeaponsComponent_ScrollWeapons(player->weapons_component, controls->mouseWheelPos );
             }
 
+            //shooting
             if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
             {
                 WeaponsComponent_TryToShoot(player->weapons_component,
-                                              player->muzzleX,
-                                              player->muzzleY,
-                                              angle_from_muzzle_to_mouse,
+                                              muzzleX,
+                                              muzzleY,
+                                              mouse_angle,
                                               bullets_vector,
                                               controls->mousePositionInWorldX,
                                               controls->mousePositionInWorldY);
             }
 
-            controls->tileInPixelsX = controls->mouseTileX * TILE_SIZE;
-            controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;
-            int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
+
+            /*
+            LEVEL
+            EDITOR
+            STUFF
+            */
+
+
             if (controls->active_button != NULL &&
                 controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
             {
                 if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
                     controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
                 {
-                    //converting tile position to real position on screen
+                    //creating object
+                    //TODO : merge all the X_Create into one big function that calls all the others
+                    int obj_type = controls->active_button->button_type;
+                    int x = controls->tileInPixelsX;
+                    int y = controls->tileInPixelsY;
 
-
-
-
-
-                    if(controls->active_button->button_type == Button_Wall_Normal)
+                    if(controls->active_button->main_category == Cat_Wall)
                     {
-                        world->map[position_in_array] = Wall_Create(Wall_Normal, controls->tileInPixelsX, controls->tileInPixelsY);
+                        world->map[position_in_array] = Wall_Create(obj_type, x, y);
                     }
 
-                    if(controls->active_button->button_type == DirtGround_button)
+                    else if(controls->active_button->main_category == Cat_Door)
                     {
-                        world->ground_map[position_in_array] = Ground_Create(Ground_Dirt, controls->tileInPixelsX, controls->tileInPixelsY);
-                    }
-                    else if(controls->active_button->button_type == GrassGround_button)
-                    {
-                        world->ground_map[position_in_array] = Ground_Create(Ground_Grass, controls->tileInPixelsX, controls->tileInPixelsY);
+                        world->map[position_in_array] = Door_Create(obj_type, x, y);
                     }
 
-                    if(controls->active_button->main_category == Cat_Zombie &&
+                    else if(controls->active_button->main_category == Cat_Ground)
+                    {
+                        world->ground_map[position_in_array] = Ground_Create(obj_type, x, y);
+                    }
+
+                    else if(controls->active_button->main_category == Cat_Zombie &&
                        (SDL_GetTicks() - player->last_creation > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
                     {
                         Vector_Push(monsters_vector,
-                                    CreateZombie(button_object_type_g[controls->active_button->button_type],
-                                                 controls->mousePositionInWorldX, controls->mousePositionInWorldY));
+                                    CreateZombie(obj_type, controls->mousePositionInWorldX, controls->mousePositionInWorldY));
 
                         player->last_creation = SDL_GetTicks();
                     }
@@ -341,13 +396,7 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                     printf("out of bound!!!");
             }
 
-
-
-            if(controls->pressedKeys[SDLK_r])
-            {
-                WeaponsComponent_Reload(player->weapons_component, delta);
-            }
-
+            //deleting monster
             if(controls->pressedKeys[SDLK_x])
             {
                 for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
@@ -357,29 +406,31 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                                                        controls->mousePositionInWorldY,
                                                        &mob->box))
                     {
-                        //mob->alive = Jfalse;
                         Vector_Delete(&world->monsters_vector, i);
 
                     }
                 }
             }
 
+            //deleting every monster
             if(controls->pressedKeys[SDLK_u])
             {
                 Vector_Clear(&world->monsters_vector);
-
             }
 
+            //remove wall (replace it with empty entity)
             if(controls->pressedKeys[SDLK_c])
             {
                 world->map[position_in_array] = Entity_Spawn();
             }
 
+            //cancel current selected object
             if(controls->pressedKeys[SDLK_e])
             {
                 controls->active_button = NULL;
             }
 
+            //switch mobs AI
             if(controls->pressedKeys[SDLK_a] &&
                SDL_GetTicks() - controls->last_ai_switch > 150)
             {
@@ -393,23 +444,10 @@ void Inputs_ApplyInputs( Controls* controls, int delta,
                 }
 
                 controls->last_ai_switch = SDL_GetTicks();
-
             }
 
-            if(!world->player.running &&
-               controls->pressedKeys[SDL_SCANCODE_LSHIFT])
-            {
-                Player_StartRunning(&world->player);
-            }
 
-            if(world->player.running &&
-               !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
-            {
-                Player_StopRunning(&world->player);
-            }
+
         }
-
-
     }
-
 }

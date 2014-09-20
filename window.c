@@ -65,25 +65,71 @@ void Window_UpdateButtonsPositions(Window* w)
    w->buttons_per_row = ((float)(w->box.width - w->margin  * 2) /
                         ((float)(w->buttons_size + w->space_between_buttons)));
 
-    for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
+
+    int buttons_nb = 0;
+    for(int i = 0 ; i < NB_OF_WALL_TYPES ; i++)
     {
-        int row = i / w->buttons_per_row;
-        int column = i - (row * w->buttons_per_row);
-        int y = row * (w->buttons_size + w->space_between_buttons) + w->margin;
-        int x = column * 25 + 10;
-        w->buttons[i] = Button_Create(i, x, y, w);
+        Button_Create(Cat_Wall, i, buttons_nb, w);
+        buttons_nb++;
     }
+
+
+    for(int i = 0 ; i < NB_OF_GROUND_TYPES ; i++)
+    {
+        Button_Create(Cat_Ground, i, buttons_nb, w);
+        buttons_nb++;
+    }
+
+    for(int i = 0 ; i < NB_OF_DOOR_TYPES ; i++)
+    {
+        Button_Create(Cat_Door, i, buttons_nb, w);
+        buttons_nb++;
+    }
+
+    for(int i = 0 ; i < NB_ZOMBIE_TYPES ; i++)
+    {
+        Button_Create(Cat_Zombie, i, buttons_nb, w);
+        buttons_nb++;
+    }
+
+    w->nb_of_buttons = buttons_nb;
 }
 
-
-Button Button_Create(LevelEditor_Button type, int x, int y, Window* parent_window)
+void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
 {
-    Button button;
+    int row = buttons_nb / w->buttons_per_row;
+    int column = buttons_nb - (row * w->buttons_per_row);
+    int y = row * (w->buttons_size + w->space_between_buttons) + w->margin;
+    int x = column * 25 + 10;
 
+
+
+    Button button;
+    button.main_category = cat;
     button.button_type = type;
-    button.x = x + parent_window->x;
-    button.y = y + parent_window->y;
-    button.box = BoundingBox_CreateBetter(x, y, 20, 20);
-    button.main_category = button_category_g[type];
-    return button;
+    button.texture = 0;
+    switch(cat)
+    {
+    case Cat_Wall:
+        button.texture = wall_textures_g[type];
+        break;
+    case Cat_Zombie:
+        button.texture = zombie_textures_g[type];
+        break;
+    case Cat_Ground:
+        button.texture = ground_textures_g[type];
+        break;
+    case Cat_Door:
+        button.texture = door_textures_g[type];
+        break;
+    }
+
+    button.x = x + w->x;
+    button.y = y + w->y;
+    button.box = BoundingBox_CreateBetter(button.x, button.y , 20, 20);
+    w->buttons[buttons_nb] = button;
+
+    printf("%d\n", buttons_nb);
+
+
 }

@@ -74,8 +74,8 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
 
     saveMenu->name                       =   SaveLevel_menu;
     //optionsMenu->texts[FPS_options_button]  =   "FPS";
-
-    Vector_Push(&saveMenu->textfields, TextField_Create(20, 100, 500, 60));
+    TextField* field = TextField_Create(200, 100, 500, 60);
+    Vector_Push(&saveMenu->textfields, field);
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 400,
                                                       "Back",
@@ -83,7 +83,7 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
 
 
     Vector_Push(&saveMenu->buttons, back_button);
-    saveMenu->active_textfield = NULL;
+    saveMenu->active_textfield = field;
     return saveMenu;
 }
 
@@ -136,19 +136,19 @@ TextField* TextField_Create(int x, int y, int width, int height)
 
 void TextField_Input(TextField* tf, char c)
 {
-    if(tf->can_type)
+    size_t len = strlen(tf->text);
+    if(len < tf->max_char)
     {
-        size_t len = strlen(tf->text);
-        if(len < tf->max_char)
-        {
-            tf->text[len] = c;
-            tf->can_type = Jfalse;
-            tf->input_timer = 0;
-            tf->caretX += 10;
-        }
-
-        printf("%s\n", tf->text);
+        tf->text[len] = c;
+        tf->caretX += 10;
     }
+}
+
+void TextField_Backspace(TextField* tf)
+{
+    size_t len = strlen(tf->text);
+    tf->text[len - 1] = 0;
+    tf->caretX -= 10;
 }
 
 void TextField_Update(TextField* tf, int delta, Controls* controls)
@@ -158,7 +158,7 @@ void TextField_Update(TextField* tf, int delta, Controls* controls)
 
     for(int i = 0 ; i < 200 ; i ++)
     {
-        if(controls->pressedKeys[i] == Jtrue &&
+        if(controls->pressedKeys[i] == Jtrue && previousPressedKeys_g[i] == Jfalse &&
            (char)controls->pressedKeys[i] != tf->text[len] &&
            !controls->pressedKeys[SDLK_RETURN] &&
            !controls->pressedKeys[SDLK_BACKSPACE] &&
@@ -166,22 +166,12 @@ void TextField_Update(TextField* tf, int delta, Controls* controls)
         {
             TextField_Input(tf, (char)(i));
         }
-        else if(controls->pressedKeys[SDLK_BACKSPACE])
-        {
-            //TextField_Backspace(tf);
-        }
     }
-
-    if(tf->input_timer < tf->input_delay)
+    if(controls->pressedKeys[SDLK_BACKSPACE] &&
+            !previousPressedKeys_g[SDLK_BACKSPACE])
     {
-        tf->input_timer += delta;
+        TextField_Backspace(tf);
     }
-
-    if(tf->input_timer >= tf->input_delay)
-    {
-        tf->can_type = Jtrue;
-    }
-
 }
 
 void TextField_Caret_Update(TextField* tf, int delta)

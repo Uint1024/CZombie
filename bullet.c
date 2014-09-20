@@ -65,6 +65,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 void Bullet_Update(Entity* bullet, int delta, World* world)
 {
 
+
     bullet->time_traveled += bullet->speed * delta;
     if(bullet->time_traveled > 1000)
     {
@@ -76,10 +77,14 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
     {
         bullet->dx = cos(bullet->angle) * bullet->speed * delta;
         bullet->dy = sin(bullet->angle) * bullet->speed  * delta;
+
         moveEntity(bullet, bullet->dx, bullet->dy);
+
 
        if(!bullet->is_ennemy_bullet)
         {
+
+
             for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
             {
                 Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
@@ -89,9 +94,11 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
                     bullet->alive = Jfalse;
                 }
             }
+
         }
         else
         {
+
             //wow I really need to improve this mess
             //put the collision detection on the zombie's side
             //and pass the attack direction to the player
@@ -109,15 +116,20 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
             free(temp);
         }
 
-        for(int i = 0 ; i < world->map_size ; i++)
+
+
+        for(int i = 0 ; i < world->map_size && bullet->alive; i++)
         {
             if(world->map[i] != NULL)
             {
-                if(Entity_CheckNear(bullet, world->map[i]))
+                if(Entity_CheckNear(bullet, world->map[i]) && world->map[i]->solid)
                 {
+
                     if(BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
                     {
+
                         bullet->alive = Jfalse;
+
                     }
                 }
 
@@ -126,4 +138,6 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
         }
 
     }
+
+
 }
