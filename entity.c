@@ -104,10 +104,12 @@ void moveEntity(Entity* ent, float x, float y)
 
 }
 
-void moveToPosition(Entity* ent, float x, float y)
+void Entity_MoveToPosition(Entity* ent, float x, float y)
 {
 	ent->x = x;
 	ent->y = y;
+
+
 	BoundingBox_Update(ent);
 }
 
@@ -226,9 +228,11 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
                     ent->collision_direction = collision_direction;
 
                     if(ent->t == Cat_Zombie && ent->zombieC->aggressive &&
-                       map[i]->solid && map[i]->t == Cat_Door)
+                       map[i]->solid &&
+                       (map[i]->t == Cat_Door || map[i]->t == Cat_Wall))
                     {
-                        Door_GetAttacked(map[i], ent);
+                        printf("%d\n", ent->damage);
+                        Structure_GetAttacked(map[i], ent);
                     }
                 }
             }

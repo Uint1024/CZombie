@@ -9,8 +9,8 @@ Window Window_CreateLevelEditor()
     w.x = 20;
     w.y = 20;
     w.buttons_size = 20;
-    int w_width = 100;
-    int w_height = 100;
+    int w_width = 200;
+    int w_height = 200;
     w.space_between_buttons = 5;
     w.margin = 10;
 
@@ -29,7 +29,7 @@ void Window_Move(Window* w, int dx, int dy)
     w->x += dx;
     w->y += dy;
 
-    for(int i = 0 ; i < NB_OF_LEVEL_EDITOR_BUTTONS ; i++)
+    for(int i = 0 ; i < w->nb_of_buttons ; i++)
     {
         w->buttons[i].x += dx;
         w->buttons[i].y += dy;
@@ -93,7 +93,18 @@ void Window_UpdateButtonsPositions(Window* w)
         buttons_nb++;
     }
 
+    for(int i = 0 ; i < NB_EVENT_TYPES ; i++)
+    {
+        printf("event button n %d\n", i);
+        Button_Create(Cat_Event, i, buttons_nb, w);
+        buttons_nb++;
+
+    }
+
+
+
     w->nb_of_buttons = buttons_nb;
+
 }
 
 void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
@@ -102,8 +113,6 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
     int column = buttons_nb - (row * w->buttons_per_row);
     int y = row * (w->buttons_size + w->space_between_buttons) + w->margin;
     int x = column * 25 + 10;
-
-
 
     Button button;
     button.main_category = cat;
@@ -125,6 +134,9 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
         break;
     case Cat_Grenade:
         //todo
+        break;
+    case Cat_Event:
+        button.texture = event_textures_g[type];
         break;
     case NB_OF_CAT:
         printf("error, tried to create NB_OF_CAT button\n");
@@ -154,7 +166,7 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
     button.box = BoundingBox_CreateBetter(button.x, button.y , 20, 20);
     w->buttons[buttons_nb] = button;
 
-    printf("%d\n", buttons_nb);
+    printf("button nb %d\n", buttons_nb);
 
 
 }

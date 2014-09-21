@@ -11,7 +11,6 @@
 void Player_Update(World* world)
 {
     Entity* p = &world->player;
-
     if(p->running)
     {
         Player_Run(p);
@@ -21,10 +20,14 @@ void Player_Update(World* world)
         Player_Walk(p);
     }
 
+    if(game_state_g == GameState_Editing_Map)
+    {
+        p->speed = LEVEL_EDITOR_SPEED;
+    }
     p->camera->dx = 0;
 	p->camera->dy = 0;
 
-    if(game_state_g != Level_Editor)
+    if(game_state_g != GameState_Editing_Map)
     {
         p->invulnerability_timer -= delta_g;
         if(p->weapons_component->reloading)
@@ -60,7 +63,7 @@ Entity Player_Create(float x, float y, int w, int h)
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   50;
-	p.speed                         =   0.2;
+	p.speed                         =   BASE_PLAYER_SPEED;
     p.blinking_frame                =   0;
     p.blinking_timer                =   0;
     p.camera                        =   CreateCamera();

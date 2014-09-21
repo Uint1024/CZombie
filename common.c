@@ -7,6 +7,7 @@ Main_Category  button_category_g[NB_OF_LEVEL_EDITOR_BUTTONS];
 Texture_Type ground_textures_g[NB_OF_GROUND_TYPES];
 Texture_Type wall_textures_g[NB_OF_WALL_TYPES];
 Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
+Texture_Type event_textures_g[NB_EVENT_TYPES];
     SDL_Color font_color_g[NBCOLORS];
 
 
@@ -33,7 +34,7 @@ Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
 
     float   angry_speed_g[NB_ZOMBIE_TYPES] =
             {
-                0.1,   0.1,   0.25,   0.1,
+                0.25,   0.1,   0.25,   0.1,
                 0.1
             };
 
@@ -58,7 +59,7 @@ Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
 
     int zombie_hp_g[NB_ZOMBIE_TYPES] =
             {
-                2, 20, 2, 20,
+                3, 20, 2, 20,
                 40
             };
 
@@ -84,6 +85,10 @@ void Game_InitData()
 
     door_textures_g[Door_Normal] = Tex_Door_Normal;
     door_textures_g[Door_Dead] = Tex_Door_Dead;
+
+    event_textures_g[Event_End_Level] = Tex_Event_MapEnd;
+    event_textures_g[Event_Player_Start] = Tex_Event_PlayerSpawn;
+    event_textures_g[Event_Teleport_To_Other_Map] = Tex_Event_TeleportOtherMap;
 
     SDL_Color black = {0,0,0,255};
     SDL_Color white = {255,255,255,255};

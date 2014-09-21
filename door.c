@@ -35,6 +35,7 @@ void Door_Die(Entity* d)
     d->texture = door_textures_g[Door_Dead];
     d->solid = Jfalse;
 }
+
 void Door_Switch(Entity* d)
 {
     if(SDL_GetTicks() - d->door_opening_timer > 150)

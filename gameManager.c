@@ -54,11 +54,34 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
     return wave;
 }
 
+void Game_StartMap(World* world)
+{
+
+    world->player.visible = Jtrue;
+    world->player.solid = Jtrue;
+
+
+    for(int i = 0 ; i < Vector_Count(&world->events_vector) ; i++)
+    {
+
+        Entity* event = (Entity*)Vector_Get(&world->events_vector, i);
+        if(event->sub_category == Event_Player_Start)
+        {
+            world->player = Player_Create( event->x, event->y, 20, 20);
+            world->player.visible = Jtrue;
+            world->player.solid = Jtrue;
+            world->player.camera->x = -screen_width_g/2 + world->player.x;
+            world->player.camera->y = -screen_height_g/2 + world->player.y;
+        }
+    }
+
+
+}
 void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 {
     Player_Update(world);
 
-    if(game_state_g == Playing)
+    if(game_state_g != GameState_Editing_Map)
     {
         GameManage_UpdateWorldEntities(gm, world);
     }
@@ -67,10 +90,6 @@ void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
     //GameManager_UpdateUI(level_editor);
 }
 
-/*void GameManager_UpdateUI(Window level_editor)
-{
-    //if(BoundingBox_CheckPointCollision())
-}*/
 
 void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 {

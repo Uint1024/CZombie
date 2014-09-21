@@ -15,7 +15,9 @@ typedef struct ZombieC ZombieC;
 typedef struct Entity
 {
 
-	Main_Category           t;
+	Main_Category           t; //Cat_Wall, Cat_Door, Cat_Zombie etc...
+
+	int                     sub_category; //normal or hard wall, broken door, fast or heavy zombie...
 	float                   x;
 	float                   y;
     Texture_Type            texture;
@@ -101,4 +103,5 @@ float Entity_GetMiddleY(Entity* ent);
 float Entity_GetMiddleX(Entity* ent);
 
 void Entity_Destroy(Entity* ent);
+void Entity_MoveToPosition(Entity* ent, float x, float y);
 #endif

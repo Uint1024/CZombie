@@ -7,4 +7,7 @@
 
 Entity* Ground_Create(Ground_Type type, float x, float y);
 Entity* Wall_Create(Wall_Type type, int x_, int y_);
+void Structure_GetAttacked(Entity* d, Entity* attacker);
+void Structure_Die(Entity* d);
+
 #endif

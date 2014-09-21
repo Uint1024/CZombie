@@ -14,6 +14,7 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 	ent->y = y_;
 	ent->dx = 0;
 	ent->dy = 0;
+	ent->hp = 1050;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
 	return ent;
@@ -33,5 +34,22 @@ Entity* Ground_Create(Ground_Type type, float x, float y)
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
 	return ent;
+}
+
+
+void Structure_GetAttacked(Entity* d, Entity* attacker)
+{
+    printf("%d\n", d->hp);
+    if((d->hp -= attacker->damage) <= 0)
+    {
+        Structure_Die(d);
+    }
+}
+
+void Structure_Die(Entity* d)
+{
+    //d->texture = door_textures_g[Door_Dead];
+    d->solid = Jfalse;
+    d->visible = Jfalse;
 }
 

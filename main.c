@@ -28,8 +28,9 @@
 
 Jbool           debug_mode = Jfalse;
 Jbool           display_menu_g = Jtrue;
-Game_State      game_state_g = Main_Menu;
-
+Game_State      game_state_g = GameState_Main_Menu;
+int screen_width_g = 1080;
+int screen_height_g = 768;
 int delta_g = 0;
 int main(int argc, char* args[])
 {
@@ -47,7 +48,7 @@ int main(int argc, char* args[])
 
 	Controls* controls = CreateControls();
 
-    World world = World_Initialize(30, 30, screen_width, screen_height);
+    World world = World_Initialize(70, 70);
 
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;
@@ -58,11 +59,13 @@ int main(int argc, char* args[])
     int time_this_frame_real = 0;
 
     Window level_editor = Window_CreateLevelEditor();
+
     MenuManager menu_manager = MenuManager_Create(graphics);
     int ms_delay_between_frame = 1000 / 60;
 
 	while (running)
 	{
+
 	    time_this_frame_real = SDL_GetTicks();
         chrono_update += time_this_frame_real - time_last_frame_real;
 

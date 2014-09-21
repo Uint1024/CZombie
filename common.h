@@ -9,28 +9,33 @@
 typedef enum {
     Play_button,
     LevelEditor_button,
+    NewMap_button,
+    LoadMap_button,
     SaveGame_button,
     LoadGame_button,
-    SaveLevel_button,
-    LoadLevel_button,
+    SaveMap_button,
     Options_button,
     Quit_button,
     Back_button,
+    Exit_Level_Editor_button,
     TOTAL_MAIN_MENU_BUTTONS,
     FILE_NAME_BUTTON
 } Menu_Button_Name;
 
 typedef enum {
-    Main_Menu,
-    Level_Editor,
-    Playing
+    GameState_Main_Menu,
+    GameState_Editing_Map,
+    GameState_Map_Editor_Testing_Level,
+    GameState_Playing
 } Game_State;
 
 typedef enum {
-    Main_Menu_menu,
-    SaveLevel_menu,
-    LoadLevel_menu,
+    MainMenu_menu,
+    SaveMap_menu,
+    LoadMap_menu,
     Options_menu,
+    LevelEditor_menu,
+    LevelEditorEditing_menu,
     NBMENUS
 } Menu_Name;
 
@@ -42,12 +47,21 @@ typedef enum { Left, Top, Bottom, Right, None } Direction;
 
 typedef enum { Survival_mode } Game_Mode;
 
+
+typedef enum {
+    Event_Player_Start,
+    Event_Teleport_To_Other_Map,
+    Event_End_Level,
+    NB_EVENT_TYPES
+} MapEvent_Type;
+
 //main category of objets
 typedef enum {
     Cat_Wall,
     Cat_Door,
     Cat_Ground,
     Cat_Zombie,
+    Cat_Event,//map events
     Cat_Player,
     Cat_Weapon,
     Cat_Bonus,
@@ -57,6 +71,7 @@ typedef enum {
     NB_OF_CAT,
     Nothing
 } Main_Category;
+
 
 
 
@@ -143,6 +158,10 @@ typedef enum {
 
     Explosion1_tex,
 
+    Tex_Event_PlayerSpawn,
+    Tex_Event_TeleportOtherMap,
+    Tex_Event_MapEnd,
+
     Tex_Cursor_Aiming,
     Cursor_resize_up_down_tex,
     Cursor_resize_left_right_tex,
@@ -185,7 +204,8 @@ typedef enum{
 
 extern Jbool debug_mode;
 extern int delta_g;
-
+extern int screen_width_g;
+extern int screen_height_g;
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb);
 
 typedef struct Entity Entity;
@@ -221,7 +241,7 @@ extern int              buttons_wall_types_g[NB_OF_WALL_TYPES];
 extern Texture_Type     wall_textures_g[NB_OF_WALL_TYPES];
 extern Texture_Type     door_textures_g[NB_OF_DOOR_TYPES];
 extern Texture_Type     ground_textures_g[NB_OF_GROUND_TYPES];
-
+extern Texture_Type     event_textures_g[NB_EVENT_TYPES];
 extern SDL_Color        font_color_g[NBCOLORS];
 
 
@@ -239,7 +259,8 @@ extern Jbool            display_menu_g;
 
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
-#define BASE_PLAYER_SPEED 0.3
+#define BASE_PLAYER_SPEED 0.2
+#define LEVEL_EDITOR_SPEED 0.6
 
 #define PI 3.14159265359
 #define HALF_PI 1.5707963267

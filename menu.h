@@ -5,6 +5,8 @@
 #include "boundingBox.h"
 #include "controls.h"
 
+typedef struct MenuManager MenuManager;
+
 typedef struct TextField
 {
     char*           text;
@@ -30,7 +32,6 @@ typedef struct Menu
 {
     Menu_Name       name;
     Vector          buttons;
-    Vector          all_buttons;
     Vector          texts;
     Vector          textfields;
     int             total_buttons;
@@ -42,13 +43,14 @@ typedef struct Menu
 
 
 Menu* OptionMenu_Create(Graphics* graphics);
-Menu* MainMenu_Create(Graphics* graphics);
+Menu* MainMenu_Create(MenuManager* menu_manager);
 Menu* SaveLevelMenu_Create(Graphics* graphics);
 Menu* LoadLevelMenu_Create(Graphics* graphics);
+Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager);
 
-void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu);
+/*void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu);
 void MainMenu_LoadMainEmptyMenu(Menu* mainMenu);
-void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu);
+void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu);*/
 
 TextField* TextField_Create(int x, int y, int width, int height);
 void TextField_Update(TextField* tf, Controls* controls);

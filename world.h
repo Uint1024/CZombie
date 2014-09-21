@@ -9,17 +9,24 @@ typedef struct World
     Vector      bonus_vector;
     Vector      monsters_vector;
     Vector      explosions_vector;
+    Vector      events_vector;
     Entity      player;
 
 
-    //"foreground" layer of the map
+    //"foreground" layer of the map, solid
     Entity**     map;
     int         map_width;
     int         map_height;
     int         map_size;
+
+    //background
     Entity**      ground_map;
 
 } World;
 
-World World_Initialize(int map_width, int map_height, int screen_width, int screen_height);
+//load empty map at the beginning of the program
+World World_Initialize(int map_width, int map_height);
+
+//delete the actual loaded map and replace it with a new empty map
+void World_Reset(World* world, int map_width, int map_height);
 #endif // WORLD_H

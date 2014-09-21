@@ -15,6 +15,7 @@ typedef struct MenuManager
 
     //to prevent clicking too fast
     int             click_timer;
+    Vector          all_buttons;
 } MenuManager;
 
 
@@ -24,4 +25,5 @@ void MenuManager_Update(MenuManager* mm,
                         Controls* controls,
                         Jbool* running,
                         World* world);
+void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager);
 #endif // MENU_MANAGER_H

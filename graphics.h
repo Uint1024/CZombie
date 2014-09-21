@@ -51,5 +51,5 @@ void Graphics_RenderGameUI(Graphics* g, World* world);
 
 void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,Window* level_editor, GameManager* gm);
 
-
+void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha);
 #endif // GRAPHICS_H

@@ -63,6 +63,9 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Cursor_resize_left_right_tex]  =   "resize_left_right.png";
     g->textures_names[Tex_Door_Normal]              =   "door.png";
     g->textures_names[Tex_Door_Dead]              =   "broken_door.png";
+    g->textures_names[Tex_Event_MapEnd]              =   "event_mapend.png";
+    g->textures_names[Tex_Event_PlayerSpawn]              =   "event_playerstart.png";
+    g->textures_names[Tex_Event_TeleportOtherMap]              =   "event_mapchange.png";
 
 
     for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
@@ -101,6 +104,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     Vector* bonus_vector = &world->bonus_vector;
     Vector* monsters_vector = &world->monsters_vector;
     Vector* explosions_vector = &world->explosions_vector;
+    Vector* events_vector = &world->events_vector;
     Entity* camera = world->player.camera;
 
 
@@ -108,19 +112,59 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     {
         if (world->ground_map[i] != NULL)
         {
+
             if(Entity_CheckNear(&world->player, world->ground_map[i]))
+            {
+
                 Graphics_RenderObject(graphics, world->ground_map[i], camera);
+            }
+            else
+            {
+
+            }
+
+        }
+        else
+        {
+
         }
     }
+
+
 
     for (int i = 0; i < world->map_size; i++)
     {
         if (world->map[i] != NULL)
         {
             if(Entity_CheckNear(&world->player, world->map[i]))
+            {
                 Graphics_RenderObject(graphics, world->map[i], camera);
+
+            }
+            else
+            {
+
+            }
+
+        }
+        else
+        {
+
         }
     }
+
+    for(int i = 0 ; i < Vector_Count(events_vector) ; i++)
+    {
+        Entity* event = (Entity*)Vector_Get(events_vector, i);
+        if(Entity_CheckNear(&world->player, event))
+        {
+            Graphics_RenderObject(graphics, event, camera);
+
+        }
+
+    }
+
+
     Graphics_RenderObject(graphics, &world->player, camera);
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
@@ -163,6 +207,8 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
             Graphics_RenderObject(graphics, explosion, camera);
         }
     }
+
+
 }
 
 void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
@@ -206,6 +252,7 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
                             object->box.top - camera->y,
                             object->box.width,
                             object->box.height };
+
 
     if(object->visible)
     {
@@ -292,6 +339,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 
     for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
     {
+
         MenuButton* button = (MenuButton*)Vector_Get(&menu->buttons, i);
 
         SDL_Rect rect = BoundingBox_GetSDLRect(&button->box);
@@ -330,7 +378,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
         Graphics_RenderText(g, tf->text, Medium, tf->first_caretX, tf->caretY, Jfalse, Black);
     }
 
-    if(menu->name == LoadLevel_menu)
+    if(menu->name == LoadMap_menu)
     {
         for(int i = 0 ; i < Vector_Count(&menu->file_list) ; i++)
         {
@@ -343,7 +391,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             SDL_RenderDrawRect(g->renderer, &rect);
         }
     }
-    else if(menu->name == SaveLevel_menu)
+    else if(menu->name == SaveMap_menu)
     {
         Graphics_RenderText(g, "Save map", Large,
                                 400, 50,
@@ -382,7 +430,8 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
 
             if(cat == Cat_Ground ||
                cat == Cat_Wall ||
-               cat == Cat_Door)
+               cat == Cat_Door ||
+               cat == Cat_Event)
             {
                 obj_w = TILE_SIZE;
                 obj_h = TILE_SIZE;
@@ -412,8 +461,13 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
             {
                 texture_type = door_textures_g[object_type];
             }
+            else if(cat == Cat_Event)
+            {
+                texture_type = event_textures_g[object_type];
+            }
 
             SDL_Rect blueprint_rect = {obj_x, obj_y, obj_w, obj_h };
+            //Graphics_SetTextureAlpha(g, texture_type, 100);
             SDL_RenderCopy(g->renderer, g->textures[texture_type],
                            NULL, &blueprint_rect);
         }
@@ -455,6 +509,12 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
         Graphics_RenderText(g, deactivated, Medium, 300, 20, Jtrue, Black);
     }
 
+}
+
+void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha)
+{
+        SDL_SetTextureBlendMode(graphics->textures[texture], SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(graphics->textures[texture], alpha);
 }
 
 void Graphics_RenderGameUI(Graphics* g, World* world)
@@ -507,12 +567,12 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
                        float fps, Window* level_editor,
                        GameManager* gm)
 {
-    if(game_state_g == Level_Editor)
+    if(game_state_g == GameState_Editing_Map)
     {
-        Graphics_RenderLevelEditorUI(g, world, controls, level_editor, gm);
+       Graphics_RenderLevelEditorUI(g, world, controls, level_editor, gm);
     }
 
-    else if(game_state_g == Playing)
+    else if(game_state_g != GameState_Editing_Map)
     {
         Graphics_RenderGameUI(g, world);
 

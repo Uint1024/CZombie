@@ -27,4 +27,5 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
                  int trooper_zombies);
 void GameManager_GeneratePositionOutsideOfScreen(int* randX, int* randY);
 void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world);
+void Game_StartMap(World* world);
 #endif // GAME_MANAGER_H
