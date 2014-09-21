@@ -6,6 +6,7 @@
 #include "world.h"
 #include "stdio.h"
 #include "player.h"
+#include "zombie.h"
 
 Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float speed, Jbool is_ennemy_bullet)
 {
@@ -62,11 +63,11 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 	return bullet;
 }
 
-void Bullet_Update(Entity* bullet, int delta, World* world)
+void Bullet_Update(Entity* bullet, World* world)
 {
 
 
-    bullet->time_traveled += bullet->speed * delta;
+    bullet->time_traveled += bullet->speed * delta_g;
     if(bullet->time_traveled > 1000)
     {
         bullet->alive = Jfalse;
@@ -75,16 +76,14 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
 
     if(bullet->alive)
     {
-        bullet->dx = cos(bullet->angle) * bullet->speed * delta;
-        bullet->dy = sin(bullet->angle) * bullet->speed  * delta;
+        bullet->dx = cos(bullet->angle) * bullet->speed * delta_g;
+        bullet->dy = sin(bullet->angle) * bullet->speed  * delta_g;
 
         moveEntity(bullet, bullet->dx, bullet->dy);
 
 
        if(!bullet->is_ennemy_bullet)
         {
-
-
             for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
             {
                 Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
@@ -94,7 +93,6 @@ void Bullet_Update(Entity* bullet, int delta, World* world)
                     bullet->alive = Jfalse;
                 }
             }
-
         }
         else
         {

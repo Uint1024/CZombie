@@ -5,15 +5,15 @@
 typedef struct Entity Entity;
 typedef struct World World;
 
-void Player_Update(int delta, World* world);
+void Player_Update(World* world);
 Entity Player_Create(float x, float y, int w, int h);
 void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector);
 void Player_TakeDamage(Entity* p, Entity** attacker);
 void Player_Move(Entity* p,float dx, float dy);
 void Player_PickUpBonus(Entity* player, Entity* bonus);
-void Player_Run(Entity* p, int delta);
+void Player_Run(Entity* p);
 void Player_StartRunning(Entity* p);
 void Player_StopRunning(Entity* p);
-void Player_Walk(Entity* p, int delta);
+void Player_Walk(Entity* p);
 
 #endif

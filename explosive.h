@@ -24,5 +24,5 @@ Explosive* ExplosiveComponent_Create(float x, float y, float angle, float speed,
                             float destinationX, float destinationY);
 Entity* Grenade_Create(float x, float y, float angle, float speed,
                         float destinationX, float destinationY);
-void Grenade_Update(Entity* g, int delta, World* world);
+void Grenade_Update(Entity* g, World* world);
 #endif // EXPLOSIVE_H

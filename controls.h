@@ -45,8 +45,13 @@ typedef struct Controls
 
 Controls* CreateControls();
 Jbool   Inputs_PoolInputs(Controls* controls, Entity* camera);
-void    Inputs_ApplyInputs( Controls* controls, int delta,
-                            Jbool* game_started,
+void    Inputs_ApplyInputs( Controls* controls,
                             World* world, Window* level_editor, GameManager* gm);
-void Inputs_ProcessInputs(Controls* controls, int delta, Jbool* game_started, World* world, Window* level_editor, GameManager* game_manager);
+
+void Inputs_ProcessInputs(Controls* controls, World* world, Window* level_editor,
+                          GameManager* game_manager);
+
+void Inputs_ApplyInputsLevelEditor(Controls* controls,
+                            World* world, Window* level_editor,
+                            GameManager* gm);
 #endif

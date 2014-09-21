@@ -20,20 +20,16 @@ MenuManager MenuManager_Create(Graphics* graphics)
     mm.active_menu                  =   mm.sub_menus[Main_Menu_menu];
     mm.click_timer                  =   0;
 
-
-
     return mm;
 }
 
 void MenuManager_Update(MenuManager* mm,
                         Controls* controls,
-                        Jbool* game_started,
                         Jbool* running,
-                        int delta,
                         World* world)
 {
     Menu* menu = mm->active_menu;
-    mm->click_timer -= delta;
+    mm->click_timer -= delta_g;
 
     for(int i = 0 ; i < Vector_Count(&menu->textfields) ; i++)
     {
@@ -52,7 +48,7 @@ void MenuManager_Update(MenuManager* mm,
     if(menu->name == SaveLevel_menu &&
        menu->active_textfield != NULL)
     {
-        TextField_Update( menu->active_textfield , delta, controls);
+        TextField_Update( menu->active_textfield, controls);
 
         if(controls->pressedKeys[SDLK_RETURN])
         {
@@ -129,7 +125,18 @@ void MenuManager_Update(MenuManager* mm,
                     {
                         if(button->name == Play_button)
                         {
-                            *game_started = Jtrue;
+                            display_menu_g = Jfalse;
+                            game_state_g = Playing;
+                        }
+                        else if(button->name == LevelEditor_button)
+                        {
+                            display_menu_g = Jfalse;
+                            //Game_SwitchToLevelEditor();
+                            world->player.visible = Jfalse;
+                            world->player.solid = Jfalse;
+                            game_state_g = Level_Editor;
+                            MainMenu_LoadLevelEditorMainMenu(mm->sub_menus[Main_Menu_menu]);
+
                         }
                         else if(button->name == Options_button)
                         {

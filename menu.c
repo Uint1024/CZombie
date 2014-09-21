@@ -2,44 +2,135 @@
 #include "menu_button.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include "string.h"
 #include <stdio.h>
+#include "menu_button.h"
+
 Menu* MainMenu_Create(Graphics* graphics)
 {
     Menu* mainMenu = (Menu*)malloc(sizeof(Menu));
 
     mainMenu->name                      =   Main_Menu_menu;
-    MenuButton* play_button             =   MenuButton_Create(Play_button,
-                                                              100.0f, 100.0f,
-                                                              "Play", Jtrue,
-                                                              graphics);
 
-    MenuButton* save_level_button       =   MenuButton_Create(SaveLevel_button,
-                                                              100.0f, 220.0f,
-                                                              "Save Level", Jtrue,
-                                                              graphics);
-    MenuButton* load_level_button       =   MenuButton_Create(LoadLevel_button,
-                                                              100.0f, 340.0f,
-                                                              "Load Level", Jtrue,
-                                                              graphics);
-    MenuButton* options_button          =   MenuButton_Create(Options_button,
-                                                              100.0f, 460.0f,
-                                                              "Options", Jtrue,
-                                                              graphics);
-    MenuButton* quit_button              =   MenuButton_Create(Quit_button,
-                                                               100.0f, 580.0f,
-                                                              "Quit", Jtrue,
-                                                              graphics);
+    mainMenu->all_buttons = Vector_Create();
+    MainMenu_LoadAllButtons(graphics, mainMenu);
+
+
     mainMenu->buttons = Vector_Create();
-    Vector_Push(&mainMenu->buttons, play_button);
-    Vector_Push(&mainMenu->buttons, save_level_button);
-    Vector_Push(&mainMenu->buttons, load_level_button);
-    Vector_Push(&mainMenu->buttons, options_button);
-    Vector_Push(&mainMenu->buttons, quit_button);
+
+
+
+    MainMenu_LoadMainEmptyMenu(mainMenu);
 
     mainMenu->texts = Vector_Create();
     mainMenu->active_textfield = NULL;
     return mainMenu;
+}
+
+void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu)
+{
+    Menu_Button_Name Menu_Button_Name[9] = {Play_button,
+                                            LevelEditor_button,
+                                            SaveGame_button,
+                                            LoadGame_button,
+                                            SaveLevel_button,
+                                            LoadLevel_button,
+                                            Options_button,
+                                            Quit_button,
+                                            Back_button};
+
+    char* text[9] = {"Play", "Level Editor", "Save Game", "Load Game",
+                        "Save Map", "Load Map",
+                        "Options", "Quit", "Back"};
+
+    for(int i = 0 ; i < 9 ; i++)
+    {
+        MenuButton* button = MenuButton_Create(Menu_Button_Name[i],
+                                      100.0f, 100.0f,
+                                      text[i], Jtrue,
+                                      graphics);
+
+        printf("creating button with name %d\n", Menu_Button_Name[i]);
+        Vector_Push(&mainMenu->all_buttons,
+                    button
+                    );
+    }
+}
+
+
+void MainMenu_LoadMainEmptyMenu(Menu* mainMenu)
+{
+    Vector_Clear(&mainMenu->buttons);
+
+    Menu_Button_Name Menu_Button_Name[4] = {Play_button,
+                                            LevelEditor_button,
+                                            Options_button,
+                                            Quit_button};
+
+    for(int j = 0 ; j < 4 ; j++)
+    {
+        for(int i = 0 ; i < TOTAL_MAIN_MENU_BUTTONS ; i++)
+        {
+            MenuButton* button = Vector_Get(&mainMenu->all_buttons, i);
+
+
+            if(button->name == Menu_Button_Name[j])
+            {
+                //new button position
+                button->y = 100 * j + 50;
+                button->box = BoundingBox_CreateBetter(button->x,
+                                                       button->y,
+                                                       button->box.width,
+                                                       button->box.height);
+
+                MenuButton* new_button = (MenuButton*)malloc(sizeof(MenuButton));
+
+                memcpy(new_button, button, sizeof(MenuButton));
+                printf("fuck");
+                Vector_Push(&mainMenu->buttons, new_button);
+            }
+            printf("j = %d, i = %d, button name = %d looking for = %d\n", j, i, button->name, Menu_Button_Name[j]);
+
+        }
+    }
+
+}
+
+void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu)
+{
+
+    Vector_Clear(&mainMenu->buttons);
+
+
+    Menu_Button_Name Menu_Button_Name[5] = {Play_button,
+                                            SaveLevel_button,
+                                            LoadLevel_button,
+                                            Options_button,
+                                            Quit_button};
+    for(int j = 0 ; j < 5 ; j++)
+    {
+        for(int i = 0 ; i < TOTAL_MAIN_MENU_BUTTONS ; i++)
+        {
+            MenuButton* button = Vector_Get(&mainMenu->all_buttons, i);
+
+            printf("j = %d, i = %d, button name = %d looking for = %d\n", j, i, button->name, Menu_Button_Name[j]);
+
+            if(button->name == Menu_Button_Name[j])
+            {
+
+                //new button position
+                button->y = 100 * j + 50;
+                button->box = BoundingBox_CreateBetter(button->x,
+                                                       button->y,
+                                                       button->box.width,
+                                                       button->box.height);
+                MenuButton* new_button = (MenuButton*)malloc(sizeof(MenuButton));
+                memcpy(new_button, button, sizeof(MenuButton));
+                Vector_Push(&mainMenu->buttons, new_button);
+            }
+
+        }
+    }
 }
 
 Menu* OptionMenu_Create(Graphics* graphics)
@@ -151,9 +242,9 @@ void TextField_Backspace(TextField* tf)
     tf->caretX -= 10;
 }
 
-void TextField_Update(TextField* tf, int delta, Controls* controls)
+void TextField_Update(TextField* tf, Controls* controls)
 {
-    TextField_Caret_Update(tf, delta);
+    TextField_Caret_Update(tf);
     size_t len = strlen(tf->text);
 
     for(int i = 0 ; i < 200 ; i ++)
@@ -174,9 +265,9 @@ void TextField_Update(TextField* tf, int delta, Controls* controls)
     }
 }
 
-void TextField_Caret_Update(TextField* tf, int delta)
+void TextField_Caret_Update(TextField* tf)
 {
-    tf->caret_blinking_timer += delta;
+    tf->caret_blinking_timer += delta_g;
     if(tf->caret_blinking_timer > tf->caret_blinking_delay)
     {
         tf->visible_caret = tf->visible_caret ? Jfalse : Jtrue;

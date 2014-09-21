@@ -36,7 +36,7 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
     button->hover        =   Jfalse;
 
 
-
+    printf("creating button %d\n", button->name);
     return button;
 }
 
@@ -58,4 +58,18 @@ MenuButton* FileNameButton_Create(float y, char* text)
 
 
     return button;
+}
+
+void MenuButton_UpdateBox(MenuButton* b, int x, int y)
+{
+    b->x = x;
+    b->y = y;
+    b->box = BoundingBox_CreateFromAllValues(b->box.width,
+                                    b->box.height,
+                                    b->x,
+                                    b->y);
+    b->text_rect.w = b->box.width;
+    b->text_rect.h = b->box.height;
+    b->text_rect.x = b->x;
+    b->text_rect.y = b->y;
 }

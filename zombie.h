@@ -20,13 +20,14 @@ typedef struct ZombieC
 
 ZombieC* ZombieC_Create();
 
-void Zombie_Update(Entity* z, int delta, World* world);
+void Zombie_Update(Entity* z, World* world);
 
 Entity* CreateZombie(Zombie_Type type, float x, float y);
 void Zombie_Die(Entity* zombie, Vector* bonus_vector);
 void  Zombie_Shoot(Entity* z, World* world);
 void Zombie_Ai(Entity* z, World* world);
 void Zombie_BecomeAggressive(Entity* z, World* world);
+void Zombie_BecomeCalm(Entity* z);
 void Zombie_CalculateRandomPath(Entity *z);
 void Zombie_NewTrajectory(Entity* z);
 void Zombie_GetAttacked(Entity* z, int damage, World* world);

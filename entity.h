@@ -29,7 +29,7 @@ typedef struct Entity
 	float                   dy;
 	float                   speed;
 	float                   angle;
-
+    Jbool                   visible;
 
 	Weapon_Type             bullet_type;
 
@@ -84,7 +84,7 @@ Entity* Entity_Spawn();
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
 void Entity_LoseHealth(Entity* ent, int damage);
 Jbool Entity_CollisionWithStuff(Entity* ent, World* world);
-void Entity_CalculateVelocityFromAngle(Entity* ent, int delta);
+void Entity_CalculateVelocityFromAngle(Entity* ent);
 
 Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size);
 Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector);

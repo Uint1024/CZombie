@@ -39,16 +39,16 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
     return grenade;
 }
 
-void Grenade_Update(Entity* g, int delta, World* world)
+void Grenade_Update(Entity* g, World* world)
 {
-    g->explosive_component->explosion_timer -= delta;
+    g->explosive_component->explosion_timer -= delta_g;
 
     if(g->explosive_component->explosion_timer <= 0)
     {
         g->alive = Jfalse;
     }
-    g->dx = cos(g->angle) * g->speed * delta;
-	g->dy = sin(g->angle) * g->speed  * delta;
+    g->dx = cos(g->angle) * g->speed * delta_g;
+	g->dy = sin(g->angle) * g->speed  * delta_g;
 
     if(abs(g->x - g->explosive_component->destinationX) < 10)
     {

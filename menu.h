@@ -30,6 +30,7 @@ typedef struct Menu
 {
     Menu_Name       name;
     Vector          buttons;
+    Vector          all_buttons;
     Vector          texts;
     Vector          textfields;
     int             total_buttons;
@@ -45,8 +46,12 @@ Menu* MainMenu_Create(Graphics* graphics);
 Menu* SaveLevelMenu_Create(Graphics* graphics);
 Menu* LoadLevelMenu_Create(Graphics* graphics);
 
+void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu);
+void MainMenu_LoadMainEmptyMenu(Menu* mainMenu);
+void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu);
+
 TextField* TextField_Create(int x, int y, int width, int height);
-void TextField_Update(TextField* tf, int delta, Controls* controls);
-void TextField_Caret_Update(TextField* tf, int delta);
+void TextField_Update(TextField* tf, Controls* controls);
+void TextField_Caret_Update(TextField* tf);
 void TextField_Input(TextField* tf, char c);
 #endif // MENU_H

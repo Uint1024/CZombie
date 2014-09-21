@@ -1,5 +1,6 @@
 #include "window.h"
 #include "boundingBox.h"
+#include "stdio.h"
 
 Window Window_CreateLevelEditor()
 {
@@ -121,6 +122,30 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
         break;
     case Cat_Door:
         button.texture = door_textures_g[type];
+        break;
+    case Cat_Grenade:
+        //todo
+        break;
+    case NB_OF_CAT:
+        printf("error, tried to create NB_OF_CAT button\n");
+        break;
+    case Nothing:
+        printf("error, tried to create Nothing button\n");
+        break;
+    case Cat_Player:
+        printf("error, tried to create Player button\n");
+        break;
+    case Cat_Weapon:
+        printf("error, tried to create Weapon button\n");
+        break;
+    case Cat_Bonus:
+        printf("error, tried to create Bonus button\n");
+        break;
+    case Cat_Texture:
+        printf("error, tried to create Texture button\n");
+        break;
+    case Cat_Bullet:
+        printf("error, tried to create Bullet button\n");
         break;
     }
 

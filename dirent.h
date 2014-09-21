@@ -343,27 +343,23 @@ _wopendir(
  * this function include regular files, sub-directories, pseudo-directories
  * "." and ".." as well as volume labels, hidden files and system files.
  */
-static struct _wdirent*
+/*static struct _wdirent*
 _wreaddir(
     _WDIR *dirp)
 {
     WIN32_FIND_DATAW *datap;
     struct _wdirent *entp;
 
-    /* Read next directory entry */
+
     datap = dirent_next (dirp);
     if (datap) {
         size_t n;
         DWORD attr;
-        
-        /* Pointer to directory entry to return */
+
+
         entp = &dirp->ent;
 
-        /* 
-         * Copy file name as wide-character string.  If the file name is too
-         * long to fit in to the destination buffer, then truncate file name
-         * to PATH_MAX characters and zero-terminate the buffer.
-         */
+
         n = 0;
         while (n + 1 < PATH_MAX  &&  datap->cFileName[n] != 0) {
             entp->d_name[n] = datap->cFileName[n];
@@ -371,10 +367,10 @@ _wreaddir(
         }
         dirp->ent.d_name[n] = 0;
 
-        /* Length of file name excluding zero terminator */
+
         entp->d_namlen = n;
 
-        /* File type */
+
         attr = datap->dwFileAttributes;
         if ((attr & FILE_ATTRIBUTE_DEVICE) != 0) {
             entp->d_type = DT_CHR;
@@ -384,19 +380,19 @@ _wreaddir(
             entp->d_type = DT_REG;
         }
 
-        /* Reset dummy fields */
+
         entp->d_ino = 0;
         entp->d_reclen = sizeof (struct _wdirent);
 
     } else {
 
-        /* Last directory entry read */
+
         entp = NULL;
 
     }
 
     return entp;
-}
+}*/
 
 /*
  * Close directory stream opened by opendir() function.  This invalidates the
@@ -515,12 +511,12 @@ dirent_next(
     return p;
 }
 
-/* 
+/*
  * Open directory stream using plain old C-string.
  */
 static DIR*
 opendir(
-    const char *dirname) 
+    const char *dirname)
 {
     struct DIR *dirp;
     int error;
@@ -552,7 +548,7 @@ opendir(
             }
 
         } else {
-            /* 
+            /*
              * Cannot convert file name to wide-character string.  This
              * occurs if the string contains invalid multi-byte sequences or
              * the output buffer is too small to contain the resulting
@@ -590,7 +586,7 @@ opendir(
  */
 static struct dirent*
 readdir(
-    DIR *dirp) 
+    DIR *dirp)
 {
     WIN32_FIND_DATAW *datap;
     struct dirent *entp;
@@ -605,7 +601,7 @@ readdir(
         error = dirent_wcstombs_s(
             &n, dirp->ent.d_name, PATH_MAX, datap->cFileName, PATH_MAX);
 
-        /* 
+        /*
          * If the file name cannot be represented by a multi-byte string,
          * then attempt to use old 8+3 file name.  This allows traditional
          * Unix-code to access some file names despite of unicode
@@ -617,7 +613,7 @@ readdir(
          */
         if (error  &&  datap->cAlternateFileName[0] != '\0') {
             error = dirent_wcstombs_s(
-                &n, dirp->ent.d_name, PATH_MAX, 
+                &n, dirp->ent.d_name, PATH_MAX,
                 datap->cAlternateFileName, PATH_MAX);
         }
 
@@ -645,7 +641,7 @@ readdir(
             entp->d_reclen = sizeof (struct dirent);
 
         } else {
-            /* 
+            /*
              * Cannot convert file name to multi-byte string so construct
              * an errornous directory entry and return that.  Note that
              * we cannot return NULL as that would stop the processing
@@ -673,7 +669,7 @@ readdir(
  */
 static int
 closedir(
-    DIR *dirp) 
+    DIR *dirp)
 {
     int ok;
     if (dirp) {
@@ -698,13 +694,13 @@ closedir(
 /*
  * Rewind directory stream to beginning.
  */
-static void
+/*static void
 rewinddir(
-    DIR* dirp) 
+    DIR* dirp)
 {
-    /* Rewind wide-character string directory stream */
+
     _wrewinddir (dirp->wdirp);
-}
+}*/
 
 /* Convert multi-byte string to wide character string */
 static int

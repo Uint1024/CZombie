@@ -16,9 +16,9 @@ Entity* Explosion_Create(int x, int y)
 }
 
 
-void Explosion_Update(Entity* exp, int delta)
+void Explosion_Update(Entity* exp)
 {
-    exp->explosion_timer -= delta;
+    exp->explosion_timer -= delta_g;
     if(exp->explosion_timer <= 0)
         exp->alive = Jfalse;
 }

@@ -22,4 +22,5 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
                               char* text, Jbool centered,
                               Graphics* graphics);
 MenuButton* FileNameButton_Create(float y, char* text);
+void MenuButton_UpdateBox(MenuButton* b, int x, int y);
 #endif // MAIN_MENU_H

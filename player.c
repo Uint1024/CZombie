@@ -8,30 +8,36 @@
 #include "weapons_component.h"
 #include "world.h"
 
-void Player_Update(int delta, World* world)
+void Player_Update(World* world)
 {
     Entity* p = &world->player;
 
     if(p->running)
     {
-        Player_Run(p, delta);
+        Player_Run(p);
     }
     else
     {
-        Player_Walk(p, delta);
+        Player_Walk(p);
     }
 
-    p->invulnerability_timer -= delta;
-    if(p->weapons_component->reloading)
-    {
-        WeaponsComponent_Reload(p->weapons_component, delta);
-    }
-
-	p->camera->dx = 0;
+    p->camera->dx = 0;
 	p->camera->dy = 0;
-    Entity_CollisionWithStuff(p, world);
-    //CollisionWithMonsters(p, &world->monsters_vector);
-    Player_CheckBonusCollision(p, &world->bonus_vector);
+
+    if(game_state_g != Level_Editor)
+    {
+        p->invulnerability_timer -= delta_g;
+        if(p->weapons_component->reloading)
+        {
+            WeaponsComponent_Reload(p->weapons_component);
+        }
+
+
+        Entity_CollisionWithStuff(p, world);
+        //CollisionWithMonsters(p, &world->monsters_vector);
+        Player_CheckBonusCollision(p, &world->bonus_vector);
+    }
+
 
 
     Player_Move(p, p->dx, p->dy);
@@ -100,18 +106,18 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
     }
 }
 
-void Player_Run(Entity* p, int delta)
+void Player_Run(Entity* p)
 {
-    p->stamina -= 0.03 * delta;
+    p->stamina -= 0.03 * delta_g;
     if(p->stamina <= 0)
         Player_StopRunning(p);
 
 }
 
-void Player_Walk(Entity* p, int delta)
+void Player_Walk(Entity* p)
 {
     if(p->stamina < p->max_stamina)
-        p->stamina += 0.01 * delta;
+        p->stamina += 0.01 * delta_g;
 
 }
 
@@ -133,7 +139,7 @@ void Player_StopRunning(Entity* p)
 }
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
-    WeaponsComponent* wc = player->weapons_component;
+    //WeaponsComponent* wc = player->weapons_component;
     /*    if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
         {
             WeaponsComponent_AddAmmo(wc,

@@ -26,7 +26,10 @@
 #include "gameManager.h"
 #include "window.h"
 
-Jbool debug_mode = Jfalse;
+Jbool           debug_mode = Jfalse;
+Jbool           display_menu_g = Jtrue;
+Game_State      game_state_g = Main_Menu;
+
 int delta_g = 0;
 int main(int argc, char* args[])
 {
@@ -48,14 +51,11 @@ int main(int argc, char* args[])
 
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;
-	int delta = 1;
 	float fps = 0;
 
     int chrono_update = 0;
     int time_last_frame_real = 0;
     int time_this_frame_real = 0;
-
-    Jbool game_started = Jtrue;
 
     Window level_editor = Window_CreateLevelEditor();
     MenuManager menu_manager = MenuManager_Create(graphics);
@@ -69,33 +69,32 @@ int main(int argc, char* args[])
         if(chrono_update > ms_delay_between_frame)
         {
             time_now = SDL_GetTicks();
-            delta = time_now - time_last_frame;
             delta_g = time_now - time_last_frame;
-            if(delta > 0)
+            if(delta_g > 0)
             {
-                fps = 1000 / chrono_update;
+                fps = 1000 / delta_g;
             }
 
             chrono_update = 0;
 
-            Inputs_ProcessInputs(controls, delta, &game_started, &world, &level_editor, &game_manager);
+            Inputs_ProcessInputs(controls, &world, &level_editor, &game_manager);
 
 
-            if(game_started)
+            if(!display_menu_g)
             {
-                GameManager_Update(&game_manager, &world, delta, &level_editor);
-                Graphics_RenderGame(graphics,&world, controls, fps, delta, &level_editor, &game_manager);
+                GameManager_Update(&game_manager, &world, &level_editor);
+                Graphics_RenderGame(graphics,&world, controls, fps, &level_editor, &game_manager);
             }
             else
             {
-                MenuManager_Update(&menu_manager, controls, &game_started, &running, delta, &world);
+                MenuManager_Update(&menu_manager, controls, &running, &world);
                 Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
             }
 
-                for(int i = 0 ; i < 200 ; i++)
-    {
-        previousPressedKeys_g[i] = controls->pressedKeys[i];
-    }
+            for(int i = 0 ; i < 200 ; i++)
+            {
+                previousPressedKeys_g[i] = controls->pressedKeys[i];
+            }
             time_last_frame = time_now;
         }
 

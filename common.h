@@ -1,22 +1,30 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define TOTAL_MAIN_MENU_BUTTONS 3
+
 #define TILE_SIZE 32
 #include <SDL.h>
 
 
 typedef enum {
     Play_button,
+    LevelEditor_button,
+    SaveGame_button,
+    LoadGame_button,
     SaveLevel_button,
     LoadLevel_button,
     Options_button,
     Quit_button,
     Back_button,
+    TOTAL_MAIN_MENU_BUTTONS,
     FILE_NAME_BUTTON
 } Menu_Button_Name;
 
-
+typedef enum {
+    Main_Menu,
+    Level_Editor,
+    Playing
+} Game_State;
 
 typedef enum {
     Main_Menu_menu,
@@ -187,6 +195,7 @@ float C_GenerateRandomAngle();
 float C_GenerateAngleInOppositeDirection(Direction direction);
 float C_DifferenceBetweenAngles(float angle1, float angle2);
 float C_ConvertAngle2PiCirlce(float angle);
+void Game_InitData();
 
 typedef struct Vec2
 {
@@ -225,8 +234,8 @@ extern int              zombie_height_g[NB_ZOMBIE_TYPES];
 extern int              zombie_hp_g[NB_ZOMBIE_TYPES];
 extern int              zombie_damage_g[NB_ZOMBIE_TYPES];
 extern int              zombie_weapon_g[NB_ZOMBIE_TYPES];
-
-
+extern Game_State       game_state_g;
+extern Jbool            display_menu_g;
 
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 

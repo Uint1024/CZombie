@@ -10,6 +10,7 @@
 #include "world.h"
 #include <math.h>
 #include "zombie.h"
+#include "door.h"
 
 Entity* Entity_Spawn()
 {
@@ -28,6 +29,7 @@ Entity* Entity_Spawn()
 	ent->box.bottom                 = 0;
     ent->solid = Jtrue;
     ent->texture                    = No_texture;
+    ent->visible = Jtrue;
 
 	//speed, angle, and velocity should be in a movement component?
 	ent->dx                         = 0;
@@ -196,10 +198,10 @@ Jbool Entity_CollisionWithStuff(Entity* ent, World* world)
     return (collision_with_walls || collision_with_mobs);
 }
 
-void Entity_CalculateVelocityFromAngle(Entity* ent, int delta)
+void Entity_CalculateVelocityFromAngle(Entity* ent)
 {
-    ent->dx = cos(ent->angle) * ent->speed * delta;
-    ent->dy = sin(ent->angle) * ent->speed * delta;
+    ent->dx = cos(ent->angle) * ent->speed * delta_g;
+    ent->dy = sin(ent->angle) * ent->speed * delta_g;
 }
 
 Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)

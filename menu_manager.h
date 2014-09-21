@@ -22,8 +22,6 @@ typedef struct MenuManager
 MenuManager MenuManager_Create(Graphics* graphics);
 void MenuManager_Update(MenuManager* mm,
                         Controls* controls,
-                        Jbool* game_started,
                         Jbool* running,
-                        int delta,
                         World* world);
 #endif // MENU_MANAGER_H

@@ -84,13 +84,13 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
 
 
 void Graphics_RenderGame(Graphics* g, World* world,
-                         Controls* controls, float fps, int delta, Window* level_editor,
+                         Controls* controls, float fps, Window* level_editor,
                          GameManager* gm)
  {
      SDL_SetRenderDrawColor(g->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
      SDL_RenderClear(g->renderer);
      Graphics_RenderWorld(g, world);
-     Graphics_RenderUI(g, world, controls, fps, delta, level_editor, gm);
+     Graphics_RenderUI(g, world, controls, fps, level_editor, gm);
      Graphics_Flip(g);
  }
 
@@ -170,6 +170,8 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
     if(object->t == Cat_Player)
     {
         int alpha_value = 255;
+
+
         if(object->invulnerability_timer > 0)
         {
             if(object->invulnerability_timer > 1500)
@@ -205,25 +207,18 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
                             object->box.width,
                             object->box.height };
 
-    SDL_RenderCopyEx(graphics->renderer,
-                     graphics->textures[object->texture],
-                     NULL,
-                     &rect,
-                     object->angle * 57.32f,
-                     NULL,
-                     SDL_FLIP_NONE);
-
-    /*if(object->vision_distance != 0)
+    if(object->visible)
     {
-        for(int i = 0 ; i < 10 ; i++)
-        {
-            SDL_RenderDrawLine(graphics->renderer, object->x + object->box.width /2 - camera->x,
-                                object->y + object->box.height /2 - camera->y,
-                                object->vision_points[i].x - camera->x, object->vision_points[i].y - camera->y);
-        }
+        SDL_RenderCopyEx(graphics->renderer,
+                         graphics->textures[object->texture],
+                         NULL,
+                         &rect,
+                         object->angle * 57.32f,
+                         NULL,
+                         SDL_FLIP_NONE);
+    }
 
-        //printf("wtf");
-    }*/
+
 	if(debug_mode)
     {
 
@@ -299,10 +294,11 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     {
         MenuButton* button = (MenuButton*)Vector_Get(&menu->buttons, i);
 
+        SDL_Rect rect = BoundingBox_GetSDLRect(&button->box);
         SDL_RenderCopy(g->renderer,
                        button->text_texture,
                        NULL,
-                       &button->text_rect);
+                       &rect);
 
         if(button->hover)
         {
@@ -366,10 +362,10 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     Graphics_Flip(g);
 }
 
-void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
-                       float fps, int delta, Window* level_editor,
-                       GameManager* gm)
+void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
+                                  Window* level_editor, GameManager* gm)
 {
+
     if(controls->active_button != NULL)
     {
         if(!controls->hovering_on_window)
@@ -452,24 +448,6 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     }
 
 
-
-
-    //====Cursor stuff
-    if(!controls->cursor_resize_left_right)
-    {
-        SDL_Rect cursor_rect;
-        cursor_rect.x = controls->mouseX - 10;
-        cursor_rect.y = controls->mouseY - 10;
-        cursor_rect.h = 21;
-        cursor_rect.w = 21;
-        SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
-    }
-    else if(controls->cursor_resize_left_right)
-    {
-        SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
-        SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
-    }
-
     if(!gm->ai_on)
     {
         char deactivated[] = "AI deactivated";
@@ -477,6 +455,10 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
         Graphics_RenderText(g, deactivated, Medium, 300, 20, Jtrue, Black);
     }
 
+}
+
+void Graphics_RenderGameUI(Graphics* g, World* world)
+{
     //stamina
     char stamina[] = "Stamina";
     Graphics_RenderText(g, stamina, Medium, 50, 700, Jtrue, White);
@@ -519,6 +501,38 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
                             world->player.y - 20 - world->player.camera->y
                             , Jtrue, White);
     }
+}
+
+void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
+                       float fps, Window* level_editor,
+                       GameManager* gm)
+{
+    if(game_state_g == Level_Editor)
+    {
+        Graphics_RenderLevelEditorUI(g, world, controls, level_editor, gm);
+    }
+
+    else if(game_state_g == Playing)
+    {
+        Graphics_RenderGameUI(g, world);
+
+    }
+
+    //====Cursor stuff
+    if(!controls->cursor_resize_left_right)
+    {
+        SDL_Rect cursor_rect;
+        cursor_rect.x = controls->mouseX - 10;
+        cursor_rect.y = controls->mouseY - 10;
+        cursor_rect.h = 21;
+        cursor_rect.w = 21;
+        SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
+    }
+    else if(controls->cursor_resize_left_right)
+    {
+        SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
+        SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
+    }
 
 
     //NON-GAMEPLAY
@@ -526,7 +540,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     if (fps > 0)
     {
         char full_txt_fps[80];
-        snprintf(full_txt_fps, sizeof full_txt_fps, "%f%s%d%s", fps, " FPS (", delta, " ms)");
+        snprintf(full_txt_fps, sizeof full_txt_fps, "%f%s%d%s", fps, " FPS (", delta_g, " ms)");
         Graphics_RenderText(g, full_txt_fps, Medium, 700, 50, Jtrue, White);
     }
 

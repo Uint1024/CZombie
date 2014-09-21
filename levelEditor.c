@@ -3,6 +3,8 @@
 #include "world.h"
 #include "vector.h"
 #include "zombie.h"
+#include "weapon.h"
+#include "weapons_component.h"
 
 void Level_Save(char* file_name, World* w)
 {
@@ -143,7 +145,6 @@ void Level_Load(char* file_name, World* w)
         w->map[i] = buffer;
     }
 
-    //printf("map size = %d ; file pointer right after map load : %d\n", world->map_size, ftell(save_file));
 
     for(int i = 0 ; i < w->map_size ; i++)
     {
@@ -219,21 +220,5 @@ void Level_Load(char* file_name, World* w)
         Vector_Push(&w->monsters_vector, buffer);
 
     }
-
-    /*for(int i = 0 ; i < num_of_zombies ; i++)
-    {
-        Entity* buffer = (Entity*)malloc(sizeof(Entity));
-
-        size_t read =  fread(buffer, sizeof(Entity), 1, save_file);
-        /*if(buffer->weapons_component != NULL)
-        {
-            printf("not null weapon\n");
-            WeaponsComponent* wc_buffer = WeaponsComponent_Create(Jtrue);
-            fread(wc_buffer, sizeof(WeaponsComponent), 1, save_file);
-            buffer->weapons_component = wc_buffer;
-        }
-
-        Vector_Push(&w->monsters_vector, buffer);
-    }*/
     fclose(save_file);
 }

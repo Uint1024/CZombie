@@ -28,15 +28,13 @@ Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
     float   calm_speed_g[NB_ZOMBIE_TYPES] =
             {
                 0.05,   0.05,    0.05,   0.05,
-                0.05,
-                0,      0
+                0.05
             };
 
     float   angry_speed_g[NB_ZOMBIE_TYPES] =
             {
                 0.1,   0.1,   0.25,   0.1,
-                0.1,
-                0,      0
+                0.1
             };
 
     Texture_Type  zombie_textures_g[NB_ZOMBIE_TYPES] =
@@ -50,72 +48,42 @@ Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
             {
                 20,  40, 20, 45,
                 100,
-                0, 0
             };
 
     int zombie_height_g[NB_ZOMBIE_TYPES] =
             {
                 20, 40, 20, 60,
-                100,
-                0, 0
+                100
             };
 
     int zombie_hp_g[NB_ZOMBIE_TYPES] =
             {
                 2, 20, 2, 20,
-                40,
-                0, 0
+                40
             };
 
     int zombie_damage_g[NB_ZOMBIE_TYPES] =
             {
                 3, 10, 1, 10,
-                10,
-                0, 0
+                10
             };
 
     int zombie_weapon_g[NB_ZOMBIE_TYPES] =
             {
                 No_Weapon, Fireball_w, No_Weapon, TripleFireball_w,
-                TripleFireball_w,
-                0, 0
+                TripleFireball_w
             };
-Game_InitData()
+
+void Game_InitData()
 {
-
-
-
-
     /*Texture of objects*/
-    //Texture_Type ground_textures_g[NB_OF_GROUND_TYPES];
     ground_textures_g[Ground_Dirt] = Tex_Ground_Dirt;
     ground_textures_g[Ground_Grass] = Tex_Ground_Grass;
 
-    //Texture_Type wall_textures_g[NB_OF_WALL_TYPES];
     wall_textures_g[Wall_Normal] = Tex_Wall_Normal;
 
-    //Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
     door_textures_g[Door_Normal] = Tex_Door_Normal;
     door_textures_g[Door_Dead] = Tex_Door_Dead;
-
-
-
-    /*The object type corresponding to each button*/
-
-    button_object_type_g[NormalZombie_button] = Normal_Zombie;
-    button_object_type_g[HeavyZombie_button] = Heavy_Zombie;
-    button_object_type_g[FastZombie_button] = Fast_Zombie;
-    button_object_type_g[HugeZombie_button] = Huge_Zombie;
-    button_object_type_g[TrooperZombie_button] = Trooper_Zombie;
-
-    button_object_type_g[GrassGround_button] = Ground_Grass;
-    button_object_type_g[DirtGround_button] = Ground_Dirt;
-
-    button_object_type_g[Button_Wall_Normal] = Wall_Normal;
-
-    button_object_type_g[Button_Door_Normal] = Door_Normal;
-
-
 
     SDL_Color black = {0,0,0,255};
     SDL_Color white = {255,255,255,255};
@@ -124,6 +92,14 @@ Game_InitData()
     font_color_g[White] = white;
 
 }
+
+/*void Game_SwitchToLevelEditor()
+{
+
+    game_state_g = Level_Editor;
+
+
+}*/
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb)
 {
 	float angle     =    atan2f(yb - ya, xb - xa);

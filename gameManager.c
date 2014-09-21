@@ -54,9 +54,15 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
     return wave;
 }
 
-void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_editor)
+void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 {
-    GameManage_UpdateWorldEntities(gm, delta, world);
+    Player_Update(world);
+
+    if(game_state_g == Playing)
+    {
+        GameManage_UpdateWorldEntities(gm, world);
+    }
+
     //GameManager_UpdateEnnemyWaves(gm, world, delta);
     //GameManager_UpdateUI(level_editor);
 }
@@ -66,7 +72,7 @@ void GameManager_Update(GameManager* gm, World* world, int delta, Window* level_
     //if(BoundingBox_CheckPointCollision())
 }*/
 
-void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
+void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 {
     //because I don't want to type world-> 50 times
     Vector* bullets_vector = &world->bullets_vector;
@@ -74,7 +80,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
     Vector* monsters_vector = &world->monsters_vector;
     Vector* explosions_vector = &world->explosions_vector;
 
-    Player_Update(delta, world);
+
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
@@ -87,11 +93,11 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
             if(projectile->t == Cat_Bullet)
             {
 
-                 Bullet_Update(projectile, delta, world);
+                 Bullet_Update(projectile, world);
             }
             else if(projectile->t == Cat_Grenade)
             {
-                Grenade_Update(projectile, delta, world);
+                Grenade_Update(projectile, world);
 
                 if(!projectile->alive)
                 {
@@ -115,7 +121,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
         if(Vector_Get(bonus_vector, i) != NULL)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
-            Bonus_Update(bonus, &world->player, delta);
+            Bonus_Update(bonus, &world->player);
             if (bonus->alive == Jfalse)
             {
                 Vector_Delete(bonus_vector, i);
@@ -135,7 +141,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
             {
                 Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 
-                    Zombie_Update(mob, delta, world);
+                    Zombie_Update(mob, world);
 
                     if (mob->alive == Jfalse)
                     {
@@ -155,7 +161,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
     for(int i = 0 ; i < Vector_Count(explosions_vector) ; i++)
     {
         Entity* exp = (Entity*)Vector_Get(explosions_vector, i);
-        Explosion_Update(exp, delta);
+        Explosion_Update(exp);
         if (!exp->alive)
         {
             Vector_Delete(explosions_vector, i);
@@ -163,9 +169,9 @@ void GameManage_UpdateWorldEntities(GameManager* gm, int delta, World* world)
     }
 }
 
-void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world, int delta)
+void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world)
 {
-    gm->wave_timer -= delta;
+    gm->wave_timer -= delta_g;
 
 
     if(Vector_Count(&world->monsters_vector) == 0 || gm->wave_timer <= 0)

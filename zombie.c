@@ -22,7 +22,7 @@ ZombieC* ZombieC_Create()
 }
 
 
-void Zombie_Update(Entity* z, int delta, World* world)
+void Zombie_Update(Entity* z, World* world)
 {
 
     Entity_CalculateVelocity(z);
@@ -108,8 +108,8 @@ void Zombie_Ai(Entity* z, World* world)
     float diff = C_DifferenceBetweenAngles(z->angle, angle_to_player);
 
     //check if player is in field of view, or if the player is too close
-	if(!zc->aggressive &&
-        (diff > -1.2f && diff < 1.2f &&
+	if((!zc->aggressive &&
+        (diff > -1.2f && diff < 1.2f) &&
          Entity_CheckDistance(z, player, zc->vision_distance)) ||
 
         Entity_CheckDistance(z, player, 70))

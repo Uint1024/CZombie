@@ -50,7 +50,7 @@ void WeaponsComponent_AddAmmo(WeaponsComponent* wc, Weapon_Type type, int quanti
     wc->bullets[type] += quantity;
 }
 
-void WeaponsComponent_Reload(WeaponsComponent* wc, int delta)
+void WeaponsComponent_Reload(WeaponsComponent* wc)
 {
     if(wc->current_weapon->magazine_bullets < wc->current_weapon->magazine_max_bullets)
     {
@@ -61,7 +61,7 @@ void WeaponsComponent_Reload(WeaponsComponent* wc, int delta)
         }
         else if(wc->reloading && wc->bullets[wc->current_weapon->type] > 0)
         {
-            wc->reload_timer -= delta;
+            wc->reload_timer -= delta_g;
         }
 
         if(wc->reloading && wc->reload_timer <= 0)
@@ -155,7 +155,7 @@ void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float orig
     }
     else if(weapon->magazine_bullets <= 0)
     {
-        WeaponsComponent_Reload(wc, 0);
+        WeaponsComponent_Reload(wc);
     }
 
 }

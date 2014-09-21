@@ -40,7 +40,7 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 }
 
 
-void Bonus_Update(Entity* bonus, Entity* player,int delta)
+void Bonus_Update(Entity* bonus, Entity* player)
 {
     if(abs(bonus->x - player->x) < 150 && abs(bonus->y - player->y) < 150)
     {
@@ -49,7 +49,7 @@ void Bonus_Update(Entity* bonus, Entity* player,int delta)
         //min speed is 0 when distance is 150, max speed is 0.05f when distance is 0
         bonus->speed = -0.003f * abs(bonus->x - player->x) + 0.5;
 
-        Entity_CalculateVelocityFromAngle(bonus, delta);
+        Entity_CalculateVelocityFromAngle(bonus);
         moveEntity(bonus, bonus->dx, bonus->dy);
     }
 }
