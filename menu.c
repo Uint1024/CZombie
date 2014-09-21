@@ -50,7 +50,6 @@ void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu)
                                       text[i], Jtrue,
                                       graphics);
 
-        printf("creating button with name %d\n", Menu_Button_Name[i]);
         Vector_Push(&mainMenu->all_buttons,
                     button
                     );
@@ -89,7 +88,6 @@ void MainMenu_LoadMainEmptyMenu(Menu* mainMenu)
                 printf("fuck");
                 Vector_Push(&mainMenu->buttons, new_button);
             }
-            printf("j = %d, i = %d, button name = %d looking for = %d\n", j, i, button->name, Menu_Button_Name[j]);
 
         }
     }
@@ -113,7 +111,6 @@ void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu)
         {
             MenuButton* button = Vector_Get(&mainMenu->all_buttons, i);
 
-            printf("j = %d, i = %d, button name = %d looking for = %d\n", j, i, button->name, Menu_Button_Name[j]);
 
             if(button->name == Menu_Button_Name[j])
             {

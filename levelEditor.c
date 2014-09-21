@@ -9,7 +9,7 @@
 void Level_Save(char* file_name, World* w)
 {
         FILE *save_file;
-        save_file = fopen(file_name, "w");
+        save_file = fopen(file_name, "wb");
         if(!save_file)
         {
             printf("Can't open file\n");
@@ -69,6 +69,7 @@ Texture_Type            texture;
         {
             Entity* buffer = (Entity*)Vector_Get(&w->monsters_vector, i);
 
+            printf("Begin saving %d, ftell = %d !\n", i, ftell(save_file));
             fwrite(&buffer->texture, sizeof(Texture_Type), 1, save_file);
             fwrite(&buffer->x, sizeof(float), 1, save_file);
             fwrite(&buffer->y, sizeof(float), 1, save_file);
@@ -97,11 +98,14 @@ Texture_Type            texture;
             fwrite(&buffer->collision_direction, sizeof(Direction), 1, save_file);
             fwrite(&buffer->door_opening_timer, sizeof(int), 1, save_file);
 
+
+
             if(buffer->zombieC != NULL)
             {
-                printf("Saving a zombie!\n");
+
                 Jbool is_zombie = Jtrue;
                 fwrite(&is_zombie, sizeof(Jbool), 1, save_file);
+
                 ZombieC* zc = buffer->zombieC;
                 fwrite(&zc->aggressive, sizeof(Jbool), 1, save_file);
                 fwrite(&zc->idling, sizeof(Jbool), 1, save_file);
@@ -131,7 +135,7 @@ void Level_Load(char* file_name, World* w)
     printf("LOADING\n");
     FILE *save_file;
 
-    save_file = fopen(file_name, "r");
+    save_file = fopen(file_name, "rb");
     if(!save_file)
     {
         printf("Can't open file");
@@ -160,14 +164,16 @@ void Level_Load(char* file_name, World* w)
     for(int i = 0 ; i < num_of_zombies ; i++)
     {
         Entity* buffer = Entity_Spawn();
-
+        printf("Begin loading %d, ftell = %d !\n", i, ftell(save_file));
         fread(&buffer->texture, sizeof(Texture_Type), 1, save_file);
         fread(&buffer->x, sizeof(float), 1, save_file);
         fread(&buffer->y, sizeof(float), 1, save_file);
+
         fread(&buffer->t, sizeof(Main_Category), 1, save_file);
         fread(&buffer->dx, sizeof(float), 1, save_file);
         fread(&buffer->dy, sizeof(float), 1, save_file);
         fread(&buffer->muzzleX, sizeof(float), 1, save_file);
+
         fread(&buffer->muzzleY, sizeof(float), 1, save_file);
         fread(&buffer->speed, sizeof(float), 1, save_file);
         fread(&buffer->bullet_type, sizeof(Weapon_Type), 1, save_file);
@@ -180,26 +186,32 @@ void Level_Load(char* file_name, World* w)
         fread(&buffer->last_creation, sizeof(int), 1, save_file);
         fread(&buffer->invulnerability_timer, sizeof(int), 1, save_file);
         fread(&buffer->blinking_timer, sizeof(int), 1, save_file);
+
         fread(&buffer->blinking_frame, sizeof(int), 1, save_file);
         fread(&buffer->stamina, sizeof(float), 1, save_file);
         fread(&buffer->max_stamina, sizeof(float), 1, save_file);
         fread(&buffer->running, sizeof(Jbool), 1, save_file);
         fread(&buffer->angle, sizeof(float), 1, save_file);
         fread(&buffer->solid, sizeof(Jbool), 1, save_file);
+
         fread(&buffer->collision_direction, sizeof(Direction), 1, save_file);
+
+
         fread(&buffer->door_opening_timer, sizeof(int), 1, save_file);
 
         Jbool is_zombie = Jfalse;
 
         fread(&is_zombie, sizeof(Jbool), 1, save_file);
-
+        printf("is zombie = %d", is_zombie);
 
 
         if(is_zombie != Jfalse)
         {
             ZombieC* zc = ZombieC_Create();
+
             fread(&zc->aggressive, sizeof(Jbool), 1, save_file);
             fread(&zc->idling, sizeof(Jbool), 1, save_file);
+
             fread(&zc->rand_move_every, sizeof(int), 1, save_file);
             fread(&zc->rand_move_timer, sizeof(int), 1, save_file);
             fread(&zc->vision_distance, sizeof(int), 1, save_file);
@@ -207,6 +219,7 @@ void Level_Load(char* file_name, World* w)
             fread(&zc->zombie_type, sizeof(Zombie_Type), 1, save_file);
             buffer->zombieC = zc;
         }
+
 
 
 

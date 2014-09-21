@@ -90,6 +90,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics.h" />
+		<Unit filename="levelEditor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="levelEditor.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
