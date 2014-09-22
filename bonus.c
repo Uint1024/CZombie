@@ -15,27 +15,12 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 
     bonus->x = x;
     bonus->y = y;
-    bonus->t = bonus_type;
+    bonus->t = Cat_Bonus;
+    bonus->sub_category = bonus_type;
     bonus->angle = angle;
 
-/*if(bonus_type == Bonus_Shotgun)
-    {
-        bonus->texture = Tex_Bonus_Shotgun;
-        bonus->corresponding_weapon = Shotgun_w;
-        BoundingBox_Create(bonus, 30, 15);
-    }
-    else if(bonus_type == Bonus_Rifle)
-    {
-        bonus->texture = Tex_Bonus_Rifle;
-        bonus->corresponding_weapon = AutomaticRifle_w;
-        BoundingBox_Create(bonus, 30, 15);
-    }
-    else if(bonus_type == Bonus_GrenadeLauncher)
-    {
-        bonus->texture = Tex_Bonus_GrenadeLauncher;
-        bonus->corresponding_weapon = GrenadeLauncher_w;
-        BoundingBox_Create(bonus, 30, 15);
-    }*/
+    bonus->texture = bonus_textures_g[bonus_type];
+    BoundingBox_Create(bonus, 30, 15);
     return bonus;
 }
 
@@ -49,7 +34,7 @@ void Bonus_Update(Entity* bonus, Entity* player)
         //min speed is 0 when distance is 150, max speed is 0.05f when distance is 0
         bonus->speed = -0.003f * abs(bonus->x - player->x) + 0.5;
 
-        Entity_CalculateVelocityFromAngle(bonus);
+        Entity_CalculateVelocity(bonus);
         moveEntity(bonus, bonus->dx, bonus->dy);
     }
 }

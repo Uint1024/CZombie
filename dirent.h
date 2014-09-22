@@ -183,7 +183,7 @@ struct _WDIR {
 typedef struct _WDIR _WDIR;
 
 static _WDIR *_wopendir (const wchar_t *dirname);
-static struct _wdirent *_wreaddir (_WDIR *dirp);
+//static struct _wdirent *_wreaddir (_WDIR *dirp);
 static int _wclosedir (_WDIR *dirp);
 static void _wrewinddir (_WDIR* dirp);
 
@@ -216,7 +216,7 @@ typedef struct DIR DIR;
 static DIR *opendir (const char *dirname);
 static struct dirent *readdir (DIR *dirp);
 static int closedir (DIR *dirp);
-static void rewinddir (DIR* dirp);
+//static void rewinddir (DIR* dirp);
 
 
 /* Internal utility functions */
@@ -434,20 +434,20 @@ _wclosedir(
  * Rewind directory stream such that _wreaddir() returns the very first
  * file name again.
  */
-static void
+/*static void
 _wrewinddir(
     _WDIR* dirp)
 {
     if (dirp) {
-        /* Release existing search handle */
+
         if (dirp->handle != INVALID_HANDLE_VALUE) {
             FindClose (dirp->handle);
         }
 
-        /* Open new search handle */
         dirent_first (dirp);
     }
 }
+*/
 
 /* Get first directory entry (internal) */
 static WIN32_FIND_DATAW*

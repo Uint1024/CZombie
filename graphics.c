@@ -66,6 +66,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Tex_Event_MapEnd]              =   "event_mapend.png";
     g->textures_names[Tex_Event_PlayerSpawn]              =   "event_playerstart.png";
     g->textures_names[Tex_Event_TeleportOtherMap]              =   "event_mapchange.png";
+    g->textures_names[Tex_Bonus_Handgun]              =   "bonus_handgun.png";
 
 
     for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
@@ -337,9 +338,9 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     SDL_SetRenderDrawColor(g->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(g->renderer);
 
+    //render buttons of currently active menu
     for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
     {
-
         MenuButton* button = (MenuButton*)Vector_Get(&menu->buttons, i);
 
         SDL_Rect rect = BoundingBox_GetSDLRect(&button->box);
@@ -360,6 +361,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
         }
     }
 
+    //render textfields (only useful in rare occasions, why did I make a vector, I dunno)
     for(int i = 0 ; i < Vector_Count(&menu->textfields) ; i++)
     {
         TextField* tf = (TextField*)Vector_Get(&menu->textfields, i);
@@ -378,6 +380,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
         Graphics_RenderText(g, tf->text, Medium, tf->first_caretX, tf->caretY, Jfalse, Black);
     }
 
+    //render the buttons of the load map/save menu
     if(menu->name == LoadMap_menu)
     {
         for(int i = 0 ; i < Vector_Count(&menu->file_list) ; i++)
@@ -391,6 +394,8 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             SDL_RenderDrawRect(g->renderer, &rect);
         }
     }
+
+    //display text of the save menu
     else if(menu->name == SaveMap_menu)
     {
         Graphics_RenderText(g, "Save map", Large,
@@ -398,7 +403,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
                                 Jfalse, Black);
     }
 
-
+    //display mouse cursor
     SDL_Rect cursor_rect;
     cursor_rect.x = controls->mouseX - 10;
     cursor_rect.y = controls->mouseY - 10;
@@ -418,7 +423,9 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
     {
         if(!controls->hovering_on_window)
         {
-            //-------render temp object on the map
+            //-------render temp object on the map...
+            //TODO : instead of doing that, just create an actual temporary
+            //object that sticks to the mouse!
             int obj_w = 5;
             int obj_h = 5;
             int obj_y = 5;
@@ -476,7 +483,7 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
     }
 
     //---render level editor window
-    SDL_SetRenderDrawColor(g->renderer, 255, 255,255, 255);
+    SDL_SetRenderDrawColor(g->renderer, 220, 220,220, 255);
     SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.width, level_editor->box.height};
     SDL_RenderFillRect(g->renderer, &editor_rect);
 

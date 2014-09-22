@@ -77,6 +77,12 @@ void Entity_CalculateVelocity(Entity* ent)
     ent->dy = sin(ent->angle ) * ent->speed * delta_g;
 }
 
+/*void Entity_CalculateVelocityFromAngle(Entity* ent)
+{
+    ent->dx = cos(ent->angle) * ent->speed * delta_g;
+    ent->dy = sin(ent->angle) * ent->speed * delta_g;
+}*/
+
 void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY)
 {
     *middleX = (float)(ent->x + ent->box.width / 2);
@@ -200,11 +206,7 @@ Jbool Entity_CollisionWithStuff(Entity* ent, World* world)
     return (collision_with_walls || collision_with_mobs);
 }
 
-void Entity_CalculateVelocityFromAngle(Entity* ent)
-{
-    ent->dx = cos(ent->angle) * ent->speed * delta_g;
-    ent->dy = sin(ent->angle) * ent->speed * delta_g;
-}
+
 
 Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 {

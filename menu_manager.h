@@ -10,8 +10,9 @@ typedef struct Graphics Graphics;
 
 typedef struct MenuManager
 {
-    Menu*           sub_menus[5];
+    Menu*           sub_menus[15];
     Menu*           active_menu;
+    Menu*           previous_active_menu;
 
     //to prevent clicking too fast
     int             click_timer;

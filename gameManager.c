@@ -103,7 +103,6 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
-
         if(Vector_Get(bullets_vector, i) != NULL)
         {
 

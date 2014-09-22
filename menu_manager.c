@@ -17,12 +17,15 @@ MenuManager MenuManager_Create(Graphics* graphics)
     MenuManager_LoadAllButtons(graphics, &mm);
 
     mm.sub_menus[MainMenu_menu]    =   MainMenu_Create(&mm);
+        mm.sub_menus[LevelEditorEditing_menu]   =   LevelEditorEditing_Create(&mm);
     //mm.sub_menus[Options_menu]      =   OptionMenu_Create(graphics);
     mm.sub_menus[SaveMap_menu]      =   SaveLevelMenu_Create(graphics);
     mm.sub_menus[LoadMap_menu]      =   LoadLevelMenu_Create(graphics);
     mm.sub_menus[LevelEditor_menu]   =   LevelEditorMainMenu_Create(&mm);
-    mm.sub_menus[LevelEditorEditing_menu]   =   LevelEditorMainMenu_Create(&mm);
+
+
     mm.active_menu                  =   mm.sub_menus[MainMenu_menu];
+    mm.previous_active_menu = NULL;
     mm.click_timer                  =   0;
 
     return mm;
@@ -129,19 +132,28 @@ void MenuManager_Update(MenuManager* mm,
             MenuButton* button = (MenuButton*)Vector_Get(&menu->file_list, i);
 
             //if clicking on file name, we load the save
-            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
+            if(mm->click_timer <= 0 &&
+               controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
                BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &button->box))
             {
                 char* complete_name = malloc(sizeof(button->text) + 6);
                 strcpy(complete_name, "saves/");
                 strcat(complete_name, button->text);
 
-                Level_Load(complete_name, world);
-
+                //TODO :
+                //determine if we're loading the file to modify it or play it
+                //if we want to modify it, configure the game to level editor mode...
+                //problem : how do I know why the user wants to load it??
                 display_menu_g = Jfalse;
                 game_state_g = GameState_Editing_Map;
                 world->player.visible = Jfalse;
                 world->player.solid = Jfalse;
+                mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
+
+
+                Level_Load(complete_name, world);
+
+
             }
 
 
@@ -168,83 +180,52 @@ void MenuManager_Update(MenuManager* mm,
 
                 if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
                 {
-                    if(menu->name == MainMenu_menu)
+
+                    if(button->name == Play_button)
                     {
-                        if(button->name == Play_button)
-                        {
-                            display_menu_g = Jfalse;
-                            game_state_g = GameState_Playing;
-                        }
-                        else if(button->name == LevelEditor_button)
-                        {
-
-                            mm->active_menu = mm->sub_menus[LevelEditor_menu];
-                            /**/
-                            //MainMenu_LoadLevelEditorMainMenu(mm->sub_menus[Main_Menu_menu]);
-
-                        }
-                        else if(button->name == Options_button)
-                        {
-                            //mm->active_menu = mm->sub_menus[Options_menu];
-                            //button->hover = Jfalse;
-                        }
-                        /*else if(button->name == SaveMap_button)
-                        {
-                            mm->active_menu = mm->sub_menus[SaveMap_menu];
-                            button->hover = Jfalse;
-                        }
-                        else if(button->name == LoadMap_button)
-                        {
-                            mm->active_menu = mm->sub_menus[LoadMap_menu];
-                            button->hover = Jfalse;
-                        }*/
-                        else if(button->name == Quit_button)
-                        {
-                            *running = Jfalse;
-                        }
+                        display_menu_g = Jfalse;
+                        game_state_g = GameState_Playing;
                     }
-
-                    else if(menu->name == LevelEditor_menu)
+                    else if(button->name == LevelEditor_button)
                     {
-                        if(button->name == NewMap_button)
-                        {
-                            World_Reset(world, 70, 70);
-                            display_menu_g = Jfalse;
-                            world->player.visible = Jfalse;
-                            world->player.solid = Jfalse;
-                            game_state_g = GameState_Editing_Map;
-                        }
-                        else if(button->name == LoadMap_button)
-                        {
-                            mm->active_menu = mm->sub_menus[LoadMap_menu];
-                            button->hover = Jfalse;
-                        }
+                        mm->previous_active_menu = mm->active_menu;
+                        mm->active_menu = mm->sub_menus[LevelEditor_menu];
                     }
-                    else if(menu->name == Options_menu)
+                    if(button->name == SaveMap_button)
                     {
-                        if(button->name == Back_button)
-                        {
-                            mm->active_menu = mm->sub_menus[MainMenu_menu];
-                            button->hover = Jfalse;
-                        }
+                        mm->previous_active_menu = mm->active_menu;
+                        mm->active_menu = mm->sub_menus[SaveMap_menu];
+                        button->hover = Jfalse;
                     }
-
-                    else if(menu->name == SaveMap_menu)
+                    else if(button->name == LoadMap_button)
                     {
-                        if(button->name == Back_button)
-                        {
-                            mm->active_menu = mm->sub_menus[MainMenu_menu];
-                            button->hover = Jfalse;
-                        }
+                        mm->previous_active_menu = mm->active_menu;
+                        mm->active_menu = mm->sub_menus[LoadMap_menu];
+                        button->hover = Jfalse;
                     }
-
-                    else if(menu->name == LoadMap_menu)
+                    else if(button->name == Quit_button)
                     {
-                        if(button->name == Back_button)
-                        {
-                            mm->active_menu = mm->sub_menus[MainMenu_menu];
-                            button->hover = Jfalse;
-                        }
+                        *running = Jfalse;
+                    }
+                    else if(button->name == NewMap_button)
+                    {
+                        World_Reset(world, 70, 70);
+                        mm->previous_active_menu = mm->active_menu;
+                        mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
+
+                        display_menu_g = Jfalse;
+                        world->player.visible = Jfalse;
+                        world->player.solid = Jfalse;
+                        game_state_g = GameState_Editing_Map;
+
+                    }
+                    else if(button->name == Back_button)
+                    {
+                        mm->active_menu = mm->previous_active_menu;
+                    }
+                    else if(button->name == Exit_Level_Editor_button)
+                    {
+                        mm->active_menu = mm->sub_menus[MainMenu_menu];
                     }
 
                     mm->click_timer         =   200;

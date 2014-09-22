@@ -20,7 +20,7 @@
 
     Jbool previousPressedKeys_g[200] = {Jfalse};
 static int switch_timer = 0;
-
+static int building_time = 0;
 Controls* CreateControls()
 {
 
@@ -215,28 +215,34 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                 }
 
                 else if(category == Cat_Zombie &&
-                   (SDL_GetTicks() - player->last_creation > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
+                   (SDL_GetTicks() - building_time > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
                 {
                     Vector_Push(monsters_vector,
                                 CreateZombie(obj_type, controls->mousePositionInWorldX, controls->mousePositionInWorldY));
 
-                    player->last_creation = SDL_GetTicks();
+                    building_time = SDL_GetTicks();
                 }
-                else if(category == Cat_Event)
+                else if(category == Cat_Event &&
+                        SDL_GetTicks() - building_time > 150)
                 {
                     //there can be only 1 player start and end of level
                     for(int i = 0 ; i < Vector_Count(&world->events_vector) ; i++)
                     {
+
                         Entity* map_event = (Entity*)Vector_Get(&world->events_vector, i);
+
+                        printf("%d in vector, trying to create %d, object in vector is %d\n", Vector_Count(&world->events_vector), obj_type, map_event->sub_category);
                         if((obj_type == Event_Player_Start || obj_type == Event_End_Level )&&
                            obj_type == map_event->sub_category)
                         {
+
                             Vector_Delete(&world->events_vector, i);
+                            printf("deleted %d, %d left\n", i, Vector_Count(&world->events_vector));
                         }
                     }
-                    printf("%d", Vector_Count(&world->events_vector));
+
                     Vector_Push(&world->events_vector, MapEvent_Create(obj_type, x, y, TILE_SIZE, TILE_SIZE));
-                    player->last_creation = SDL_GetTicks();
+                    building_time = SDL_GetTicks();
                 }
             }
             else

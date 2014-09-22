@@ -47,6 +47,7 @@ Menu* MainMenu_Create(MenuManager* menu_manager);
 Menu* SaveLevelMenu_Create(Graphics* graphics);
 Menu* LoadLevelMenu_Create(Graphics* graphics);
 Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager);
+Menu*  LevelEditorEditing_Create(MenuManager* menu_manager);
 
 /*void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu);
 void MainMenu_LoadMainEmptyMenu(Menu* mainMenu);

@@ -5,6 +5,7 @@
 Main_Category  button_category_g[NB_OF_LEVEL_EDITOR_BUTTONS];
     int button_object_type_g[NB_OF_LEVEL_EDITOR_BUTTONS];
 Texture_Type ground_textures_g[NB_OF_GROUND_TYPES];
+Texture_Type bonus_textures_g[NB_OF_BONUS_TYPES];
 Texture_Type wall_textures_g[NB_OF_WALL_TYPES];
 Texture_Type door_textures_g[NB_OF_DOOR_TYPES];
 Texture_Type event_textures_g[NB_EVENT_TYPES];
@@ -12,7 +13,20 @@ Texture_Type event_textures_g[NB_EVENT_TYPES];
 
 
 
+    /*Bonus_Rifle,
+    Bonus_Shotgun,
+    Bonus_GrenadeLauncher,
+    Bonus_Handgun,*/
 
+    int     bonus_width_g[NB_OF_BONUS_TYPES] =
+    {
+        30, 30, 30, 20
+    };
+
+    int     bonus_height_g[NB_OF_BONUS_TYPES] =
+    {
+        15, 15, 15, 15
+    };
 
         /*ZOMBIES DEFINITION*/
     //TODO : put in a moddable external file
@@ -89,6 +103,11 @@ void Game_InitData()
     event_textures_g[Event_End_Level] = Tex_Event_MapEnd;
     event_textures_g[Event_Player_Start] = Tex_Event_PlayerSpawn;
     event_textures_g[Event_Teleport_To_Other_Map] = Tex_Event_TeleportOtherMap;
+
+    bonus_textures_g[Bonus_GrenadeLauncher] = Tex_Bonus_GrenadeLauncher;
+    bonus_textures_g[Bonus_Rifle] = Tex_Bonus_Rifle;
+    bonus_textures_g[Bonus_Shotgun] = Tex_Bonus_Shotgun;
+    bonus_textures_g[Bonus_Handgun] = Tex_Bonus_Handgun;
 
     SDL_Color black = {0,0,0,255};
     SDL_Color white = {255,255,255,255};

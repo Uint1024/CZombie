@@ -25,6 +25,7 @@
 #include "world.h"
 #include "gameManager.h"
 #include "window.h"
+#include "menu.h"
 
 Jbool           debug_mode = Jfalse;
 Jbool           display_menu_g = Jtrue;
@@ -54,24 +55,25 @@ int main(int argc, char* args[])
 	int time_last_frame = 0;
 	float fps = 0;
 
+    //once this reaches 1000 / 60, we update the game (to have 30 updates per second)
     int chrono_update = 0;
+
+    //number of ms since the beginning of the game
     int time_last_frame_real = 0;
-    int time_this_frame_real = 0;
+
 
     Window level_editor = Window_CreateLevelEditor();
 
     MenuManager menu_manager = MenuManager_Create(graphics);
     int ms_delay_between_frame = 1000 / 60;
-
 	while (running)
 	{
-
-	    time_this_frame_real = SDL_GetTicks();
-        chrono_update += time_this_frame_real - time_last_frame_real;
+        time_now = SDL_GetTicks();
+        chrono_update += time_now - time_last_frame_real;
 
         if(chrono_update > ms_delay_between_frame)
         {
-            time_now = SDL_GetTicks();
+
             delta_g = time_now - time_last_frame;
             if(delta_g > 0)
             {
@@ -82,9 +84,9 @@ int main(int argc, char* args[])
 
             Inputs_ProcessInputs(controls, &world, &level_editor, &game_manager);
 
-
             if(!display_menu_g)
             {
+
                 GameManager_Update(&game_manager, &world, &level_editor);
                 Graphics_RenderGame(graphics,&world, controls, fps, &level_editor, &game_manager);
             }
@@ -101,7 +103,7 @@ int main(int argc, char* args[])
             time_last_frame = time_now;
         }
 
-        time_last_frame_real = time_this_frame_real;
+        time_last_frame_real = time_now;
 	}
 
 

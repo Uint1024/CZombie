@@ -2,10 +2,11 @@
 #include "menu_button.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "string.h"
+#include <string.h>
 #include <stdio.h>
 #include "menu_button.h"
 #include "menu_manager.h"
+
 
 /*Menu* MainMenu_Create(Graphics* graphics)
 {
@@ -105,19 +106,22 @@ Menu* MainMenu_Create(MenuManager* menu_manager)
 Menu*  LevelEditorEditing_Create(MenuManager* menu_manager)
 {
 
-    Vector_Clear(&mainMenu->buttons);
+    Menu* levelEditorEditingMenu = (Menu*)malloc(sizeof(Menu));
+    levelEditorEditingMenu->buttons = Vector_Create();
+    levelEditorEditingMenu->texts = Vector_Create();
+    levelEditorEditingMenu->name                       =   LevelEditorEditing_menu;
+    levelEditorEditingMenu->active_textfield = NULL;
 
-
-    Menu_Button_Name Menu_Button_Name[4] = {
+    Menu_Button_Name Menu_Button_Name[5] = {NewMap_button,
                                             SaveMap_button,
                                             LoadMap_button,
                                             Options_button,
                                             Exit_Level_Editor_button};
-    for(int j = 0 ; j < 4 ; j++)
+    for(int j = 0 ; j < 5 ; j++)
     {
         for(int i = 0 ; i < TOTAL_MAIN_MENU_BUTTONS ; i++)
         {
-            MenuButton* button = Vector_Get(&mainMenu->all_buttons, i);
+            MenuButton* button = Vector_Get(&menu_manager->all_buttons, i);
 
 
             if(button->name == Menu_Button_Name[j])
@@ -131,11 +135,13 @@ Menu*  LevelEditorEditing_Create(MenuManager* menu_manager)
                                                        button->box.height);
                 MenuButton* new_button = (MenuButton*)malloc(sizeof(MenuButton));
                 memcpy(new_button, button, sizeof(MenuButton));
-                Vector_Push(&mainMenu->buttons, new_button);
+                Vector_Push(&levelEditorEditingMenu->buttons, new_button);
             }
 
         }
     }
+
+    return levelEditorEditingMenu;
 }
 
 Menu* OptionMenu_Create(Graphics* graphics)
@@ -179,7 +185,6 @@ Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager)
 
             if(button->name == Menu_Button_Name[j])
             {
-                printf("bop");
                 //new button position
                 button->y = 100 * j + 50;
                 button->box = BoundingBox_CreateBetter(button->x,

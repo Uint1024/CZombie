@@ -151,7 +151,7 @@ void Level_Save(char* file_name, World* w)
 
         int num_of_events = Vector_Count(&w->events_vector);
         fwrite(&num_of_events, sizeof(int), 1, save_file);
-
+        printf("savin %d events", num_of_events);
         for(int i = 0 ; i < num_of_events ; i++)
         {
             Entity* buffer = (Entity*)Vector_Get(&w->events_vector, i);
@@ -176,7 +176,9 @@ void Level_Load(char* file_name, World* w)
 {
     Vector_Clear(&w->monsters_vector);
     Vector_Clear(&w->bonus_vector);
-
+    Vector_Clear(&w->events_vector);
+    Vector_Clear(&w->bullets_vector);
+    Vector_Clear(&w->explosions_vector);
 
     printf("LOADING\n");
     FILE *save_file;
@@ -206,7 +208,7 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_events = 0;
     fread(&num_of_events, sizeof(int), 1, save_file);
-
+    printf("loading %d events\n", num_of_events);
     for(int i = 0 ; i < num_of_events ; i++)
     {
         Entity* buffer = Entity_Spawn();

@@ -2,6 +2,7 @@
 #include "boundingBox.h"
 #include "stdio.h"
 
+
 Window Window_CreateLevelEditor()
 {
     Window w;
@@ -42,10 +43,12 @@ void Window_Move(Window* w, int dx, int dy)
 void Window_ResizeRight(Window *w, int changeW)
 {
     int newW = w->box.width + changeW;
+    if(newW > 50)
+    {
+        BoundingBox_UpdateNewSize(&w->box, newW, w->box.height);
 
-    BoundingBox_UpdateNewSize(&w->box, newW, w->box.height);
-
-    Window_UpdateButtonsPositions(w);
+        Window_UpdateButtonsPositions(w);
+    }
 }
 
 void Window_ResizeLeft(Window *w, int changeW)
@@ -53,11 +56,14 @@ void Window_ResizeLeft(Window *w, int changeW)
     //changeW is negative because the mouse moved to left
     int newW = w->box.width - changeW;
 
-    //move window to left and then increase its width
-    Window_Move(w, changeW, 0);
-    BoundingBox_UpdateNewSize(&w->box, newW, w->box.height);
+    if(newW > 50)
+    {
+        //move window to left and then increase its width
+        Window_Move(w, changeW, 0);
+        BoundingBox_UpdateNewSize(&w->box, newW, w->box.height);
 
-    Window_UpdateButtonsPositions(w);
+        Window_UpdateButtonsPositions(w);
+    }
 }
 
 

@@ -15,7 +15,11 @@ typedef struct ZombieC
     int                     rand_move_timer;
     int                     rand_move_every;
     Jbool                   idling;
-
+    Jbool                   dodging;
+    int                   dodging_time;
+    //the zombies ai activates every every 700 ms,
+    //else it lags too much...
+    int                     ai_timer;
 } ZombieC;
 
 ZombieC* ZombieC_Create();

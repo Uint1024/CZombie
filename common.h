@@ -102,6 +102,7 @@ typedef enum {
     Bonus_Rifle,
     Bonus_Shotgun,
     Bonus_GrenadeLauncher,
+    Bonus_Handgun,
     NB_OF_BONUS_TYPES
 } Bonus_type;
 
@@ -155,6 +156,7 @@ typedef enum {
     Tex_Bonus_GrenadeLauncher,
     Tex_Bonus_Rifle,
     Tex_Bonus_Shotgun,
+    Tex_Bonus_Handgun,
 
     Explosion1_tex,
 
@@ -242,6 +244,7 @@ extern Texture_Type     wall_textures_g[NB_OF_WALL_TYPES];
 extern Texture_Type     door_textures_g[NB_OF_DOOR_TYPES];
 extern Texture_Type     ground_textures_g[NB_OF_GROUND_TYPES];
 extern Texture_Type     event_textures_g[NB_EVENT_TYPES];
+extern Texture_Type     bonus_textures_g[NB_OF_BONUS_TYPES];
 extern SDL_Color        font_color_g[NBCOLORS];
 
 
@@ -249,11 +252,18 @@ extern SDL_Color        font_color_g[NBCOLORS];
 extern Texture_Type     zombie_textures_g[NB_ZOMBIE_TYPES];
 extern float            calm_speed_g[NB_ZOMBIE_TYPES];
 extern float            angry_speed_g[NB_ZOMBIE_TYPES];
+
+//shouldn't I just create global zombies and copy them??
+//extern Entity zombie_templates[NB_ZOMBIE_TYPES];
 extern int              zombie_width_g[NB_ZOMBIE_TYPES];
 extern int              zombie_height_g[NB_ZOMBIE_TYPES];
 extern int              zombie_hp_g[NB_ZOMBIE_TYPES];
 extern int              zombie_damage_g[NB_ZOMBIE_TYPES];
 extern int              zombie_weapon_g[NB_ZOMBIE_TYPES];
+
+
+extern int              bonus_width_g[NB_OF_BONUS_TYPES];
+extern int              bonus_height_g[NB_OF_BONUS_TYPES];
 extern Game_State       game_state_g;
 extern Jbool            display_menu_g;
 

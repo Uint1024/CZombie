@@ -39,7 +39,6 @@ Entity* Ground_Create(Ground_Type type, float x, float y)
 
 void Structure_GetAttacked(Entity* d, Entity* attacker)
 {
-    printf("%d\n", d->hp);
     if((d->hp -= attacker->damage) <= 0)
     {
         Structure_Die(d);

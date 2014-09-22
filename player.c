@@ -142,20 +142,42 @@ void Player_StopRunning(Entity* p)
 }
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
-    //WeaponsComponent* wc = player->weapons_component;
-    /*    if(wc->weapons_inventory[bonus->corresponding_weapon] != NULL)
+    WeaponsComponent* wc = player->weapons_component;
+
+    int type = bonus->sub_category;
+    Weapon_Type weapon_type = 999;
+
+    switch(type)
+    {
+    case Bonus_GrenadeLauncher:
+        weapon_type = GrenadeLauncher_w;
+        break;
+    case Bonus_Rifle:
+        weapon_type = AutomaticRifle_w;
+        break;
+    case Bonus_Shotgun:
+        weapon_type = Shotgun_w;
+        break;
+    case Bonus_Handgun:
+        weapon_type = Handgun_w;
+        break;
+    }
+
+    if(weapon_type != 999)
+    {
+        if(wc->weapons_inventory[weapon_type] != NULL)
         {
             WeaponsComponent_AddAmmo(wc,
-                                 bonus->corresponding_weapon,
+                                 weapon_type,
                                  50);
         }
         else
         {
             WeaponsComponent_AddWeaponToInventory(
-                    wc, Weapon_Create(bonus->corresponding_weapon));
+                    wc, Weapon_Create(weapon_type));
         }
+    }
 
-*/
     bonus->alive = Jfalse;
 }
 
