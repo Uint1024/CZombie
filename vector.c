@@ -69,7 +69,7 @@ void Vector_Clear(Vector* v)
 {
     for(int i = 0 ; i < v->count ; i++)
     {
-        free(v->data[i]);
+        Entity_Destroy(v->data[i]);
     }
     free(v->data);
     v->size = 0;
@@ -110,7 +110,7 @@ void Vector_Delete(Vector *v, int index)
 
 
     v->data[v->count-1] = NULL;
-    free(to_delete);
+    Entity_Destroy(to_delete);
 
 	v->count--;
 

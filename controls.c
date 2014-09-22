@@ -66,14 +66,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 {
     if(controls->pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
     {
-
-            switch_timer = SDL_GetTicks();
-            game_state_g = GameState_Map_Editor_Testing_Level;
-
-            //where the fuck do I put this? in gamemanager? wtf is gamemanager anyway
-            Game_StartMap(world);
-            world->player.movementC->speed = BASE_PLAYER_SPEED;
-            Level_Save("saves/tempLevelEditor.sav", world);
+        switch_timer = SDL_GetTicks();
+        LevelEditor_QuickTry(world);
     }
 
 
@@ -212,6 +206,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
                 else if(category == Cat_Ground)
                 {
+                    Entity_Destroy(world->ground_map[position_in_array]);
                     world->ground_map[position_in_array] = Ground_Create(obj_type, x, y);
                 }
 
@@ -222,6 +217,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                                 CreateZombie(obj_type, controls->mousePositionInWorldX, controls->mousePositionInWorldY));
 
                     building_time = SDL_GetTicks();
+
+                    printf("%d\n", Vector_Count(monsters_vector));
                 }
                 else if(category == Cat_Event &&
                         SDL_GetTicks() - building_time > 150)
@@ -232,13 +229,11 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
                         Entity* map_event = (Entity*)Vector_Get(&world->events_vector, i);
 
-                        printf("%d in vector, trying to create %d, object in vector is %d\n", Vector_Count(&world->events_vector), obj_type, map_event->sub_category);
                         if((obj_type == Event_Player_Start || obj_type == Event_End_Level )&&
                            obj_type == map_event->sub_category)
                         {
 
                             Vector_Delete(&world->events_vector, i);
-                            printf("deleted %d, %d left\n", i, Vector_Count(&world->events_vector));
                         }
                     }
 
@@ -275,7 +270,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
         //remove wall (replace it with empty entity)
         if(controls->pressedKeys[SDLK_c])
         {
-            world->map[position_in_array] = Entity_Spawn();
+            Entity_Destroy(world->map[position_in_array]);
+            world->map[position_in_array] = Wall_CreateEmpty();
         }
 
         //cancel current selected object
@@ -305,8 +301,11 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 }
 
 
-bool Inputs_PoolInputs(Controls* controls, Entity* camera)
+bool Inputs_PoolInputs(Controls* controls, PlayerC* playerC)
 {
+    float cameraX = playerC->cameraX;
+    float cameraY = playerC->cameraY;
+
     controls->mouseWheelPos = 0;
 	while (SDL_PollEvent(&controls->e))
 	{
@@ -354,9 +353,9 @@ bool Inputs_PoolInputs(Controls* controls, Entity* camera)
 
 	SDL_GetMouseState(&controls->mouseX, &controls->mouseY);
 
-	controls->mousePositionInWorldX = controls->mouseX + camera->x;
+	controls->mousePositionInWorldX = controls->mouseX + cameraX;
 
-	controls->mousePositionInWorldY = controls->mouseY + camera->y;
+	controls->mousePositionInWorldY = controls->mouseY + cameraY;
 	controls->mouseTileX = (controls->mousePositionInWorldX - controls->mousePositionInWorldX % TILE_SIZE) / TILE_SIZE;
 
 	controls->mouseTileY = (controls->mousePositionInWorldY - controls->mousePositionInWorldY % TILE_SIZE) / TILE_SIZE;
@@ -509,10 +508,8 @@ void Inputs_ApplyInputs( Controls* controls,
             if(game_state_g == GameState_Map_Editor_Testing_Level)
             {
                 switch_timer = SDL_GetTicks();
-                game_state_g = GameState_Editing_Map;
-                world->player.visible = false;
-                world->player.solid = false;
-                Level_Load("saves/tempLevelEditor.sav", world);
+
+                LevelEditor_BackToEditing(world);
             }
         }
     }

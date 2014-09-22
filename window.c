@@ -106,8 +106,6 @@ void Window_UpdateButtonsPositions(Window* w)
 
     }
 
-
-
     w->nb_of_buttons = buttons_nb;
 
 }
@@ -123,48 +121,7 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
     button.main_category = cat;
     button.button_type = type;
     button.texture = 0;
-    switch(cat)
-    {
-    case Cat_Wall:
-        button.texture = wall_textures_g[type];
-        break;
-    case Cat_Zombie:
-        button.texture = zombie_textures_g[type];
-        break;
-    case Cat_Ground:
-        button.texture = ground_textures_g[type];
-        break;
-    case Cat_Door:
-        button.texture = door_textures_g[type];
-        break;
-    case Cat_Grenade:
-        //todo
-        break;
-    case Cat_Event:
-        button.texture = event_textures_g[type];
-        break;
-    case NB_OF_CAT:
-        printf("error, tried to create NB_OF_CAT button\n");
-        break;
-    case Nothing:
-        printf("error, tried to create Nothing button\n");
-        break;
-    case Cat_Player:
-        printf("error, tried to create Player button\n");
-        break;
-    case Cat_Weapon:
-        printf("error, tried to create Weapon button\n");
-        break;
-    case Cat_Bonus:
-        printf("error, tried to create Bonus button\n");
-        break;
-    case Cat_Texture:
-        printf("error, tried to create Texture button\n");
-        break;
-    case Cat_Bullet:
-        printf("error, tried to create Bullet button\n");
-        break;
-    }
+    button.texture = all_textures_g[cat][type];
 
     button.x = x + w->x;
     button.y = y + w->y;

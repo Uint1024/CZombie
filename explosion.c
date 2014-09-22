@@ -1,4 +1,6 @@
 #include "explosion.h"
+#include "world.h"
+#include "wall.h"
 
 Entity* Explosion_Create(int x, int y)
 {
@@ -16,9 +18,19 @@ Entity* Explosion_Create(int x, int y)
 }
 
 
-void Explosion_Update(Entity* exp)
+void Explosion_Update(Entity* exp, World* world)
 {
     exp->alive_timer -= delta_g;
+
+    for(int i = 0 ; i < world->map_size ; i++)
+    {
+        if(world->map[i]->visible && BoundingBox_CheckSimpleCollision(&exp->box, &world->map[i]->box))
+        {
+            Structure_GetAttacked(world->map[i], exp);
+        }
+
+    }
+
     if(exp->alive_timer <= 0)
         exp->alive = false;
 }

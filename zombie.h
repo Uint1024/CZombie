@@ -20,6 +20,7 @@ typedef struct ZombieC
     //the zombies ai activates every every 700 ms,
     //else it lags too much...
     int                     ai_timer;
+    int                     paths_calculated;
 } ZombieC;
 
 ZombieC* ZombieC_Create();
@@ -27,7 +28,7 @@ ZombieC* ZombieC_Create();
 void Zombie_Update(Entity* z, World* world);
 
 Entity* CreateZombie(Zombie_Type type, float x, float y);
-void Zombie_Die(Entity* zombie, Vector* bonus_vector);
+void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector);
 void  Zombie_Shoot(Entity* z, World* world);
 void Zombie_Ai(Entity* z, World* world);
 void Zombie_BecomeAggressive(Entity* z, World* world);

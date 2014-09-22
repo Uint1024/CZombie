@@ -12,6 +12,7 @@ World World_Initialize(int map_width, int map_height)
     world.monsters_vector   =   Vector_Create();
     world.explosions_vector =   Vector_Create();
     world.events_vector     =   Vector_Create();
+    world.decals_vector     =   Vector_Create();
     world.map_width         =   map_width;
     world.map_height        =   map_height;
     world.map_size          =   map_width * map_height;
@@ -25,7 +26,7 @@ World World_Initialize(int map_width, int map_height)
 
     for(int i = 0 ; i < world.map_size ; i++)
     {
-        world.map[i] = Entity_Spawn();
+        world.map[i] = Wall_CreateEmpty();
 
     }
 

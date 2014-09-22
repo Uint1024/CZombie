@@ -7,7 +7,7 @@ Entity* Door_Create(Door_Type type, int x, int y)
 {
 	Entity* ent = Entity_Spawn();
 	ent->t = Cat_Door;
-	ent->texture = door_textures_g[type];
+	ent->texture = all_textures_g[Cat_Door][type];
 	ent->x = x;
 	ent->y = y;
 	ent->hp = 250;
@@ -16,10 +16,6 @@ Entity* Door_Create(Door_Type type, int x, int y)
 	return ent;
 }
 
-/*void Door_Update(entity d)
-{
-    d->solid = true;
-}*/
 
 void Door_GetAttacked(Entity* d, Entity* attacker)
 {
@@ -31,7 +27,7 @@ void Door_GetAttacked(Entity* d, Entity* attacker)
 
 void Door_Die(Entity* d)
 {
-    d->texture = door_textures_g[Door_Dead];
+    d->texture = all_textures_g[Cat_Door][Door_Dead];
     d->solid = false;
 }
 

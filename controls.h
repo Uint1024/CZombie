@@ -8,6 +8,7 @@
 typedef struct World World;
 typedef struct Button Button;
 typedef struct GameManager GameManager;
+typedef struct PlayerC PlayerC;
 
 extern bool previousPressedKeys_g[200];
 
@@ -44,7 +45,7 @@ typedef struct Controls
 } Controls;
 
 Controls* CreateControls();
-bool   Inputs_PoolInputs(Controls* controls, Entity* camera);
+bool Inputs_PoolInputs(Controls* controls, PlayerC* playerC);
 void    Inputs_ApplyInputs( Controls* controls,
                             World* world, Window* level_editor, GameManager* gm);
 

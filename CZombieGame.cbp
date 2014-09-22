@@ -100,6 +100,7 @@
 		<Unit filename="map.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mapEvent.h" />
 		<Unit filename="menu.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -112,6 +113,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="menu_manager.h" />
+		<Unit filename="movement_component.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="movement_component.h" />
 		<Unit filename="player.c">
 			<Option compilerVar="CC" />
 		</Unit>

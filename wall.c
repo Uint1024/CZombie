@@ -5,11 +5,21 @@
 #include "entity.h"
 
 //create a plain wall at the tile x:y
+
+Entity* Wall_CreateEmpty()
+{
+    Entity* ent = Entity_Spawn();
+        ent->visible = false;
+        ent->solid = false;
+
+        return ent;
+}
+
 Entity* Wall_Create(Wall_Type type, int x_, int y_)
 {
 	Entity* ent = Entity_Spawn();
 	ent->t = Cat_Wall;
-	ent->texture = wall_textures_g[type];
+	ent->texture = all_textures_g[Cat_Wall][type];
 	ent->x = x_;
 	ent->y = y_;
 
@@ -24,7 +34,7 @@ Entity* Ground_Create(Ground_Type type, float x, float y)
     Entity* ent = Entity_Spawn();
     ent->t = Cat_Ground;
 
-    ent->texture = ground_textures_g[type];
+    ent->texture = all_textures_g[Cat_Ground][type];
 
 	ent->x = x;
 	ent->y = y;

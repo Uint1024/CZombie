@@ -209,7 +209,7 @@ void MenuManager_Update(MenuManager* mm,
                     }
                     else if(button->name == NewMap_button)
                     {
-                        World_Reset(world, 70, 70);
+                        World_Reset(world, 100,100);
                         mm->previous_active_menu = mm->active_menu;
                         mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
 

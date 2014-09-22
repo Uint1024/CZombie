@@ -98,6 +98,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     Vector* bonus_vector = &world->bonus_vector;
     Vector* monsters_vector = &world->monsters_vector;
     Vector* explosions_vector = &world->explosions_vector;
+    Vector* decals_vector = &world->decals_vector;
 
 
 
@@ -163,7 +164,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
                     if (mob->alive == false)
                     {
-                        Zombie_Die(mob, bonus_vector);
+                        Zombie_Die(mob, bonus_vector, decals_vector);
                         Vector_Delete(monsters_vector, i);
 
                     }
@@ -179,7 +180,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     for(int i = 0 ; i < Vector_Count(explosions_vector) ; i++)
     {
         Entity* exp = (Entity*)Vector_Get(explosions_vector, i);
-        Explosion_Update(exp);
+        Explosion_Update(exp, world);
         if (!exp->alive)
         {
             Vector_Delete(explosions_vector, i);

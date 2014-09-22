@@ -1,6 +1,7 @@
 #include "bonus.h"
 #include <stdio.h>
 #include "movement_component.h"
+#include "entity.h"
 
 void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
 {
@@ -18,9 +19,10 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     bonus->y = y;
     bonus->t = Cat_Bonus;
     bonus->sub_category = bonus_type;
+    bonus->movementC = MovementC_Create();
     bonus->movementC->angle = angle;
 
-    bonus->texture = bonus_textures_g[bonus_type];
+    bonus->texture = all_textures_g[Cat_Bonus][bonus_type];
     BoundingBox_Create(bonus, 30, 15);
     return bonus;
 }
@@ -28,7 +30,8 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 
 void Bonus_Update(Entity* bonus, Entity* player)
 {
-    if(abs(bonus->x - player->x) < 150 && abs(bonus->y - player->y) < 150)
+    //if(abs(bonus->x - player->x) < 150 && abs(bonus->y - player->y) < 150)
+    if(Entity_CheckDistance(player, bonus, 150))
     {
         bonus->movementC->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);
 

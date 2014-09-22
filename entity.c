@@ -58,6 +58,7 @@ void Entity_Destroy(Entity* ent)
     free(ent->zombieC);
     free(ent->movementC);
     free(ent->playerC);
+    free(ent);
 }
 
 bool Entity_CheckNear(Entity* ent1, Entity* ent2)
@@ -158,8 +159,8 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
     while(line_distance <= distance_to_ent2 &&
           can_see == true)
     {
-        pointX += cos(angle_to_ent2) * 10;//magic number yay!!
-        pointY += sin(angle_to_ent2) * 10;
+        pointX += cos(angle_to_ent2) * 28;//magic number yay!!
+        pointY += sin(angle_to_ent2) * 28;//max of cos(x) and sin(x) is 1 so it
         line_distance = C_DistanceBetween2Points(ent1MiddleX, ent1MiddleY,
                                                  pointX, pointY);
 
@@ -211,9 +212,9 @@ bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
     bool collision = false;
     for (int i = 0; i < map_size; i++)
 	{
-		if (map[i] != NULL)
+		if (map[i] != NULL && map[i]->solid)
 		{
-		    if(Entity_CheckNear(ent, map[i]) && map[i]->x != 0 && map[i]->solid)
+		    if(Entity_CheckNear(ent, map[i]))
             {
                 Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
                 if (collision_direction != None)

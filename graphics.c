@@ -69,6 +69,14 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Tex_Event_PlayerSpawn]              =   "event_playerstart.png";
     g->textures_names[Tex_Event_TeleportOtherMap]              =   "event_mapchange.png";
     g->textures_names[Tex_Bonus_Handgun]              =   "bonus_handgun.png";
+    g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "zombie_corpse.png";
+    g->textures_names[Tex_Decals_Corpse_Zombie_Heavy]              =   "corpse_heavyzombie.png";
+    g->textures_names[Tex_Wall_Cool]              =   "wall_cool.png";
+    g->textures_names[Tex_Decals_Corpse_Zombie_Trooper] = "corpse_trooperzombie.png";
+    //g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "bonus_handgun.png";
+    //g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "bonus_handgun.png";
+    //g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "bonus_handgun.png";
+
 
 
     for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
@@ -108,6 +116,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     Vector* monsters_vector = &world->monsters_vector;
     Vector* explosions_vector = &world->explosions_vector;
     Vector* events_vector = &world->events_vector;
+    Vector* decals_vector = &world->decals_vector;
 
 
     for (int i = 0; i < world->map_size; i++)
@@ -121,17 +130,26 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         }
     }
 
-/*
+
 
     for (int i = 0; i < world->map_size; i++)
     {
-        if (world->map[i] != NULL)
+        if (world->map[i]->visible)
         {
             if(Entity_CheckNear(&world->player, world->map[i]))
             {
                 Graphics_RenderObject(graphics, world->map[i], world->player.playerC);
 
             }
+        }
+    }
+    for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
+    {
+        Entity* decal = (Entity*)Vector_Get(decals_vector, i);
+        if(Entity_CheckNear(&world->player, decal))
+        {
+            Graphics_RenderObject(graphics, decal, world->player.playerC);
+
         }
     }
 
@@ -144,6 +162,8 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
 
         }
     }
+
+
 
 
     Graphics_RenderObject(graphics, &world->player, world->player.playerC);
@@ -188,7 +208,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
             Graphics_RenderObject(graphics, explosion, world->player.playerC);
         }
     }
-*/
+
 
 }
 
@@ -196,6 +216,7 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
 {
     float cameraX = playerC->cameraX;
     float cameraY = playerC->cameraY;
+    //printf("%f\n", cameraX);
     if(object->t == Cat_Player)
     {
         int alpha_value = 255;
@@ -318,6 +339,8 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
 
     SDL_FreeSurface(graphics->text_surface);
     SDL_DestroyTexture(graphics->text_texture);
+
+    //free(text);
 }
 
 void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
@@ -435,31 +458,13 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
             }
             else if(cat == Cat_Zombie)
             {
-                texture_type = zombie_textures_g[object_type];
-
-                obj_w = zombie_width_g[object_type];
-                obj_h = zombie_height_g[object_type];
+                obj_w = 20;
+                obj_h = 20;
 
                 obj_x = controls->mousePositionInWorldX - cameraX;
                 obj_y = controls->mousePositionInWorldY - cameraY;
             }
-
-            if(cat == Cat_Ground)
-            {
-                texture_type = ground_textures_g[object_type];
-            }
-            else if(cat == Cat_Wall)
-            {
-                texture_type = wall_textures_g[object_type];
-            }
-            else if(cat == Cat_Door)
-            {
-                texture_type = door_textures_g[object_type];
-            }
-            else if(cat == Cat_Event)
-            {
-                texture_type = event_textures_g[object_type];
-            }
+            texture_type = all_textures_g[cat][object_type];
 
             SDL_Rect blueprint_rect = {obj_x, obj_y, obj_w, obj_h };
             //Graphics_SetTextureAlpha(g, texture_type, 100);

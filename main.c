@@ -49,7 +49,7 @@ int main(int argc, char* args[])
 
 	Controls* controls = CreateControls();
 
-    World world = World_Initialize(70, 70);
+    World world = World_Initialize(300, 300);
 
 	int time_now = SDL_GetTicks();
 	int time_last_frame = 0;

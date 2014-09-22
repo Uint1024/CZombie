@@ -83,9 +83,13 @@ typedef enum {
     NB_OF_GROUND_TYPES
 } Ground_Type;
 
+//extern Entity ground_templates_g[NB_OF_GROUND_TYPES];
+
+
 //Wall_Type
 typedef enum {
     Wall_Normal,
+    Wall_Cool,
     NB_OF_WALL_TYPES
 } Wall_Type
 ;
@@ -106,19 +110,12 @@ typedef enum {
     NB_OF_BONUS_TYPES
 } Bonus_type;
 
-//LevelEditor_Button
-typedef enum{
-    Button_Wall_Normal,
-    Button_Door_Normal,
-    GrassGround_button,
-    DirtGround_button,
-    NormalZombie_button,
-    FastZombie_button,
-    HeavyZombie_button,
-    TrooperZombie_button,
-    NB_OF_LEVEL_EDITOR_BUTTONS,
-    HugeZombie_button
-} LevelEditor_Button;
+typedef enum
+{
+    Corpse,
+    NB_OF_DECALS_TYPES
+} Decal_Type;
+
 
 //Zombie_Type
 typedef enum {
@@ -139,6 +136,7 @@ typedef enum {
     Tex_Fireball,
 
     Tex_Wall_Normal,
+    Tex_Wall_Cool,
 
     Tex_Door_Normal,
     Tex_Door_Dead,
@@ -160,6 +158,11 @@ typedef enum {
 
     Explosion1_tex,
 
+    Tex_Decals_Corpse_Zombie_Normal,
+    Tex_Decals_Corpse_Zombie_Heavy,
+    Tex_Decals_Corpse_Zombie_Trooper,
+
+
     Tex_Event_PlayerSpawn,
     Tex_Event_TeleportOtherMap,
     Tex_Event_MapEnd,
@@ -169,6 +172,9 @@ typedef enum {
     Cursor_resize_left_right_tex,
 
     NB_OF_TEXTURES,
+        Tex_Decals_Corpse_Zombie_Fast,
+    Tex_Decals_Corpse_Zombie_Huge,
+
     No_texture
 } Texture_Type;
 
@@ -239,28 +245,14 @@ typedef struct Vec2
 extern int              buttons_wall_types_g[NB_OF_WALL_TYPES];
 
 
-/*Textures corresponding to each object in each category*/
-extern Texture_Type     wall_textures_g[NB_OF_WALL_TYPES];
-extern Texture_Type     door_textures_g[NB_OF_DOOR_TYPES];
-extern Texture_Type     ground_textures_g[NB_OF_GROUND_TYPES];
-extern Texture_Type     event_textures_g[NB_EVENT_TYPES];
-extern Texture_Type     bonus_textures_g[NB_OF_BONUS_TYPES];
+//100 is magic number, whatever, it just has to hold enough for each category
+extern Texture_Type     all_textures_g[NB_OF_CAT][100];
 extern SDL_Color        font_color_g[NBCOLORS];
 
 
 /*zombies definition*/
-extern Texture_Type     zombie_textures_g[NB_ZOMBIE_TYPES];
 extern float            calm_speed_g[NB_ZOMBIE_TYPES];
 extern float            angry_speed_g[NB_ZOMBIE_TYPES];
-
-//shouldn't I just create global zombies and copy them??
-//extern Entity zombie_templates[NB_ZOMBIE_TYPES];
-extern int              zombie_width_g[NB_ZOMBIE_TYPES];
-extern int              zombie_height_g[NB_ZOMBIE_TYPES];
-extern int              zombie_hp_g[NB_ZOMBIE_TYPES];
-extern int              zombie_damage_g[NB_ZOMBIE_TYPES];
-extern int              zombie_weapon_g[NB_ZOMBIE_TYPES];
-
 
 extern int              bonus_width_g[NB_OF_BONUS_TYPES];
 extern int              bonus_height_g[NB_OF_BONUS_TYPES];

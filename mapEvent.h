@@ -18,7 +18,7 @@ Entity* MapEvent_Create(MapEvent_Type type, int x, int y, int width, int height)
     me->x = x;
     me->y = y;
     me->box = BoundingBox_CreateBetter(x, y, width, height);
-    me->texture = event_textures_g[type];
+    me->texture = all_textures_g[Cat_Event][type];
     return me;
 }
 #endif // MAPEVENT_H
