@@ -101,7 +101,6 @@ void Window_UpdateButtonsPositions(Window* w)
 
     for(int i = 0 ; i < NB_EVENT_TYPES ; i++)
     {
-        printf("event button n %d\n", i);
         Button_Create(Cat_Event, i, buttons_nb, w);
         buttons_nb++;
 
@@ -171,8 +170,5 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
     button.y = y + w->y;
     button.box = BoundingBox_CreateBetter(button.x, button.y , 20, 20);
     w->buttons[buttons_nb] = button;
-
-    printf("button nb %d\n", buttons_nb);
-
 
 }

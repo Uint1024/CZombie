@@ -1,6 +1,7 @@
 #include "boundingBox.h"
 #include "entity.h"
 #include "window.h"
+#include "movement_component.h"
 
 //create temporary bounding box from entity's position and velocity
 Box* BoundingBox_CreateTemp(Entity* ent)
@@ -8,10 +9,10 @@ Box* BoundingBox_CreateTemp(Entity* ent)
 	Box* tempBox = (Box*)malloc(sizeof(Box));
 	tempBox->width = ent->box.width;
 	tempBox->height = ent->box.height;
-	tempBox->left = ent->box.left + ent->dx;
-	tempBox->top = ent->box.top + ent->dy;
-	tempBox->right = ent->box.right + ent->dx;
-	tempBox->bottom = ent->box.bottom + ent->dy;
+	tempBox->left = ent->box.left + ent->movementC->dx;
+	tempBox->top = ent->box.top + ent->movementC->dy;
+	tempBox->right = ent->box.right + ent->movementC->dx;
+	tempBox->bottom = ent->box.bottom + ent->movementC->dy;
 
 	return tempBox;
 }
@@ -147,7 +148,7 @@ Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 }
 
 //simple collision detection, returns true if collision
-Jbool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2)
+bool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2)
 {
 
 	if (box1->left > box2->right ||
@@ -155,16 +156,16 @@ Jbool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2)
 		box1->top > box2->bottom ||
 		box1->bottom < box2->top)
 	{
-		return Jfalse;
+		return false;
 	}
 	else
 	{
-		return Jtrue;
+		return true;
 	}
 }
 
 //check collision between a point (vec2) and a box
-Jbool BoundingBox_CheckPointCollision(int x, int y, Box* box2)
+bool BoundingBox_CheckPointCollision(int x, int y, Box* box2)
 {
 
 	if (x > box2->right ||
@@ -172,11 +173,11 @@ Jbool BoundingBox_CheckPointCollision(int x, int y, Box* box2)
 		y > box2->bottom ||
 		y < box2->top)
 	{
-		return Jfalse;
+		return false;
 	}
 	else
 	{
-		return Jtrue;
+		return true;
 	}
 }
 

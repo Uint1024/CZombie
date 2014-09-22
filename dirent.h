@@ -185,7 +185,7 @@ typedef struct _WDIR _WDIR;
 static _WDIR *_wopendir (const wchar_t *dirname);
 //static struct _wdirent *_wreaddir (_WDIR *dirp);
 static int _wclosedir (_WDIR *dirp);
-static void _wrewinddir (_WDIR* dirp);
+//static void _wrewinddir (_WDIR* dirp);
 
 
 /* For compatibility with Symbian */

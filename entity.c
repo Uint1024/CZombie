@@ -11,6 +11,8 @@
 #include <math.h>
 #include "zombie.h"
 #include "door.h"
+#include "wall.h"
+#include "movement_component.h"
 
 Entity* Entity_Spawn()
 {
@@ -18,7 +20,7 @@ Entity* Entity_Spawn()
 
 
     ent->t                          = Nothing;
-    //position, box and texture should be in a physical component?
+    ent->sub_category               = 0;
 	ent->x                          = 0;
 	ent->y                          = 0;
 	ent-> box.top                   = 0;
@@ -27,32 +29,23 @@ Entity* Entity_Spawn()
 	ent->box.height                 = 0;
 	ent->box.right                  = 0;
 	ent->box.bottom                 = 0;
-    ent->solid = Jtrue;
+    ent->solid                      = true;
     ent->texture                    = No_texture;
-    ent->visible = Jtrue;
-
-	//speed, angle, and velocity should be in a movement component?
-	ent->dx                         = 0;
-	ent->dy                         = 0;
-	ent->speed                      = 0;
-	ent->angle                      = 0;
+    ent->visible                    = true;
 
 
-	ent->alive                      = Jtrue;
+	ent->alive                      = true;
 	ent->hp                         = 0;
-	ent->last_creation              = 0;
 
 
     ent->damage                     = 0;
-    ent->stamina                    = 0;
-    ent->door_opening_timer         = 0;
 
 	//components
-    ent->weapons_component          = NULL;
-    ent->explosive_component        = NULL;
+    ent->weaponsC                   = NULL;
+    ent->explosiveC                 = NULL;
     ent->zombieC                    = NULL;
-    ent->camera                     = NULL;
-
+    ent->movementC                  = NULL;
+    ent->playerC                    = NULL;
 
 
 	return ent;
@@ -60,21 +53,22 @@ Entity* Entity_Spawn()
 
 void Entity_Destroy(Entity* ent)
 {
-    free(ent->weapons_component);
-    free(ent->explosive_component);
+    free(ent->weaponsC);
+    free(ent->explosiveC);
     free(ent->zombieC);
-    free(ent->camera);
+    free(ent->movementC);
+    free(ent->playerC);
 }
 
-Jbool Entity_CheckNear(Entity* ent1, Entity* ent2)
+bool Entity_CheckNear(Entity* ent1, Entity* ent2)
 {
     return (abs(ent1->x - ent2->x) < 600 && abs(ent1->y - ent2->y) < 600);
 }
 
 void Entity_CalculateVelocity(Entity* ent)
 {
-    ent->dx = cos(ent->angle ) * ent->speed * delta_g;
-    ent->dy = sin(ent->angle ) * ent->speed * delta_g;
+    ent->movementC->dx = cos(ent->movementC->angle ) * ent->movementC->speed * delta_g;
+    ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed * delta_g;
 }
 
 /*void Entity_CalculateVelocityFromAngle(Entity* ent)
@@ -138,7 +132,7 @@ float Entity_DistanceBetweenTwoEntities(Entity* ent1, Entity* ent2)
 
 }
 
-Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
+bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
 {
     //middle of ent1, does not change
     float ent1MiddleX = 0;
@@ -157,12 +151,12 @@ Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
     float distance_to_ent2 = Entity_DistanceBetweenTwoEntities(ent1, ent2);
 
     //become false if we hit a wall
-    Jbool can_see = Jtrue;
+    bool can_see = true;
 
     float angle_to_ent2 = C_AngleBetween2Entities(ent1, ent2);
 
     while(line_distance <= distance_to_ent2 &&
-          can_see == Jtrue)
+          can_see == true)
     {
         pointX += cos(angle_to_ent2) * 10;//magic number yay!!
         pointY += sin(angle_to_ent2) * 10;
@@ -177,7 +171,7 @@ Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
                 //if the end of the line hits a wall, the zombie can't see the player
                 if(BoundingBox_CheckPointCollision(pointX, pointY, &world->map[i]->box))
                 {
-                    can_see = Jfalse;
+                    can_see = false;
                 }
             }
         }
@@ -186,35 +180,35 @@ Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
     return can_see;
 }
 
-Jbool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
+bool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
 {
 
     float pythDistance = Entity_DistanceBetweenTwoEntities(ent1, ent2);
 
     if(pythDistance < distance)
-        return Jtrue;
+        return true;
     else
-        return Jfalse;
+        return false;
 }
 
-Jbool Entity_CollisionWithStuff(Entity* ent, World* world)
+bool Entity_CollisionWithStuff(Entity* ent, World* world)
 {
 
-    Jbool collision_with_walls = Entity_CollisionWithWalls(ent, world->map, world->map_size);
-    Jbool collision_with_mobs = Entity_CollisionWithMonsters(ent, &world->monsters_vector);
+    bool collision_with_walls = Entity_CollisionWithWalls(ent, world->map, world->map_size);
+    bool collision_with_mobs = Entity_CollisionWithMonsters(ent, &world->monsters_vector);
 
     return (collision_with_walls || collision_with_mobs);
 }
 
 
 
-Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
+bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 {
     Box* temp = BoundingBox_CreateTemp(ent);
     Entity* collision_wall[5];
 	int walls_touched[5] = { 0 };
 
-    Jbool collision = Jfalse;
+    bool collision = false;
     for (int i = 0; i < map_size; i++)
 	{
 		if (map[i] != NULL)
@@ -224,7 +218,7 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
                 Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
                 if (collision_direction != None)
                 {
-                    collision = Jtrue;
+                    collision = true;
                     collision_wall[collision_direction] = map[i];
                     walls_touched[collision_direction]++;
                     ent->collision_direction = collision_direction;
@@ -233,7 +227,6 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
                        map[i]->solid &&
                        (map[i]->t == Cat_Door || map[i]->t == Cat_Wall))
                     {
-                        printf("%d\n", ent->damage);
                         Structure_GetAttacked(map[i], ent);
                     }
                 }
@@ -242,101 +235,101 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 	}
 
 
-    if(ent->dy == 0)
+    if(ent->movementC->dy == 0)
     {
         if(walls_touched[Right] == 1 &&
-           ent->dx > 0 &&
+           ent->movementC->dx > 0 &&
            ent->box.right <= collision_wall[Right]->x)
         {
             if(ent->box.top < collision_wall[Right]->box.top)
             {
-                ent->dy = -1;
+                ent->movementC->dy = -1;
             }
             else if(ent->box.bottom > collision_wall[Right]->box.bottom)
             {
-                ent->dy = 1;
+                ent->movementC->dy = 1;
             }
         }
         else if(walls_touched[Left] == 1 &&
-                ent->dx < 0 &&
+                ent->movementC->dx < 0 &&
                 ent->box.left >= collision_wall[Left]->x)
         {
             if(ent->box.top < collision_wall[Left]->box.top)
             {
-                ent->dy = -1;
+                ent->movementC->dy = -1;
             }
             else if(ent->box.bottom > collision_wall[Left]->box.bottom)
             {
-                ent->dy = 1;
+                ent->movementC->dy = 1;
             }
         }
     }
 
-    if(ent->dx == 0)
+    if(ent->movementC->dx == 0)
     {
-        if(walls_touched[Top] == 1 && ent->dy < 0
+        if(walls_touched[Top] == 1 && ent->movementC->dy < 0
                 && ent->box.top >= collision_wall[Top]->box.bottom)
         {
             if(ent->box.left < collision_wall[Top]->box.left)
             {
-                ent->dx = -1;
+                ent->movementC->dx = -1;
             }
             else if(ent->box.right > collision_wall[Top]->box.right)
             {
-                ent->dx = 1;
+                ent->movementC->dx = 1;
             }
         }
-        else if(walls_touched[Bottom] == 1 && ent->dy > 0
+        else if(walls_touched[Bottom] == 1 && ent->movementC->dy > 0
                 && ent->box.bottom <= collision_wall[Bottom]->box.top)
         {
             if(ent->box.left < collision_wall[Bottom]->box.left)
             {
-                ent->dx = -1;
+                ent->movementC->dx = -1;
             }
             else if(ent->box.right > collision_wall[Bottom]->box.right)
             {
-                ent->dx = 1;
+                ent->movementC->dx = 1;
             }
         }
     }
 
 
-    Jbool flatBottomTop = Jfalse;
+    bool flatBottomTop = false;
 
 
 	if (walls_touched[Bottom] || walls_touched[Top])
-		flatBottomTop = Jtrue;
+		flatBottomTop = true;
 
 	if (walls_touched[Bottom] > 0 && walls_touched[Left] > 1)
 	{
-		ent->dx = collision_wall[Left]->box.right - ent->box.left;
-		ent->dy = 0;
+		ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
+		ent->movementC->dy = 0;
 	}
 	if (walls_touched[Bottom] > 0 && walls_touched[Right] > 1)
 	{
-		ent->dx = collision_wall[Right]->box.left - ent->box.right;
-		ent->dy = 0;
+		ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
+		ent->movementC->dy = 0;
 	}
 	if (walls_touched[Top] > 0 && walls_touched[Left] > 1)
 	{
-		ent->dx = collision_wall[Left]->box.right - ent->box.left;
-		ent->dy = 0;
+		ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
+		ent->movementC->dy = 0;
 	}
 	if (walls_touched[Top] > 0 && walls_touched[Right] > 1)
 	{
-		ent->dx = collision_wall[Right]->box.left - ent->box.right;
-		ent->dy = 0;
+		ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
+		ent->movementC->dy = 0;
 	}
 
-	if (walls_touched[Bottom] && ent->dy > 0)
+	if (walls_touched[Bottom] && ent->movementC->dy > 0)
 	{
-		ent->dy = collision_wall[Bottom]->box.top - ent->box.bottom;
+		ent->movementC->dy = collision_wall[Bottom]->box.top - ent->box.bottom;
 	}
 
-	if (walls_touched[Top] && ent->dy < 0)
+	if (walls_touched[Top] && ent->movementC->dy < 0)
 	{
 
-		ent->dy = collision_wall[Top]->box.bottom - ent->box.top;
+		ent->movementC->dy = collision_wall[Top]->box.bottom - ent->box.top;
 	}
 
 
@@ -344,14 +337,14 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 
 	if (!flatBottomTop)
 	{
-		if (walls_touched[Right] && ent->dx > 0)
+		if (walls_touched[Right] && ent->movementC->dx > 0)
 		{
-		    ent->dx = collision_wall[Right]->box.left - ent->box.right;
+		    ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
 		}
 
-		if (walls_touched[Left] && ent->dx < 0)
+		if (walls_touched[Left] && ent->movementC->dx < 0)
 		{
-		    ent->dx = collision_wall[Left]->box.right - ent->box.left;
+		    ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
 		}
 	}
 
@@ -362,15 +355,15 @@ Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 
 
 
-Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
+bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
-    Jbool collision = Jfalse;
+    bool collision = false;
     Box* temp = BoundingBox_CreateTemp(ent);
 
     if(ent->t != Cat_Player ||
-       (ent->t == Cat_Player && ent->invulnerability_timer <= 0))
+       (ent->t == Cat_Player && ent->playerC->invulnerability_timer <= 0))
     {
-        Entity* collision_sides[5] = {Jfalse};
+        Entity* collision_sides[5] = {false};
         for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
         {
             if(Vector_Get(monsters_vector, i) != ent)
@@ -381,7 +374,7 @@ Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
                     Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &mob_to_check->box);
                     if (collision_direction != None)
                     {
-                        collision = Jtrue;
+                        collision = true;
                         collision_sides[collision_direction] = mob_to_check;
                         ent->collision_direction = collision_direction;
                     }
@@ -389,16 +382,16 @@ Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
             }
         }
 
-        if ((collision_sides[Bottom] && ent->dy > 0) ||
-            (collision_sides[Top] && ent->dy < 0))
+        if ((collision_sides[Bottom] && ent->movementC->dy > 0) ||
+            (collision_sides[Top] && ent->movementC->dy < 0))
         {
-            ent->dy = 0;
+            ent->movementC->dy = 0;
         }
 
-        if ((collision_sides[Right] && ent->dx > 0) ||
-            (collision_sides[Left] && ent->dx < 0))
+        if ((collision_sides[Right] && ent->movementC->dx > 0) ||
+            (collision_sides[Left] && ent->movementC->dx < 0))
         {
-            ent->dx = 0;
+            ent->movementC->dx = 0;
         }
 
         if(collision && ent->t == Cat_Player)
@@ -416,7 +409,7 @@ Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions)
 {
-    Jbool collision = Jfalse;
+    bool collision = false;
     for(int i = 0 ; i < Vector_Count(explosions) ; i++)
     {
         Entity* exp = (Entity*)Vector_Get(explosions, i);
@@ -433,5 +426,5 @@ void Entity_LoseHealth(Entity* ent, int damage)
     ent->hp -= damage;
 
     if (ent->hp <= 0)
-        ent->alive = Jfalse;
+        ent->alive = false;
 }

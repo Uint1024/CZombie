@@ -7,19 +7,21 @@
 #include "stdio.h"
 #include "player.h"
 #include "zombie.h"
+#include "movement_component.h"
 
-Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float speed, Jbool is_ennemy_bullet)
+Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float speed, bool is_ennemy_bullet)
 {
 	Entity* bullet = Entity_Spawn();
 
 	bullet->t = Cat_Bullet;
-	bullet->bullet_type = type;
+	bullet->sub_category = type;
 	bullet->x = x;
 	bullet->y = y;
-	bullet->angle = angle;
-	bullet->speed = speed;
-	bullet->is_ennemy_bullet = is_ennemy_bullet;
-	bullet->time_traveled = 0;
+	bullet->movementC = MovementC_Create();
+	bullet->movementC->angle = angle;
+	bullet->movementC->speed = speed;
+	bullet->is_ennemy = is_ennemy_bullet;
+	bullet->alive_timer = 2000; //die in 2 seconds
 	bullet->damage = 1;
 
 	switch(type)
@@ -67,22 +69,22 @@ void Bullet_Update(Entity* bullet, World* world)
 {
 
 
-    bullet->time_traveled += bullet->speed * delta_g;
-    if(bullet->time_traveled > 1000)
+    bullet->alive_timer -= delta_g;
+    if(bullet->alive_timer <= 0)
     {
-        bullet->alive = Jfalse;
+        bullet->alive = false;
     }
 
 
     if(bullet->alive)
     {
-        bullet->dx = cos(bullet->angle) * bullet->speed * delta_g;
-        bullet->dy = sin(bullet->angle) * bullet->speed  * delta_g;
+        bullet->movementC->dx = cos(bullet->movementC->angle) * bullet->movementC->speed * delta_g;
+        bullet->movementC->dy = sin(bullet->movementC->angle) * bullet->movementC->speed  * delta_g;
 
-        moveEntity(bullet, bullet->dx, bullet->dy);
+        moveEntity(bullet, bullet->movementC->dx, bullet->movementC->dy);
 
 
-       if(!bullet->is_ennemy_bullet)
+       if(!bullet->is_ennemy)
         {
             for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
             {
@@ -90,7 +92,7 @@ void Bullet_Update(Entity* bullet, World* world)
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
                     Zombie_GetAttacked(mob, bullet->damage, world);
-                    bullet->alive = Jfalse;
+                    bullet->alive = false;
                 }
             }
         }
@@ -102,13 +104,13 @@ void Bullet_Update(Entity* bullet, World* world)
             //and pass the attack direction to the player
             Box* temp = BoundingBox_CreateTemp(bullet);
             Direction bullet_coming_from = BoundingBox_CheckCollision(&bullet->box, temp, &world->player.box);
-            if(bullet_coming_from != None && world->player.invulnerability_timer <= 0)
+            if(bullet_coming_from != None && world->player.playerC->invulnerability_timer <= 0)
             {
                 Entity* collision_direction[5] = {NULL};
                 collision_direction[bullet_coming_from] = bullet;
                 Player_TakeDamage(&world->player, collision_direction);
 
-                bullet->alive = Jfalse;
+                bullet->alive = false;
             }
 
             free(temp);
@@ -126,7 +128,7 @@ void Bullet_Update(Entity* bullet, World* world)
                     if(BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
                     {
 
-                        bullet->alive = Jfalse;
+                        bullet->alive = false;
 
                     }
                 }

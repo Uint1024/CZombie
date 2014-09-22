@@ -7,11 +7,24 @@
 #include "weapon.h"
 #include "weapons_component.h"
 #include "world.h"
+#include "movement_component.h"
+PlayerC* PlayerC_Create()
+{
+    PlayerC* pc                 = (PlayerC*)malloc(sizeof(PlayerC));
+    pc->invulnerability_timer   = 0;
+	pc->blinking_timer          = 0;
+	pc->blinking_frame          = 0;
+    pc->stamina                 = 100;
+    pc->max_stamina             = 100;
+    pc->running                 = false;
+    return pc;
+}
+
 
 void Player_Update(World* world)
 {
     Entity* p = &world->player;
-    if(p->running)
+    if(p->playerC->running)
     {
         Player_Run(p);
     }
@@ -22,35 +35,35 @@ void Player_Update(World* world)
 
     if(game_state_g == GameState_Editing_Map)
     {
-        p->speed = LEVEL_EDITOR_SPEED;
+        p->movementC->speed = LEVEL_EDITOR_SPEED;
     }
-    p->camera->dx = 0;
-	p->camera->dy = 0;
+    //p->playerC->dx = 0;
+	//p->camera->dy = 0;
 
     if(game_state_g != GameState_Editing_Map)
     {
-        p->invulnerability_timer -= delta_g;
-        if(p->weapons_component->reloading)
+        p->playerC->invulnerability_timer -= delta_g;
+        if(p->weaponsC->reloading)
         {
-            WeaponsComponent_Reload(p->weapons_component);
+            WeaponsComponent_Reload(p->weaponsC);
         }
 
 
         Entity_CollisionWithStuff(p, world);
-        //CollisionWithMonsters(p, &world->monsters_vector);
         Player_CheckBonusCollision(p, &world->bonus_vector);
     }
 
 
 
-    Player_Move(p, p->dx, p->dy);
+    Player_Move(p, p->movementC->dx, p->movementC->dy);
 }
 
 
 void Player_Move(Entity* p, float dx, float dy)
 {
     moveEntity(p, dx, dy);
-    MoveCamera(p->camera, dx , dy);
+    p->playerC->cameraX += dx;
+    p->playerC->cameraY += dy;
 }
 
 
@@ -63,42 +76,39 @@ Entity Player_Create(float x, float y, int w, int h)
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   50;
-	p.speed                         =   BASE_PLAYER_SPEED;
-    p.blinking_frame                =   0;
-    p.blinking_timer                =   0;
-    p.camera                        =   CreateCamera();
-    p.invulnerability_timer         =   0;
-    p.weapons_component             =   WeaponsComponent_Create();
-    p.stamina                       =   100;
-    p.max_stamina                       =   100;
-    p.running = Jfalse;
+
+    p.movementC                     =   MovementC_Create();
+    p.movementC->speed              =   BASE_PLAYER_SPEED;
+
+    p.playerC                       =   PlayerC_Create();
+
+    p.weaponsC                      =   WeaponsComponent_Create();
+
     BoundingBox_Create(&p, w, h);
-    p.dx = 0;
-    p.dy = 0;
 
 
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+    WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(Handgun_w));
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+    WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(Shotgun_w));
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+    WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(GrenadeLauncher_w));
-    WeaponsComponent_AddWeaponToInventory(p.weapons_component,
+    WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                             Weapon_Create(AutomaticRifle_w));
 
-    WeaponsComponent_ChangeWeapon(p.weapons_component,
+    WeaponsComponent_ChangeWeapon(p.weaponsC,
                                   Handgun_w);
 
-    p.weapons_component->is_monster = Jfalse;
+    p.weaponsC->is_monster = false;
 	return p;
 }
 
 void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
 {
-    Jbool collision = Jfalse;
+    bool collision = false;
     for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
     {
-        collision = Jfalse;
+        collision = false;
         Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
         collision = BoundingBox_CheckSimpleCollision(&player->box, &bonus->box);
         if(collision)
@@ -111,38 +121,38 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
 
 void Player_Run(Entity* p)
 {
-    p->stamina -= 0.03 * delta_g;
-    if(p->stamina <= 0)
+    p->playerC->stamina -= 0.03 * delta_g;
+    if(p->playerC->stamina <= 0)
         Player_StopRunning(p);
 
 }
 
 void Player_Walk(Entity* p)
 {
-    if(p->stamina < p->max_stamina)
-        p->stamina += 0.01 * delta_g;
+    if(p->playerC->stamina < p->playerC->max_stamina)
+        p->playerC->stamina += 0.01 * delta_g;
 
 }
 
 
 void Player_StartRunning(Entity* p)
 {
-    if(p->stamina > 0)
+    if(p->playerC->stamina > 0)
     {
-        p->speed = BASE_PLAYER_SPEED * 1.5f;
-        p->running = Jtrue;
+        p->movementC->speed = BASE_PLAYER_SPEED * 1.5f;
+        p->playerC->running = true;
     }
 
 }
 
 void Player_StopRunning(Entity* p)
 {
-    p->speed = BASE_PLAYER_SPEED;
-    p->running = Jfalse;
+    p->movementC->speed = BASE_PLAYER_SPEED;
+    p->playerC->running = false;
 }
 void Player_PickUpBonus(Entity* player, Entity* bonus)
 {
-    WeaponsComponent* wc = player->weapons_component;
+    WeaponsC* wc = player->weaponsC;
 
     int type = bonus->sub_category;
     Weapon_Type weapon_type = 999;
@@ -178,7 +188,7 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
         }
     }
 
-    bonus->alive = Jfalse;
+    bonus->alive = false;
 }
 
 //attacker is an array 5 pointers
@@ -210,6 +220,6 @@ void Player_TakeDamage(Entity* p, Entity** attacker)
         p->hp -= attacker[Bottom]->damage;
         Player_Move(p, 0,   -20);
     }
-p->invulnerability_timer = 2000;
+    p->playerC->invulnerability_timer = 2000;
 }
 

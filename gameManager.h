@@ -16,7 +16,7 @@ typedef struct GameManager
     Wave        waves[20];
     Game_Mode   game_mode;
     int         wave_timer;
-    Jbool       ai_on;
+    bool       ai_on;
 } GameManager;
 
 GameManager GameManager_Create();

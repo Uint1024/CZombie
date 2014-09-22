@@ -6,19 +6,20 @@
 #include "linkedList.h"
 #include "world.h"
 #include "weapon.h"
+#include "movement_component.h"
 
 ZombieC* ZombieC_Create()
 {
     ZombieC* zc = (ZombieC*)malloc(sizeof(ZombieC));
 
-    zc->aggressive = Jfalse;
-    zc->idling = Jfalse;
+    zc->aggressive = false;
+    zc->idling = false;
     zc->rand_move_every = 1;
     zc->rand_move_timer = 1;
-    zc->vision_distance = 450;
+    zc->vision_distance =360;
     zc->vision_width = 1.2;
     zc->ai_timer = rand() % 500;
-    zc->dodging = Jfalse;
+    zc->dodging = false;
     zc->dodging_time = 0;
     return zc;
 }
@@ -40,7 +41,7 @@ void Zombie_Update(Entity* z, World* world)
     ZombieC* zc = z->zombieC;
     if(!zc->idling)
     {
-        Jbool collision = Entity_CollisionWithStuff(z, world);
+        bool collision = Entity_CollisionWithStuff(z, world);
 
         if(collision && !zc->aggressive)
         {
@@ -54,7 +55,7 @@ void Zombie_Update(Entity* z, World* world)
             Zombie_Shoot(z, world);
         }
 
-        moveEntity(z, z->dx, z->dy);
+        moveEntity(z, z->movementC->dx, z->movementC->dy);
     }
 
 }
@@ -72,7 +73,7 @@ void  Zombie_Shoot(Entity* z, World* world)
     float originX = z->x + z->box.width/2;
     float originY = z->y + z->box.height/2;
 
-    WeaponsComponent_TryToShoot(z->weapons_component, originX, originY,
+    WeaponsComponent_TryToShoot(z->weaponsC, originX, originY,
                                 angle, &world->bullets_vector, 0, 0);
 }
 
@@ -80,24 +81,28 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
 {
 	Entity* z = Entity_Spawn();
 
-	z->t = Cat_Zombie;
-    z->x = x;
-	z->y = y;
-    z->zombieC = ZombieC_Create(type);
-    z->zombieC->zombie_type = type;
-    BoundingBox_Create(z, zombie_width_g[type], zombie_height_g[type]);
-    z->angle = C_GenerateRandomAngle();
-    z->texture = zombie_textures_g[type];
-    z->speed = calm_speed_g[type];
-    z->hp = zombie_hp_g[type];
-    z->damage = zombie_damage_g[type];
+	z->t                        = Cat_Zombie;
+    z->x                        = x;
+	z->y                        = y;
+    z->texture                  = zombie_textures_g[type];
+    z->hp                       = zombie_hp_g[type];
+    z->damage                   = zombie_damage_g[type];
+
+    z->zombieC                  = ZombieC_Create(type);
+    z->zombieC->zombie_type     = type;
+
+    z->movementC                = MovementC_Create();
+    z->movementC->speed         = calm_speed_g[type];
+    z->movementC->angle         = C_GenerateRandomAngle();
+
     if(zombie_weapon_g[type] != No_Weapon)
     {
-        z->weapons_component = WeaponsComponent_Create(Jtrue);
-        WeaponsComponent_AddWeaponToInventory(z->weapons_component,
+        z->weaponsC = WeaponsComponent_Create(true);
+        WeaponsComponent_AddWeaponToInventory(z->weaponsC,
                                               Weapon_Create(zombie_weapon_g[type]));
     }
 
+    BoundingBox_Create(z, zombie_width_g[type], zombie_height_g[type]);
 
 	return z;
 }
@@ -116,7 +121,7 @@ void Zombie_Ai(Entity* z, World* world)
             float angle_to_player = C_AngleBetween2Entities(z, player);
 
             //convert angle to 2pi circle and compare them
-            float diff = C_DifferenceBetweenAngles(z->angle, angle_to_player);
+            float diff = C_DifferenceBetweenAngles(z->movementC->angle, angle_to_player);
 
             //check if player is in field of view, or if the player is too close
             if(
@@ -130,7 +135,7 @@ void Zombie_Ai(Entity* z, World* world)
                 to do that we draw a line from the zombie to the player,
                 if this line hits any wall then the zombie can't see him*/
 
-                Jbool can_see = Entity_CheckCanSeeEntity(z, player, world);
+                bool can_see = Entity_CheckCanSeeEntity(z, player, world);
                 if(can_see)
                 {
                     Zombie_BecomeAggressive(z, world);
@@ -141,13 +146,10 @@ void Zombie_Ai(Entity* z, World* world)
 
         zc->ai_timer = 0;
 
-        if(zc->dodging)
-        {
-            printf("%d\n", SDL_GetTicks() - zc->dodging_time);
-        }
+
         if(zc->dodging && SDL_GetTicks() - zc->dodging_time > 700)
         {
-            zc->dodging = Jfalse;
+            zc->dodging = false;
         }
 
         if(zc->aggressive)
@@ -174,14 +176,15 @@ void Zombie_Ai(Entity* z, World* world)
                     if(left_or_right == 0) temp_angle -= HALF_PI/3;
                     else temp_angle += HALF_PI/3;
 
-                    z->angle = temp_angle;
+                    z->movementC->angle = temp_angle;
                     //zombie will run in this direction for a little while
                     zc->dodging_time = SDL_GetTicks();
-                    zc->dodging = Jtrue;
+                    zc->dodging = true;
                 }
                 else
                 {
-                    z->angle = C_AngleBetween2Points(z->x, z->y, world->player.x, world->player.y);
+                    z->movementC->angle = C_AngleBetween2Points(z->x, z->y,
+                                                                world->player.x, world->player.y);
                 }
             }
 
@@ -197,14 +200,14 @@ void Zombie_Ai(Entity* z, World* world)
 
 void Zombie_BecomeCalm(Entity* z)
 {
-    z->zombieC->aggressive = Jfalse;
-    z->speed = calm_speed_g[z->zombieC->zombie_type];
+    z->zombieC->aggressive = false;
+    z->movementC->speed = calm_speed_g[z->zombieC->zombie_type];
 }
 
 //when there's a collision, this generate a new angle in the opposite direction
 void Zombie_NewTrajectory(Entity* z)
 {
-    z->angle = C_GenerateAngleInOppositeDirection(z->collision_direction);
+    z->movementC->angle = C_GenerateAngleInOppositeDirection(z->collision_direction);
 }
 
 void Zombie_CalculateRandomPath(Entity* z)
@@ -212,13 +215,13 @@ void Zombie_CalculateRandomPath(Entity* z)
     z->zombieC->rand_move_timer += delta_g;
     if(z->zombieC->rand_move_timer >= z->zombieC->rand_move_every)
     {
-        z->zombieC->idling = z->zombieC->idling ? Jfalse : Jtrue;
+        z->zombieC->idling = z->zombieC->idling ? false : true;
         z->zombieC->rand_move_timer = 0;
         z->zombieC->rand_move_every = (rand() % 13000);
 
         if(!z->zombieC->idling)
         {
-            z->angle = C_GenerateRandomAngle();
+            z->movementC->angle = C_GenerateRandomAngle();
         }
     }
 }
@@ -227,9 +230,9 @@ void Zombie_BecomeAggressive(Entity* z, World* world)
 {
     ZombieC* zc = z->zombieC;
 
-    zc->aggressive = Jtrue;
-    zc->idling = Jfalse;
-    z->speed = angry_speed_g[zc->zombie_type];
+    zc->aggressive = true;
+    zc->idling = false;
+    z->movementC->speed = angry_speed_g[zc->zombie_type];
     Vector* monsters = &world->monsters_vector;
 
     //the zombie tells the closest zombies that he's spotted the player

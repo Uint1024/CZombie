@@ -16,7 +16,7 @@ Entity* createBall()
 
 void moveBall(Entity* ball, Entity* other)
 {
-	Jbool trajectoryCutShot = Jfalse;
+	bool trajectoryCutShot = false;
 	float tempDx = ball->dx;
 	float tempDy = ball->dy;
 	Box* tempBox = createTempBox(ball);
@@ -37,7 +37,7 @@ void moveBall(Entity* ball, Entity* other)
 	{
 		if (other->box.right != ball->box.left)
 		{
-			trajectoryCutShot = Jtrue;
+			trajectoryCutShot = true;
 			moveEntity(ball, other->box.right - ball->box.left, ball->dy);
 		}
 		else
@@ -51,7 +51,7 @@ void moveBall(Entity* ball, Entity* other)
 
 		if (other->box.left != ball->box.right)
 		{
-			trajectoryCutShot = Jtrue;
+			trajectoryCutShot = true;
 			moveEntity(ball, other->box.left - ball->box.right, ball->dy);
 		}
 		else
@@ -65,7 +65,7 @@ void moveBall(Entity* ball, Entity* other)
 	{
 		if (other->box.top != ball->box.bottom)
 		{
-			trajectoryCutShot = Jtrue;
+			trajectoryCutShot = true;
 			moveEntity(ball, ball->dx, other->box.top - ball->box.bottom);
 		}
 		else
@@ -78,7 +78,7 @@ void moveBall(Entity* ball, Entity* other)
 	{
 		if (other->box.bottom != ball->box.top)
 		{
-			trajectoryCutShot = Jtrue;
+			trajectoryCutShot = true;
 			moveEntity(ball, ball->dx, other->box.bottom - ball->box.top);
 		}
 		else
@@ -92,5 +92,5 @@ void moveBall(Entity* ball, Entity* other)
 	{
 		moveEntity(ball, ball->dx, ball->dy);
 	}
-	
+
 	}*/

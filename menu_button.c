@@ -5,7 +5,7 @@
 
 MenuButton* MenuButton_Create(Menu_Button_Name name,
                               float x, float y,
-                              char* text, Jbool centered,
+                              char* text, bool centered,
                               Graphics* graphics)
 {
     int textH = 0;
@@ -33,10 +33,9 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
     button->box          =   BoundingBox_CreateFromAllValues(textW, textH, button->x, button->y);
     SDL_Rect text_rect   =   { button->x , button->y, textW, textH };
     button->text_rect    =   text_rect;
-    button->hover        =   Jfalse;
+    button->hover        =   false;
 
 
-    printf("creating button %d\n", button->name);
     return button;
 }
 
@@ -53,7 +52,7 @@ MenuButton* FileNameButton_Create(float y, char* text)
     button->box          =   BoundingBox_CreateFromAllValues(500, 100, 100, button->y);
     SDL_Rect text_rect   =   { 100 , button->y, 500, 100 };
     button->text_rect    =   text_rect;
-    button->hover        =   Jfalse;
+    button->hover        =   false;
 
 
 

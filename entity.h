@@ -8,72 +8,44 @@
 #include "vector.h"
 #include "explosive.h"
 
+
 typedef struct Weapon Weapon;
 typedef struct ZombieC ZombieC;
-
+typedef struct PlayerC PlayerC;
+typedef struct MovementC MovementC;
+typedef struct WeaponsC WeaponsC;
 
 typedef struct Entity
 {
 
+    //variables common to every entity
 	Main_Category           t; //Cat_Wall, Cat_Door, Cat_Zombie etc...
-
-	int                     sub_category; //normal or hard wall, broken door, fast or heavy zombie...
+	int                     sub_category; //normal or hard wall, fast or heavy zombie...
 	float                   x;
 	float                   y;
     Texture_Type            texture;
-
-
-	float                   muzzleX;
-	float                   muzzleY;
-
-
-	float                   dx;
-	float                   dy;
-	float                   speed;
-	float                   angle;
-    Jbool                   visible;
-
-	Weapon_Type             bullet_type;
-
-
-    int                     explosion_timer;
-	//should be a pointer? Not every entity has a hitbox (maybe)
+    bool                    visible;
+    bool                    solid;
 	Box                     box;
 
-	Jbool                   alive;
+    int                     hp;//player and zombies can die, walls be destroyed
+	bool                    alive;
+    int                     alive_timer;//used by explosions, bullets
+
+	bool                    is_ennemy;//zombies, bullets, explosions
+    int                     damage;//zombies, bullets, explosions
 
 
-	//bullet c
-	int                     time_traveled;
-	Jbool                   is_ennemy_bullet;
-    int                     damage;
+    //components
+    MovementC*              movementC;//movement component
+    PlayerC*                playerC;//player component
+    ZombieC*                zombieC;//etc.
+    Explosive*              explosiveC;
+    WeaponsC*               weaponsC;
 
-	int                     hp;
-
-
-
-	int                     last_creation;
-	Entity*                 camera;
-
-    //player component...
-	int                     invulnerability_timer;
-	int                     blinking_timer;
-	int                     blinking_frame;
-    float                   stamina;
-    float                   max_stamina;
-    Jbool                   running;
-
-
-    ZombieC*                zombieC;
-    Explosive*              explosive_component;
-    WeaponsComponent*       weapons_component;
-
-
-
-
-    Jbool                   solid;
+    //direction of the last collision with a wall or mob
+    //used by zombies to calculate trajectories
     Direction               collision_direction;
-    int                     door_opening_timer;
 } Entity;
 
 
@@ -85,19 +57,19 @@ Entity* Entity_Spawn();
 //Entity Entity_SpawnOnStack();
 void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
 void Entity_LoseHealth(Entity* ent, int damage);
-Jbool Entity_CollisionWithStuff(Entity* ent, World* world);
+bool Entity_CollisionWithStuff(Entity* ent, World* world);
 void Entity_CalculateVelocityFromAngle(Entity* ent);
 
-Jbool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size);
-Jbool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
+bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size);
+bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
 
-Jbool Entity_CheckNear(Entity* ent1, Entity* ent2);
-Jbool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance);
+bool Entity_CheckNear(Entity* ent1, Entity* ent2);
+bool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance);
 
 void Entity_CalculateVelocity(Entity* ent);
 void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY);
 float Entity_DistanceBetweenTwoEntities(Entity* ent1, Entity* ent2);
-Jbool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world);
+bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world);
 
 float Entity_GetMiddleY(Entity* ent);
 float Entity_GetMiddleX(Entity* ent);

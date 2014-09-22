@@ -24,7 +24,7 @@ typedef struct MenuManager
 MenuManager MenuManager_Create(Graphics* graphics);
 void MenuManager_Update(MenuManager* mm,
                         Controls* controls,
-                        Jbool* running,
+                        bool* running,
                         World* world);
 void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager);
 #endif // MENU_MANAGER_H

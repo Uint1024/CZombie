@@ -6,9 +6,9 @@
 #include "weapon.h"
 #include "weapons_component.h"
 
-WeaponsComponent* WeaponsComponent_Create(Jbool is_monster)
+WeaponsC* WeaponsComponent_Create(bool is_monster)
 {
-    WeaponsComponent* wc = (WeaponsComponent*)malloc(sizeof(WeaponsComponent));
+    WeaponsC* wc = (WeaponsC*)malloc(sizeof(WeaponsC));
 
     for(int i = 0 ; i < NB_OF_WEAPONS ; i++)
     {
@@ -18,13 +18,13 @@ WeaponsComponent* WeaponsComponent_Create(Jbool is_monster)
 
     wc->current_weapon = NULL;
     wc->last_reload = 0;
-    wc->reloading = Jfalse;
+    wc->reloading = false;
     wc->is_monster = is_monster;
 
     return wc;
 }
 
-void WeaponsComponent_AddWeaponToInventory(WeaponsComponent* wc, Weapon* weapon)
+void WeaponsComponent_AddWeaponToInventory(WeaponsC* wc, Weapon* weapon)
 {
     weapon->parent = wc;
     wc->weapons_inventory[weapon->type] = weapon;
@@ -35,28 +35,28 @@ void WeaponsComponent_AddWeaponToInventory(WeaponsComponent* wc, Weapon* weapon)
     }
 }
 
-void WeaponsComponent_ChangeWeapon(WeaponsComponent* wc, Weapon_Type type)
+void WeaponsComponent_ChangeWeapon(WeaponsC* wc, Weapon_Type type)
 {
     if(wc->current_weapon != NULL)
     {
-        wc->reloading = Jfalse;
+        wc->reloading = false;
         wc->reload_timer = wc->current_weapon->reloading_time;
     }
     wc->current_weapon = wc->weapons_inventory[type];
 }
 
-void WeaponsComponent_AddAmmo(WeaponsComponent* wc, Weapon_Type type, int quantity)
+void WeaponsComponent_AddAmmo(WeaponsC* wc, Weapon_Type type, int quantity)
 {
     wc->bullets[type] += quantity;
 }
 
-void WeaponsComponent_Reload(WeaponsComponent* wc)
+void WeaponsComponent_Reload(WeaponsC* wc)
 {
     if(wc->current_weapon->magazine_bullets < wc->current_weapon->magazine_max_bullets)
     {
         if(!wc->reloading &&  wc->bullets[wc->current_weapon->type] > 0)
         {
-            wc->reloading = Jtrue;
+            wc->reloading = true;
             wc->reload_timer = wc->current_weapon->reloading_time;
         }
         else if(wc->reloading && wc->bullets[wc->current_weapon->type] > 0)
@@ -80,14 +80,14 @@ void WeaponsComponent_Reload(WeaponsComponent* wc)
             }
             wc->current_weapon->magazine_bullets += bullets_to_reload;
 
-            wc->reloading = Jfalse;
+            wc->reloading = false;
         }
     }
 }
 
-void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
+void WeaponsComponent_ScrollWeapons(WeaponsC* wc, int wheel_direction)
 {
-   Jbool found_weapon = Jfalse;
+   bool found_weapon = false;
     Weapon_Type current_type = wc->current_weapon->type;
     Weapon_Type next_type = current_type;
 
@@ -100,7 +100,7 @@ void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
             if(wc->weapons_inventory[next_type] != NULL)
             {
                 WeaponsComponent_ChangeWeapon(wc, next_type);//wc->current_weapon = wc->weapons_inventory[next_type];
-                found_weapon = Jtrue;
+                found_weapon = true;
             }
         }
         else
@@ -110,7 +110,7 @@ void WeaponsComponent_ScrollWeapons(WeaponsComponent* wc, int wheel_direction)
     }
 }
 
-void WeaponsComponent_TryToShoot(WeaponsComponent* wc, float originX, float originY, float angle, Vector* bullets_vector,
+void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, float angle, Vector* bullets_vector,
                        float destinationX, float destinationY)
 {
 

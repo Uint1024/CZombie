@@ -53,7 +53,7 @@ void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager)
     {
         MenuButton* button = MenuButton_Create(Menu_Button_Name[i],
                                       100.0f, 100.0f,
-                                      text[i], Jtrue,
+                                      text[i], true,
                                       graphics);
 
         Vector_Push(&menu_manager->all_buttons,
@@ -65,7 +65,7 @@ void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager)
 
 void MenuManager_Update(MenuManager* mm,
                         Controls* controls,
-                        Jbool* running,
+                        bool* running,
                         World* world)
 {
     Menu* menu = mm->active_menu;
@@ -114,7 +114,7 @@ void MenuManager_Update(MenuManager* mm,
           while ((ent = readdir (dir)) != NULL) {
                 if(ent->d_name[0] != '.')
                 {
-                    char** name = malloc(sizeof(ent->d_name));
+                    char* name = malloc(sizeof(ent->d_name));
                     strcpy(name, ent->d_name);
 
                     Vector_Push(&menu->file_list, FileNameButton_Create(i * 80 + 50, name));
@@ -144,10 +144,10 @@ void MenuManager_Update(MenuManager* mm,
                 //determine if we're loading the file to modify it or play it
                 //if we want to modify it, configure the game to level editor mode...
                 //problem : how do I know why the user wants to load it??
-                display_menu_g = Jfalse;
+                display_menu_g = false;
                 game_state_g = GameState_Editing_Map;
-                world->player.visible = Jfalse;
-                world->player.solid = Jfalse;
+                world->player.visible = false;
+                world->player.solid = false;
                 mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
 
 
@@ -167,8 +167,8 @@ void MenuManager_Update(MenuManager* mm,
         {
             MenuButton* button = Vector_Get(&menu->buttons, i);
 
-            button->hover = Jfalse;
-            Jbool hover_on_button =
+            button->hover = false;
+            bool hover_on_button =
                         BoundingBox_CheckPointCollision(controls->mouseX,
                                                         controls->mouseY,
                                                         &button->box
@@ -176,14 +176,14 @@ void MenuManager_Update(MenuManager* mm,
 
             if(hover_on_button)
             {
-                button->hover = Jtrue;
+                button->hover = true;
 
                 if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
                 {
 
                     if(button->name == Play_button)
                     {
-                        display_menu_g = Jfalse;
+                        display_menu_g = false;
                         game_state_g = GameState_Playing;
                     }
                     else if(button->name == LevelEditor_button)
@@ -195,17 +195,17 @@ void MenuManager_Update(MenuManager* mm,
                     {
                         mm->previous_active_menu = mm->active_menu;
                         mm->active_menu = mm->sub_menus[SaveMap_menu];
-                        button->hover = Jfalse;
+                        button->hover = false;
                     }
                     else if(button->name == LoadMap_button)
                     {
                         mm->previous_active_menu = mm->active_menu;
                         mm->active_menu = mm->sub_menus[LoadMap_menu];
-                        button->hover = Jfalse;
+                        button->hover = false;
                     }
                     else if(button->name == Quit_button)
                     {
-                        *running = Jfalse;
+                        *running = false;
                     }
                     else if(button->name == NewMap_button)
                     {
@@ -213,9 +213,9 @@ void MenuManager_Update(MenuManager* mm,
                         mm->previous_active_menu = mm->active_menu;
                         mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
 
-                        display_menu_g = Jfalse;
-                        world->player.visible = Jfalse;
-                        world->player.solid = Jfalse;
+                        display_menu_g = false;
+                        world->player.visible = false;
+                        world->player.solid = false;
                         game_state_g = GameState_Editing_Map;
 
                     }

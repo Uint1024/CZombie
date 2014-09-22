@@ -2,9 +2,25 @@
 #define PLAYER_H
 #include "linkedList.h"
 #include "vector.h"
+#include "common.h"
+
 typedef struct Entity Entity;
 typedef struct World World;
 
+
+typedef struct PlayerC
+{
+	int                     invulnerability_timer;
+	int                     blinking_timer;
+	int                     blinking_frame;
+    float                   stamina;
+    float                   max_stamina;
+    bool                    running;
+    float                   cameraX;
+    float                   cameraY;
+}PlayerC;
+
+PlayerC* PlayerC_Create();
 void Player_Update(World* world);
 Entity Player_Create(float x, float y, int w, int h);
 void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector);

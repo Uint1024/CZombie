@@ -17,8 +17,10 @@
 #include "player.h"
 #include "door.h"
 #include "mapEvent.h"
+#include "levelEditor.h"
+#include "movement_component.h"
 
-    Jbool previousPressedKeys_g[200] = {Jfalse};
+    bool previousPressedKeys_g[200] = {false};
 static int switch_timer = 0;
 static int building_time = 0;
 Controls* CreateControls()
@@ -28,17 +30,17 @@ Controls* CreateControls()
 	Controls* controls = (Controls*)malloc(sizeof(Controls));
 	for (int i = 0; i < 200; i++)
 	{
-		controls->pressedKeys[i] = Jfalse;
+		controls->pressedKeys[i] = false;
 	}
     controls->mouseWheelPos = 0;
     controls->active_window = NULL;
-    controls->cursor_resize_left_right = Jfalse;
-    controls->cursor_resize_up_down = Jfalse;
+    controls->cursor_resize_left_right = false;
+    controls->cursor_resize_up_down = false;
     controls->active_button = NULL;
 
     controls->tileInPixelsX = 0;
     controls->tileInPixelsY = 0;
-    controls->hovering_on_window = Jfalse;
+    controls->hovering_on_window = false;
     controls->last_ai_switch = 0;
 	return controls;
 }
@@ -46,7 +48,7 @@ Controls* CreateControls()
 void Inputs_ProcessInputs(Controls* controls, World* world, Window* level_editor,
                           GameManager* game_manager)
 {
-    Inputs_PoolInputs(controls, world->player.camera);
+    Inputs_PoolInputs(controls, world->player.playerC);
     Inputs_ApplyInputs(controls, world, level_editor, game_manager);
 
     for(int i = 0 ; i < 20 ; i++)
@@ -70,19 +72,18 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
             //where the fuck do I put this? in gamemanager? wtf is gamemanager anyway
             Game_StartMap(world);
-            world->player.speed = BASE_PLAYER_SPEED;
+            world->player.movementC->speed = BASE_PLAYER_SPEED;
             Level_Save("saves/tempLevelEditor.sav", world);
     }
 
 
     int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
 
-    Entity* player = &world->player;
 
     Vector* monsters_vector = &world->monsters_vector;
     if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
     {
-       controls->hovering_on_window = Jtrue;
+       controls->hovering_on_window = true;
 
         //selecting button in level_editor
         if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
@@ -103,25 +104,25 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
            controls->mouseX < level_editor->box.left + 10) &&
            controls->active_window == NULL)
         {
-            controls->cursor_resize_left_right = Jtrue;
+            controls->cursor_resize_left_right = true;
 
             if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
                controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
                controls->mouseX > level_editor->box.right - 10)
             {
-                controls->resizing_right = Jtrue;
+                controls->resizing_right = true;
             }
 
             if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
                controls->previousPressedMouseButtons[SDL_BUTTON_LEFT] &&
                controls->mouseX < level_editor->box.left + 10)
             {
-                controls->resizing_left = Jtrue;
+                controls->resizing_left = true;
             }
         }
         else
         {
-            controls->cursor_resize_left_right = Jfalse;
+            controls->cursor_resize_left_right = false;
         }
 
         //clicking on the level editor window
@@ -134,9 +135,9 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
     }
     else //if not hovering on the window
     {
-        controls->cursor_resize_left_right = Jfalse;
-        controls->cursor_resize_up_down = Jfalse;
-        controls->hovering_on_window = Jfalse;
+        controls->cursor_resize_left_right = false;
+        controls->cursor_resize_up_down = false;
+        controls->hovering_on_window = false;
 
     }
 
@@ -150,13 +151,13 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
     //resizing window
     if(controls->resizing_right || controls->resizing_left)
     {
-        controls->cursor_resize_left_right = Jtrue;
+        controls->cursor_resize_left_right = true;
 
         if(!controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
            !controls->previousPressedMouseButtons[SDL_BUTTON_LEFT])
         {
-            controls->resizing_right = Jfalse;
-            controls->resizing_left = Jfalse;
+            controls->resizing_right = false;
+            controls->resizing_left = false;
         }
 
         if(controls->resizing_right)
@@ -187,7 +188,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
     if(!controls->active_window && !controls->hovering_on_window)
     {
         if (controls->active_button != NULL &&
-            controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == Jtrue)
+            controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == true)
         {
             if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
                 controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
@@ -291,11 +292,11 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
         {
             if(gm->ai_on)
             {
-                gm->ai_on = Jfalse;
+                gm->ai_on = false;
             }
             else
             {
-                gm->ai_on = Jtrue;
+                gm->ai_on = true;
             }
 
             controls->last_ai_switch = SDL_GetTicks();
@@ -304,45 +305,45 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 }
 
 
-Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
+bool Inputs_PoolInputs(Controls* controls, Entity* camera)
 {
     controls->mouseWheelPos = 0;
 	while (SDL_PollEvent(&controls->e))
 	{
 		if (controls->e.type == SDL_QUIT || controls->e.key.keysym.scancode == SDL_SCANCODE_F4)
 		{
-			return Jfalse;
+			return false;
 		}
 
 		if(controls->e.key.keysym.scancode == SDL_SCANCODE_P)
 		{
-			debug_mode = Jtrue;
+			debug_mode = true;
 		}
 
         if(controls->e.key.keysym.scancode == SDL_SCANCODE_O)
 		{
-			debug_mode = Jfalse;
+			debug_mode = false;
 		}
 
 		if (controls->e.type == SDL_KEYDOWN)
 		{
-			controls->pressedKeys[controls->e.key.keysym.sym] = Jtrue;
-			controls->pressedMods[controls->e.key.keysym.mod] = Jtrue;
+			controls->pressedKeys[controls->e.key.keysym.sym] = true;
+			controls->pressedMods[controls->e.key.keysym.mod] = true;
 		}
 
 		if (controls->e.type == SDL_KEYUP)
 		{
-			controls->pressedKeys[controls->e.key.keysym.sym] = Jfalse;
-			controls->pressedMods[controls->e.key.keysym.mod] = Jfalse;
+			controls->pressedKeys[controls->e.key.keysym.sym] = false;
+			controls->pressedMods[controls->e.key.keysym.mod] = false;
 		}
 
 		if (controls->e.type == SDL_MOUSEBUTTONDOWN)
 		{
-			controls->pressedMouseButtons[controls->e.button.button] = Jtrue;
+			controls->pressedMouseButtons[controls->e.button.button] = true;
 		}
 		if (controls->e.type == SDL_MOUSEBUTTONUP)
 		{
-			controls->pressedMouseButtons[controls->e.button.button] = Jfalse;
+			controls->pressedMouseButtons[controls->e.button.button] = false;
 		}
 
 		if(controls->e.type == SDL_MOUSEWHEEL)
@@ -364,7 +365,7 @@ Jbool Inputs_PoolInputs(Controls* controls, Entity* camera)
     controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;
 
 
-	return Jtrue;
+	return true;
 }
 
 //wow this is a mess
@@ -375,21 +376,21 @@ void Inputs_ApplyInputs( Controls* controls,
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
     //Vector* bonus_vector = &world->bonus_vector;
-    Vector* monsters_vector = &world->monsters_vector;
+    //Vector* monsters_vector = &world->monsters_vector;
     //Vector* explosions_vector = &world->explosions_vector;
 
     controls->timer_menu -= delta_g;
 
 
     //press ESC to show menu
-    if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == Jtrue)
+    if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == true)
     {   if(display_menu_g)
         {
-           display_menu_g = Jfalse;
+           display_menu_g = false;
         }
         else
         {
-            display_menu_g = Jtrue;
+            display_menu_g = true;
         }
         controls->timer_menu  = 100;
     }
@@ -403,43 +404,43 @@ void Inputs_ApplyInputs( Controls* controls,
 
         /*MOVEMENT*/
         //cancel current velocity
-        player->dx = 0;
-        player->dy = 0;
+        player->movementC->dx = 0;
+        player->movementC->dy = 0;
 
         //determine if running
-        if(!world->player.running &&
+        if(!world->player.playerC->running &&
                controls->pressedKeys[SDL_SCANCODE_LSHIFT])
         {
             Player_StartRunning(&world->player);
         }
-        else if(world->player.running &&
+        else if(world->player.playerC->running &&
                !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
         {
             Player_StopRunning(&world->player);
         }
 
         //apply controls to player movement
-        if (controls->pressedKeys[SDLK_z] == Jtrue)
+        if (controls->pressedKeys[SDLK_z] == true)
         {
-            player->dy = -1 * player->speed * delta_g;
+            player->movementC->dy = -1 * player->movementC->speed * delta_g;
         }
-        if (controls->pressedKeys[SDLK_s] == Jtrue)
+        if (controls->pressedKeys[SDLK_s] == true)
         {
-            player->dy = 1 * player->speed * delta_g;
+            player->movementC->dy = 1 * player->movementC->speed * delta_g;
         }
-        if (controls->pressedKeys[SDLK_d] == Jtrue)
+        if (controls->pressedKeys[SDLK_d] == true)
         {
-            player->dx = 1 * player->speed * delta_g;
+            player->movementC->dx = 1 * player->movementC->speed * delta_g;
         }
-        if (controls->pressedKeys[SDLK_q] == Jtrue)
+        if (controls->pressedKeys[SDLK_q] == true)
         {
-            player->dx = -1 * player->speed * delta_g;
+            player->movementC->dx = -1 * player->movementC->speed * delta_g;
         }
 
-        if (player->dx != 0 && player->dy != 0)
+        if (player->movementC->dx != 0 && player->movementC->dy != 0)
         {
-            player->dx *= 0.707106781;
-            player->dy *= 0.707106781;
+            player->movementC->dx *= 0.707106781;
+            player->movementC->dy *= 0.707106781;
         }
 
 
@@ -448,7 +449,7 @@ void Inputs_ApplyInputs( Controls* controls,
             //reloading
             if(controls->pressedKeys[SDLK_r])
             {
-                WeaponsComponent_Reload(player->weapons_component);
+                WeaponsComponent_Reload(player->weaponsC);
             }
 
             //calculating angle to mouse
@@ -460,7 +461,7 @@ void Inputs_ApplyInputs( Controls* controls,
                                             muzzleY,
                                             controls->mousePositionInWorldX,
                                             controls->mousePositionInWorldY  );
-            player->angle = mouse_angle;
+            player->movementC->angle = mouse_angle;
 
 
             //position of the targeted position in the map array
@@ -480,13 +481,13 @@ void Inputs_ApplyInputs( Controls* controls,
             //weapon scrolling
             if(controls->mouseWheelPos != 0)
             {
-                WeaponsComponent_ScrollWeapons(player->weapons_component, controls->mouseWheelPos );
+                WeaponsComponent_ScrollWeapons(player->weaponsC, controls->mouseWheelPos );
             }
 
             //shooting
             if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
             {
-                WeaponsComponent_TryToShoot(player->weapons_component,
+                WeaponsComponent_TryToShoot(player->weaponsC,
                                               muzzleX,
                                               muzzleY,
                                               mouse_angle,
@@ -509,8 +510,8 @@ void Inputs_ApplyInputs( Controls* controls,
             {
                 switch_timer = SDL_GetTicks();
                 game_state_g = GameState_Editing_Map;
-                world->player.visible = Jfalse;
-                world->player.solid = Jfalse;
+                world->player.visible = false;
+                world->player.solid = false;
                 Level_Load("saves/tempLevelEditor.sav", world);
             }
         }

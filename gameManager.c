@@ -13,7 +13,7 @@ GameManager GameManager_Create()
 {
     GameManager gm;
 
-    gm.ai_on = Jtrue;
+    gm.ai_on = true;
     gm.wave_id = 0;
     gm.game_mode = Survival_mode;
     gm.wave_timer = 40000;
@@ -57,8 +57,8 @@ Wave Wave_Create(int normal_zombies, int fast_zombies,
 void Game_StartMap(World* world)
 {
 
-    world->player.visible = Jtrue;
-    world->player.solid = Jtrue;
+    world->player.visible = true;
+    world->player.solid = true;
 
 
     for(int i = 0 ; i < Vector_Count(&world->events_vector) ; i++)
@@ -68,10 +68,10 @@ void Game_StartMap(World* world)
         if(event->sub_category == Event_Player_Start)
         {
             world->player = Player_Create( event->x, event->y, 20, 20);
-            world->player.visible = Jtrue;
-            world->player.solid = Jtrue;
-            world->player.camera->x = -screen_width_g/2 + world->player.x;
-            world->player.camera->y = -screen_height_g/2 + world->player.y;
+            world->player.visible = true;
+            world->player.solid = true;
+            world->player.playerC->cameraX = -screen_width_g/2 + world->player.x;
+            world->player.playerC->cameraY = -screen_height_g/2 + world->player.y;
         }
     }
 
@@ -123,7 +123,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
                 }
             }
 
-            if (projectile->alive == Jfalse)
+            if (projectile->alive == false)
             {
                 Vector_Delete(bullets_vector, i);
             }
@@ -140,7 +140,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
             Bonus_Update(bonus, &world->player);
-            if (bonus->alive == Jfalse)
+            if (bonus->alive == false)
             {
                 Vector_Delete(bonus_vector, i);
             }
@@ -161,7 +161,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
                     Zombie_Update(mob, world);
 
-                    if (mob->alive == Jfalse)
+                    if (mob->alive == false)
                     {
                         Zombie_Die(mob, bonus_vector);
                         Vector_Delete(monsters_vector, i);
@@ -206,8 +206,8 @@ void GameManager_UpdateEnnemyWaves(GameManager* gm, World* world)
                 GameManager_GeneratePositionOutsideOfScreen(&randX, &randY);
                 Vector_Push(&world->monsters_vector,
                             CreateZombie(   z_type,
-                                            randX + world->player.camera->x,
-                                            randY + world->player.camera->y
+                                            randX + world->player.playerC->cameraX,
+                                            randY + world->player.playerC->cameraY
 
                                         )
                             );

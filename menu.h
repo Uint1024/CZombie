@@ -15,7 +15,7 @@ typedef struct TextField
     int             max_char;
     Box             box;
     int             caret_blinking_timer;
-    Jbool           visible_caret;
+    bool           visible_caret;
     int             caret_blinking_delay;
     int             first_caretX;
     int             caretX;

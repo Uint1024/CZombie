@@ -13,7 +13,7 @@ typedef struct Weapon
     int                 magazine_bullets;
     int                 last_shot;
     int                 delay_between_shots;
-    WeaponsComponent*   parent;
+    WeaponsC*   parent;
     int                 reloading_time;
 } Weapon;
 

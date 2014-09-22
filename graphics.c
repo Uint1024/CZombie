@@ -14,6 +14,8 @@
 #include "window.h"
 #include "zombie.h"
 #include "gameManager.h"
+#include "player.h"
+#include "movement_component.h"
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
@@ -106,32 +108,20 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     Vector* monsters_vector = &world->monsters_vector;
     Vector* explosions_vector = &world->explosions_vector;
     Vector* events_vector = &world->events_vector;
-    Entity* camera = world->player.camera;
 
 
     for (int i = 0; i < world->map_size; i++)
     {
         if (world->ground_map[i] != NULL)
         {
-
             if(Entity_CheckNear(&world->player, world->ground_map[i]))
             {
-
-                Graphics_RenderObject(graphics, world->ground_map[i], camera);
+                Graphics_RenderObject(graphics, world->ground_map[i], world->player.playerC);
             }
-            else
-            {
-
-            }
-
-        }
-        else
-        {
-
         }
     }
 
-
+/*
 
     for (int i = 0; i < world->map_size; i++)
     {
@@ -139,18 +129,9 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         {
             if(Entity_CheckNear(&world->player, world->map[i]))
             {
-                Graphics_RenderObject(graphics, world->map[i], camera);
+                Graphics_RenderObject(graphics, world->map[i], world->player.playerC);
 
             }
-            else
-            {
-
-            }
-
-        }
-        else
-        {
-
         }
     }
 
@@ -159,21 +140,20 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         Entity* event = (Entity*)Vector_Get(events_vector, i);
         if(Entity_CheckNear(&world->player, event))
         {
-            Graphics_RenderObject(graphics, event, camera);
+            Graphics_RenderObject(graphics, event, world->player.playerC);
 
         }
-
     }
 
 
-    Graphics_RenderObject(graphics, &world->player, camera);
+    Graphics_RenderObject(graphics, &world->player, world->player.playerC);
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
 
             Entity* bullet = (Entity*)Vector_Get(bullets_vector, i);
         if(Entity_CheckNear(&world->player, bullet))
-            Graphics_RenderObject(graphics, bullet, camera);
+            Graphics_RenderObject(graphics, bullet, world->player.playerC);
 
     }
 
@@ -184,7 +164,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
 
             if(Entity_CheckNear(&world->player, bonus))
-            Graphics_RenderObject(graphics, bonus, camera);
+            Graphics_RenderObject(graphics, bonus, world->player.playerC);
         }
     }
 
@@ -195,7 +175,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
             Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 
            if(Entity_CheckNear(&world->player, mob))
-            Graphics_RenderObject(graphics, mob, camera);
+            Graphics_RenderObject(graphics, mob, world->player.playerC);
 
         }
     }
@@ -205,35 +185,37 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         if(Vector_Get(explosions_vector, i) != NULL)
         {
             Entity* explosion = (struct Entity*)Vector_Get(explosions_vector, i);
-            Graphics_RenderObject(graphics, explosion, camera);
+            Graphics_RenderObject(graphics, explosion, world->player.playerC);
         }
     }
-
+*/
 
 }
 
-void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
+void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
 {
+    float cameraX = playerC->cameraX;
+    float cameraY = playerC->cameraY;
     if(object->t == Cat_Player)
     {
         int alpha_value = 255;
 
 
-        if(object->invulnerability_timer > 0)
+        if(object->playerC->invulnerability_timer > 0)
         {
-            if(object->invulnerability_timer > 1500)
+            if(object->playerC->invulnerability_timer > 1500)
             {
                 alpha_value = 100;
             }
-            else if(object->invulnerability_timer > 1000)
+            else if(object->playerC->invulnerability_timer > 1000)
             {
                 alpha_value = 255;
             }
-            else if(object->invulnerability_timer > 500)
+            else if(object->playerC->invulnerability_timer > 500)
             {
                 alpha_value = 100;
             }
-            else if(object->invulnerability_timer > 0)
+            else if(object->playerC->invulnerability_timer > 0)
             {
                 alpha_value = 255;
             }
@@ -249,21 +231,26 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
         SDL_SetTextureAlphaMod(graphics->textures[object->texture], 50);
     }
 
-    const SDL_Rect rect = { object->box.left - camera->x,
-                            object->box.top - camera->y,
+    const SDL_Rect rect = { object->box.left - cameraX,
+                            object->box.top - cameraY,
                             object->box.width,
                             object->box.height };
 
 
-    if(object->visible)
+    if(object->movementC != NULL && object->visible)
     {
         SDL_RenderCopyEx(graphics->renderer,
                          graphics->textures[object->texture],
                          NULL,
                          &rect,
-                         object->angle * 57.32f,
+                         object->movementC->angle * 57.32f,//convert radian to degree
                          NULL,
                          SDL_FLIP_NONE);
+    }
+    else if(object->movementC == NULL && object->visible)
+    {
+        SDL_RenderCopy(graphics->renderer, graphics->textures[object->texture],
+                       NULL, &rect);
     }
 
 
@@ -280,18 +267,18 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
         Graphics_RenderText(graphics,
                             positionX_str,
                             Small,
-                            object->x - camera->x,
-                            object->y - camera->y,
-                            Jtrue,
+                            object->x - cameraX,
+                            object->y - cameraY,
+                            true,
                             White
                             );
 
         Graphics_RenderText(graphics,
                             positionY_str,
                             Small,
-                            object->x - camera->x,
-                            object->y - camera->y + 10,
-                            Jtrue,
+                            object->x - cameraX,
+                            object->y - cameraY + 10,
+                            true,
                             White
                                                         );
     }
@@ -301,7 +288,7 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, Entity* camera)
 }
 
 void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
-                         int x, int y, Jbool shaded, Font_Color color)
+                         int x, int y, bool shaded, Font_Color color)
 {
 
     SDL_Color text_color = font_color_g[color];
@@ -377,7 +364,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             SDL_RenderFillRect(g->renderer, &caret_rect);
         }
 
-        Graphics_RenderText(g, tf->text, Medium, tf->first_caretX, tf->caretY, Jfalse, Black);
+        Graphics_RenderText(g, tf->text, Medium, tf->first_caretX, tf->caretY, false, Black);
     }
 
     //render the buttons of the load map/save menu
@@ -389,7 +376,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 
             Graphics_RenderText(g, button->text, Large,
                                 button->box.left, button->box.top,
-                                Jtrue, White);
+                                true, White);
             SDL_Rect rect = BoundingBox_GetSDLRect(&button->box);
             SDL_RenderDrawRect(g->renderer, &rect);
         }
@@ -400,7 +387,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     {
         Graphics_RenderText(g, "Save map", Large,
                                 400, 50,
-                                Jfalse, Black);
+                                false, Black);
     }
 
     //display mouse cursor
@@ -418,7 +405,8 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
                                   Window* level_editor, GameManager* gm)
 {
-
+    float cameraX = world->player.playerC->cameraX;
+    float cameraY = world->player.playerC->cameraY;
     if(controls->active_button != NULL)
     {
         if(!controls->hovering_on_window)
@@ -442,8 +430,8 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
             {
                 obj_w = TILE_SIZE;
                 obj_h = TILE_SIZE;
-                obj_x = controls->tileInPixelsX - world->player.camera->x;
-                obj_y = controls->tileInPixelsY - world->player.camera->y;
+                obj_x = controls->tileInPixelsX - cameraX;
+                obj_y = controls->tileInPixelsY - cameraY;
             }
             else if(cat == Cat_Zombie)
             {
@@ -452,8 +440,8 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
                 obj_w = zombie_width_g[object_type];
                 obj_h = zombie_height_g[object_type];
 
-                obj_x = controls->mousePositionInWorldX - world->player.camera->x;
-                obj_y = controls->mousePositionInWorldY - world->player.camera->y;
+                obj_x = controls->mousePositionInWorldX - cameraX;
+                obj_y = controls->mousePositionInWorldY - cameraY;
             }
 
             if(cat == Cat_Ground)
@@ -513,7 +501,7 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
     {
         char deactivated[] = "AI deactivated";
 
-        Graphics_RenderText(g, deactivated, Medium, 300, 20, Jtrue, Black);
+        Graphics_RenderText(g, deactivated, Medium, 300, 20, true, Black);
     }
 
 }
@@ -526,12 +514,15 @@ void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alph
 
 void Graphics_RenderGameUI(Graphics* g, World* world)
 {
+    float cameraX = world->player.playerC->cameraX;
+    float cameraY = world->player.playerC->cameraY;
+
     //stamina
     char stamina[] = "Stamina";
-    Graphics_RenderText(g, stamina, Medium, 50, 700, Jtrue, White);
+    Graphics_RenderText(g, stamina, Medium, 50, 700, true, White);
 
     SDL_Rect stamina_rect_back = {150,700,100,20};
-    SDL_Rect stamina_rect_front = {150,700,world->player.stamina,20};
+    SDL_Rect stamina_rect_front = {150,700,world->player.playerC->stamina,20};
 
     SDL_SetRenderDrawColor(g->renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(g->renderer, &stamina_rect_back);
@@ -542,31 +533,31 @@ void Graphics_RenderGameUI(Graphics* g, World* world)
     //hp
     char hp[8];
     snprintf(hp, sizeof(hp), "%d hp", world->player.hp);
-    Graphics_RenderText(g, hp, Medium, 700, 110, Jtrue, White);
+    Graphics_RenderText(g, hp, Medium, 700, 110, true, White);
 
     //name of weapon
-    Graphics_RenderText(g, world->player.weapons_component->current_weapon->name, Medium, 700, 130, Jtrue, White);
+    Graphics_RenderText(g, world->player.weaponsC->current_weapon->name, Medium, 700, 130, true, White);
 
     //bullets left
     char nb_of_bullets_on_player[70];
     snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
-             world->player.weapons_component->current_weapon->magazine_bullets, " / ",
-             world->player.weapons_component->current_weapon->magazine_max_bullets, " / ",
-             world->player.weapons_component->bullets[world->player.weapons_component->current_weapon->type]
+             world->player.weaponsC->current_weapon->magazine_bullets, " / ",
+             world->player.weaponsC->current_weapon->magazine_max_bullets, " / ",
+             world->player.weaponsC->bullets[world->player.weaponsC->current_weapon->type]
              );
-    Graphics_RenderText(g, nb_of_bullets_on_player, Medium, 700, 150, Jtrue, White);
+    Graphics_RenderText(g, nb_of_bullets_on_player, Medium, 700, 150, true, White);
 
     //reloading! text
-    if(world->player.weapons_component->reloading)
+    if(world->player.weaponsC->reloading)
     {
         char reloading_str[25] = "";
         snprintf(reloading_str, sizeof(reloading_str), "Reloading (%d)",
-                 world->player.weapons_component->reload_timer);
+                 world->player.weaponsC->reload_timer);
         Graphics_RenderText(g, reloading_str,
                             Medium,
-                            world->player.x - world->player.camera->x - 20,
-                            world->player.y - 20 - world->player.camera->y
-                            , Jtrue, White);
+                            world->player.x - cameraX - 20,
+                            world->player.y - 20 - cameraY
+                            , true, White);
     }
 }
 
@@ -608,7 +599,7 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     {
         char full_txt_fps[80];
         snprintf(full_txt_fps, sizeof full_txt_fps, "%f%s%d%s", fps, " FPS (", delta_g, " ms)");
-        Graphics_RenderText(g, full_txt_fps, Medium, 700, 50, Jtrue, White);
+        Graphics_RenderText(g, full_txt_fps, Medium, 700, 50, true, White);
     }
 
     //debug stuff
@@ -616,11 +607,11 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     {
         char nb_of_monsters[50];
         snprintf(nb_of_monsters, sizeof(nb_of_monsters), "%d%s", Vector_Count(&world->monsters_vector), " monsters on screen.");
-        Graphics_RenderText(g, nb_of_monsters, Medium, 700, 100, Jtrue, White);
+        Graphics_RenderText(g, nb_of_monsters, Medium, 700, 100, true, White);
 
         char nb_of_bullets_on_screen[50];
         snprintf(nb_of_bullets_on_screen, sizeof(nb_of_bullets_on_screen), "%d%s", Vector_Count(&world->bullets_vector), " bullets on screen.");
-        Graphics_RenderText(g, nb_of_bullets_on_screen, Medium, 700, 120, Jtrue, White);
+        Graphics_RenderText(g, nb_of_bullets_on_screen, Medium, 700, 120, true, White);
     }
 }
 void Graphics_Flip(Graphics* graphics)

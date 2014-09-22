@@ -27,8 +27,8 @@
 #include "window.h"
 #include "menu.h"
 
-Jbool           debug_mode = Jfalse;
-Jbool           display_menu_g = Jtrue;
+bool           debug_mode = false;
+bool           display_menu_g = true;
 Game_State      game_state_g = GameState_Main_Menu;
 int screen_width_g = 1080;
 int screen_height_g = 768;
@@ -43,7 +43,7 @@ int main(int argc, char* args[])
 	int screen_height = 768;
 
     Graphics* graphics = Graphics_Create(screen_width, screen_height);
-	Jbool running = Jtrue;
+	bool running = true;
 
     GameManager game_manager = GameManager_Create();
 

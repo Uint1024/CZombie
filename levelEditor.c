@@ -5,6 +5,7 @@
 #include "zombie.h"
 #include "weapon.h"
 #include "weapons_component.h"
+#include "movement_component.h"
 
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 {
@@ -15,38 +16,32 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
     fwrite(&buffer->x, sizeof(float), 1, save_file);
     fwrite(&buffer->y, sizeof(float), 1, save_file);
     fwrite(&buffer->t, sizeof(Main_Category), 1, save_file);
-    fwrite(&buffer->dx, sizeof(float), 1, save_file);
-    fwrite(&buffer->dy, sizeof(float), 1, save_file);
-    fwrite(&buffer->muzzleX, sizeof(float), 1, save_file);
-    fwrite(&buffer->muzzleY, sizeof(float), 1, save_file);
-    fwrite(&buffer->speed, sizeof(float), 1, save_file);
-    fwrite(&buffer->bullet_type, sizeof(Weapon_Type), 1, save_file);
-    fwrite(&buffer->explosion_timer, sizeof(int), 1, save_file);
     fwrite(&buffer->box, sizeof(Box), 1, save_file);
-    fwrite(&buffer->alive, sizeof(Jbool), 1, save_file);
-    fwrite(&buffer->time_traveled, sizeof(int), 1, save_file);
-    fwrite(&buffer->is_ennemy_bullet, sizeof(Jbool), 1, save_file);
+    fwrite(&buffer->alive, sizeof(bool), 1, save_file);
+    fwrite(&buffer->alive_timer, sizeof(bool), 1, save_file);
+    fwrite(&buffer->is_ennemy, sizeof(bool), 1, save_file);
     fwrite(&buffer->hp, sizeof(int), 1, save_file);
-    fwrite(&buffer->last_creation, sizeof(int), 1, save_file);
-    fwrite(&buffer->invulnerability_timer, sizeof(int), 1, save_file);
-    fwrite(&buffer->blinking_timer, sizeof(int), 1, save_file);
-    fwrite(&buffer->blinking_frame, sizeof(int), 1, save_file);
-    fwrite(&buffer->stamina, sizeof(float), 1, save_file);
-    fwrite(&buffer->max_stamina, sizeof(float), 1, save_file);
-    fwrite(&buffer->running, sizeof(Jbool), 1, save_file);
-    fwrite(&buffer->angle, sizeof(float), 1, save_file);
-    fwrite(&buffer->solid, sizeof(Jbool), 1, save_file);
+    fwrite(&buffer->solid, sizeof(bool), 1, save_file);
     fwrite(&buffer->collision_direction, sizeof(Direction), 1, save_file);
-    fwrite(&buffer->door_opening_timer, sizeof(int), 1, save_file);
+
+    if(buffer->movementC != NULL)
+    {
+        fwrite(true, sizeof(bool), 1, save_file);
+        MovementC* mc = buffer->movementC;
+        fwrite(&mc->angle, sizeof(float), 1, save_file);
+        fwrite(&mc->speed, sizeof(float), 1, save_file);
+        fwrite(&mc->dx, sizeof(float), 1, save_file);
+        fwrite(&mc->dy, sizeof(float), 1, save_file);
+    }
 
     if(buffer->zombieC != NULL)
     {
-        Jbool is_zombie = Jtrue;
-        fwrite(&is_zombie, sizeof(Jbool), 1, save_file);
+        bool is_zombie = true;
+        fwrite(&is_zombie, sizeof(bool), 1, save_file);
 
         ZombieC* zc = buffer->zombieC;
-        fwrite(&zc->aggressive, sizeof(Jbool), 1, save_file);
-        fwrite(&zc->idling, sizeof(Jbool), 1, save_file);
+        fwrite(&zc->aggressive, sizeof(bool), 1, save_file);
+        fwrite(&zc->idling, sizeof(bool), 1, save_file);
         fwrite(&zc->rand_move_every, sizeof(int), 1, save_file);
         fwrite(&zc->rand_move_timer, sizeof(int), 1, save_file);
         fwrite(&zc->vision_distance, sizeof(int), 1, save_file);
@@ -55,8 +50,8 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
     }
     else
     {
-        Jbool is_zombie = Jfalse;
-        fwrite(&is_zombie, sizeof(Jbool), 1, save_file);
+        bool is_zombie = false;
+        fwrite(&is_zombie, sizeof(bool), 1, save_file);
     }
 }
 
@@ -67,47 +62,38 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
     fread(&buffer->damage, sizeof(float), 1, save_file);
     fread(&buffer->x, sizeof(float), 1, save_file);
     fread(&buffer->y, sizeof(float), 1, save_file);
-
     fread(&buffer->t, sizeof(Main_Category), 1, save_file);
-    fread(&buffer->dx, sizeof(float), 1, save_file);
-    fread(&buffer->dy, sizeof(float), 1, save_file);
-    fread(&buffer->muzzleX, sizeof(float), 1, save_file);
-
-    fread(&buffer->muzzleY, sizeof(float), 1, save_file);
-    fread(&buffer->speed, sizeof(float), 1, save_file);
-    fread(&buffer->bullet_type, sizeof(Weapon_Type), 1, save_file);
-    fread(&buffer->explosion_timer, sizeof(int), 1, save_file);
     fread(&buffer->box, sizeof(Box), 1, save_file);
-    fread(&buffer->alive, sizeof(Jbool), 1, save_file);
-    fread(&buffer->time_traveled, sizeof(int), 1, save_file);
-    fread(&buffer->is_ennemy_bullet, sizeof(Jbool), 1, save_file);
+    fread(&buffer->alive, sizeof(bool), 1, save_file);
+    fread(&buffer->alive_timer, sizeof(bool), 1, save_file);
+    fread(&buffer->is_ennemy, sizeof(bool), 1, save_file);
     fread(&buffer->hp, sizeof(int), 1, save_file);
-    fread(&buffer->last_creation, sizeof(int), 1, save_file);
-    fread(&buffer->invulnerability_timer, sizeof(int), 1, save_file);
-    fread(&buffer->blinking_timer, sizeof(int), 1, save_file);
-
-    fread(&buffer->blinking_frame, sizeof(int), 1, save_file);
-    fread(&buffer->stamina, sizeof(float), 1, save_file);
-    fread(&buffer->max_stamina, sizeof(float), 1, save_file);
-    fread(&buffer->running, sizeof(Jbool), 1, save_file);
-    fread(&buffer->angle, sizeof(float), 1, save_file);
-    fread(&buffer->solid, sizeof(Jbool), 1, save_file);
-
+    fread(&buffer->solid, sizeof(bool), 1, save_file);
     fread(&buffer->collision_direction, sizeof(Direction), 1, save_file);
 
+    bool has_movementC = false;
+    fread(&has_movementC, sizeof(bool), 1, save_file);
 
-    fread(&buffer->door_opening_timer, sizeof(int), 1, save_file);
+    if(has_movementC != false)
+    {
+        MovementC* mc = MovementC_Create();
+        fread(&mc->angle, sizeof(float), 1, save_file);
+        fread(&mc->speed, sizeof(float), 1, save_file);
+        fread(&mc->dx, sizeof(float), 1, save_file);
+        fread(&mc->dy, sizeof(float), 1, save_file);
+        buffer->movementC = mc;
+    }
 
-    Jbool is_zombie = Jfalse;
 
-    fread(&is_zombie, sizeof(Jbool), 1, save_file);
+    bool is_zombie = false;
+    fread(&is_zombie, sizeof(bool), 1, save_file);
 
-    if(is_zombie != Jfalse)
+    if(is_zombie != false)
     {
         ZombieC* zc = ZombieC_Create();
 
-        fread(&zc->aggressive, sizeof(Jbool), 1, save_file);
-        fread(&zc->idling, sizeof(Jbool), 1, save_file);
+        fread(&zc->aggressive, sizeof(bool), 1, save_file);
+        fread(&zc->idling, sizeof(bool), 1, save_file);
 
         fread(&zc->rand_move_every, sizeof(int), 1, save_file);
         fread(&zc->rand_move_timer, sizeof(int), 1, save_file);
@@ -118,8 +104,8 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 
         if(zombie_weapon_g[zc->zombie_type] != No_Weapon)
         {
-            buffer->weapons_component = WeaponsComponent_Create(Jtrue);
-            WeaponsComponent_AddWeaponToInventory(buffer->weapons_component,
+            buffer->weaponsC = WeaponsComponent_Create(true);
+            WeaponsComponent_AddWeaponToInventory(buffer->weaponsC,
                                               Weapon_Create(zombie_weapon_g[buffer->zombieC->zombie_type]));
         }
     }

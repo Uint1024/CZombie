@@ -41,7 +41,7 @@ typedef enum {
 
 //typedef enum { FPS_options_button, Controls_options_button, Back_button } OptionsMenu_Button;
 
-typedef enum { Jfalse, Jtrue } Jbool;
+typedef enum { false, true } bool;
 
 typedef enum { Left, Top, Bottom, Right, None } Direction;
 
@@ -204,7 +204,7 @@ typedef enum{
     NBCOLORS
 } Font_Color;
 
-extern Jbool debug_mode;
+extern bool debug_mode;
 extern int delta_g;
 extern int screen_width_g;
 extern int screen_height_g;
@@ -265,7 +265,7 @@ extern int              zombie_weapon_g[NB_ZOMBIE_TYPES];
 extern int              bonus_width_g[NB_OF_BONUS_TYPES];
 extern int              bonus_height_g[NB_OF_BONUS_TYPES];
 extern Game_State       game_state_g;
-extern Jbool            display_menu_g;
+extern bool            display_menu_g;
 
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 

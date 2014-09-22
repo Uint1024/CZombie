@@ -12,8 +12,7 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 	ent->texture = wall_textures_g[type];
 	ent->x = x_;
 	ent->y = y_;
-	ent->dx = 0;
-	ent->dy = 0;
+
 	ent->hp = 1050;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
@@ -29,8 +28,7 @@ Entity* Ground_Create(Ground_Type type, float x, float y)
 
 	ent->x = x;
 	ent->y = y;
-	ent->dx = 0;
-	ent->dy = 0;
+
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
 	return ent;
@@ -48,7 +46,7 @@ void Structure_GetAttacked(Entity* d, Entity* attacker)
 void Structure_Die(Entity* d)
 {
     //d->texture = door_textures_g[Door_Dead];
-    d->solid = Jfalse;
-    d->visible = Jfalse;
+    d->solid = false;
+    d->visible = false;
 }
 

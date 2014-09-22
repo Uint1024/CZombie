@@ -11,11 +11,11 @@ typedef struct ZombieC
     Zombie_Type             zombie_type;
     int                     vision_distance;
     float                   vision_width;
-    Jbool                   aggressive;
+    bool                   aggressive;
     int                     rand_move_timer;
     int                     rand_move_every;
-    Jbool                   idling;
-    Jbool                   dodging;
+    bool                   idling;
+    bool                   dodging;
     int                   dodging_time;
     //the zombies ai activates every every 700 ms,
     //else it lags too much...

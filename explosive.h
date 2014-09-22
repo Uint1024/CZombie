@@ -15,7 +15,7 @@ typedef struct Explosive
     int damage;
     int explosion_radius;
 
-    Jbool activated;
+    bool activated;
     int explosion_timer;
     int time_of_explosion;
 } Explosive;

@@ -13,13 +13,13 @@ typedef struct MenuButton
     char*               text;
     SDL_Texture*        text_texture;
     SDL_Rect            text_rect;
-    Jbool               hover;
+    bool               hover;
 
 } MenuButton;
 
 MenuButton* MenuButton_Create(Menu_Button_Name name,
                               float x, float y,
-                              char* text, Jbool centered,
+                              char* text, bool centered,
                               Graphics* graphics);
 MenuButton* FileNameButton_Create(float y, char* text);
 void MenuButton_UpdateBox(MenuButton* b, int x, int y);

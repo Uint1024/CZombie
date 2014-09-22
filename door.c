@@ -1,6 +1,7 @@
 #include "door.h"
 #include "entity.h"
 
+static int door_switch_timer = 0;
 
 Entity* Door_Create(Door_Type type, int x, int y)
 {
@@ -9,8 +10,6 @@ Entity* Door_Create(Door_Type type, int x, int y)
 	ent->texture = door_textures_g[type];
 	ent->x = x;
 	ent->y = y;
-	ent->dx = 0;
-	ent->dy = 0;
 	ent->hp = 250;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
@@ -19,7 +18,7 @@ Entity* Door_Create(Door_Type type, int x, int y)
 
 /*void Door_Update(entity d)
 {
-    d->solid = Jtrue;
+    d->solid = true;
 }*/
 
 void Door_GetAttacked(Entity* d, Entity* attacker)
@@ -33,20 +32,20 @@ void Door_GetAttacked(Entity* d, Entity* attacker)
 void Door_Die(Entity* d)
 {
     d->texture = door_textures_g[Door_Dead];
-    d->solid = Jfalse;
+    d->solid = false;
 }
 
 void Door_Switch(Entity* d)
 {
-    if(SDL_GetTicks() - d->door_opening_timer > 150)
-       {
-            d->door_opening_timer = SDL_GetTicks();
-            d->solid = d->solid ? Jfalse : Jtrue;
-       }
+    if(SDL_GetTicks() - door_switch_timer > 60)
+    {
+        door_switch_timer = SDL_GetTicks();
+        d->solid = d->solid ? false : true;
+    }
 
 }
 
 void Door_Open(Entity* d)
 {
-    d->solid = Jfalse;
+    d->solid = false;
 }

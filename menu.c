@@ -51,7 +51,7 @@
     {
         MenuButton* button = MenuButton_Create(Menu_Button_Name[i],
                                       100.0f, 100.0f,
-                                      text[i], Jtrue,
+                                      text[i], true,
                                       graphics);
 
         Vector_Push(&mainMenu->all_buttons,
@@ -157,7 +157,7 @@ Menu* OptionMenu_Create(Graphics* graphics)
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 400,
                                                       "Back",
-                                                      Jtrue, graphics);
+                                                      true, graphics);
     Vector_Push(&optionsMenu->buttons, back_button);
     optionsMenu->active_textfield = NULL;
     return optionsMenu;
@@ -216,7 +216,7 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 400,
                                                       "Back",
-                                                      Jtrue, graphics);
+                                                      true, graphics);
 
 
     Vector_Push(&saveMenu->buttons, back_button);
@@ -238,7 +238,7 @@ Menu* LoadLevelMenu_Create(Graphics* graphics)
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 500,
                                                       "Back",
-                                                      Jtrue, graphics);
+                                                      true, graphics);
 
     Vector_Push(&optionsMenu->buttons, back_button);
     optionsMenu->active_textfield = NULL;
@@ -262,7 +262,7 @@ TextField* TextField_Create(int x, int y, int width, int height)
 
     tf->caret_blinking_delay = 400;
     tf->caret_blinking_timer = 0;
-    tf->visible_caret = Jtrue;
+    tf->visible_caret = true;
     tf->caretX = x + 24;
     tf->first_caretX = tf->caretX;
     tf->caretY = y + 20;
@@ -295,7 +295,7 @@ void TextField_Update(TextField* tf, Controls* controls)
 
     for(int i = 0 ; i < 200 ; i ++)
     {
-        if(controls->pressedKeys[i] == Jtrue && previousPressedKeys_g[i] == Jfalse &&
+        if(controls->pressedKeys[i] == true && previousPressedKeys_g[i] == false &&
            (char)controls->pressedKeys[i] != tf->text[len] &&
            !controls->pressedKeys[SDLK_RETURN] &&
            !controls->pressedKeys[SDLK_BACKSPACE] &&
@@ -316,7 +316,7 @@ void TextField_Caret_Update(TextField* tf)
     tf->caret_blinking_timer += delta_g;
     if(tf->caret_blinking_timer > tf->caret_blinking_delay)
     {
-        tf->visible_caret = tf->visible_caret ? Jfalse : Jtrue;
+        tf->visible_caret = tf->visible_caret ? false : true;
         tf->caret_blinking_timer = 0;
     }
 }
