@@ -45,7 +45,8 @@ void Player_FieldOfView(Entity* p, World* world)
     playerTileX = p->x / TILE_SIZE;
     playerTileY = p->y / TILE_SIZE;
 
-    for(int i = 1 ; i < 3 ; i++)
+    world->ground_map[playerTileY * world->map_width + playerTileX]->in_dark = false;
+    for(int i = 1 ; i < 9 ; i++)
     {
         Player_ScanOctant(1, i, 1, 0, world);
     }
@@ -58,10 +59,11 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                        float end_slope,
                        World* world)
 {
-int y = 0;
-int x = 0;
+    int y = 0;
+    int x = 0;
+    int i = 0;
     //can see 10 tiles away
-    int vision_distance = 10;
+    int vision_distance = 25;
     int vision_distance2 = vision_distance * vision_distance;
 
     switch(octant)
@@ -69,18 +71,18 @@ int x = 0;
     case 1:
         //tile being scanned
         y = playerTileY - depth;
-        if(y < 0) y = 0;
-
+        if (y < 0) return;
         x = playerTileX - (int)(start_slope * depth);
-        if(x < 0) x = 0;
+        if (x < 0) x = 0;
+        //current tile
+
 
         while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) >= end_slope)
         {
             if(C_DistanceSquaredBetween2Points(x, y,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
-                //current tile
-                int  i = y * world->map_width + x;
+                i = y * world->map_width + x;
 
                 if(world->map[i]->solid)
                 {
@@ -117,17 +119,16 @@ int x = 0;
         break;
     case 2://nne
         y = playerTileY - depth;
-        if(y < 0) y = 0;
-
+        if (y < 0) return;
         x = playerTileX + (int)(start_slope * depth);
-        if(x >= world->map_width) x = world->map_width - 1;
+        if (x >= world->map_width) x = world->map_width - 1;
 
         while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) <= end_slope)
         {
             if(C_DistanceSquaredBetween2Points(x, y,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
-                int  i = y * world->map_width + x;
+                i = y * world->map_width + x;
 
                 if(world->map[i]->solid)
                 {
@@ -157,6 +158,271 @@ int x = 0;
 
         }
         x++;
+        break;
+
+    case 3:
+        x = playerTileX + depth;
+        if(x >= world->map_width) return;
+
+        y = playerTileY - (int)(start_slope * depth);
+        if(y < 0) y = 0;
+
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, true) <= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                i = y * world->map_width + x;
+
+                if(world->map[i]->solid)
+                {
+                    if(y - 1 > 0 && !world->map[i - world->map_width]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   true),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(y - 1 > 0 && world->map[i - world->map_width]->solid)
+                     {
+                         start_slope = -C_GetSlopeBetween2Points(x + 0.5f, y - 0.5f,
+                                                                playerTileX, playerTileY, true);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            y++;
+
+        }
+        y--;
+        break;
+    case 4:
+        x = playerTileX + depth;
+        if(x >= world->map_width) return;
+
+        y = playerTileY + (int)(start_slope * depth);
+        if(y >= world->map_height) y = world->map_height - 1;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, true) >= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                i = y * world->map_width + x;
+
+
+                if(world->map[i]->solid)
+                {
+                    if(y + 1 < world->map_height && !world->map[i + world->map_width]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   true),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(y + 1 < world->map_height && world->map[i + world->map_width]->solid)
+                     {
+                         start_slope = C_GetSlopeBetween2Points(x + 0.5f, y + 0.5f,
+                                                                playerTileX, playerTileY, true);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            y--;
+
+        }
+        y++;
+        break;
+    case 5:
+        y = playerTileY + depth;
+        if(y >= world->map_height) return;
+
+        x = playerTileX + (int)(start_slope * depth);
+        if(x >= world->map_width) x = world->map_width - 1;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) >= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                i = y * world->map_width + x;
+
+
+                if(world->map[i]->solid)
+                {
+                    if(x + 1 < world->map_width && !world->map[i + 1]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x + 0.5f, y - 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   false),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(x + 1 < world->map_width && world->map[i + 1]->solid)
+                     {
+                         start_slope = C_GetSlopeBetween2Points(x + 0.5f, y + 0.5f,
+                                                                playerTileX, playerTileY, false);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            x--;
+
+        }
+        x++;
+        break;
+    case 6:
+        y = playerTileY + depth;
+        if(y >= world->map_height) return;
+
+        x = playerTileX - (int)(start_slope * depth);
+        if(x <0 ) x = 0;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) <= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                i = y * world->map_width + x;
+
+
+                if(world->map[i]->solid)
+                {
+                    if(x - 1 >= 0 && !world->map[i - 1]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   false),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(x - 1 >= 0 && world->map[i - 1]->solid)
+                     {
+                         start_slope = -C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
+                                                                playerTileX, playerTileY, false);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            x++;
+
+        }
+        x--;
+        break;
+    case 7:
+        x = playerTileX - depth;
+        if(x <0 ) return;
+
+        y = playerTileY + (int)(start_slope * depth);
+        if(y > world->map_height) y = world->map_height - 1;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, true) <= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                i = y * world->map_width + x;
+
+
+                if(world->map[i]->solid)
+                {
+                    if(y + 1 < world->map_height && !world->map[i + world->map_width]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x + 0.5f, y + 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   true),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(y + 1 < world->map_height && world->map[i + world->map_width]->solid)
+                     {
+                         start_slope = -C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
+                                                                playerTileX, playerTileY, true);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            y--;
+
+        }
+        y++;
+        break;
+    case 8:
+        x = playerTileX - depth;
+        if(x < 0) return;
+
+        y = playerTileY - (int)(start_slope * depth);
+        if (y < 0) y = 0;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, true) >= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                i = y * world->map_width + x;
+
+
+                if(world->map[i]->solid)
+                {
+                    if(y - 1 > 0 && !world->map[i - world->map_width]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x + 0.5f, y - 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   true),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(y - 1 > 0 && world->map[i - world->map_width]->solid)
+                     {
+                         start_slope = C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
+                                                                playerTileX, playerTileY, true);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            y++;
+
+        }
+        y--;
         break;
     }
 
