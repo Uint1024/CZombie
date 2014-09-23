@@ -102,8 +102,8 @@ void Graphics_RenderGame(Graphics* g, World* world,
  {
      SDL_SetRenderDrawColor(g->renderer, 50, 50, 50, 0xFF);
      SDL_RenderClear(g->renderer);
-     Graphics_RenderWorld(g, world);
-     Graphics_RenderUI(g, world, controls, fps, level_editor, gm);
+     //Graphics_RenderWorld(g, world);
+     //Graphics_RenderUI(g, world, controls, fps, level_editor, gm);
      Graphics_Flip(g);
  }
 

@@ -39,8 +39,6 @@ void Player_FieldOfView(Entity* p, World* world)
             world->map[i]->in_dark = true;
         }
     }
-    bool* wall = calloc(world->map_size, sizeof(bool));
-    bool* visible = calloc(world->map_size, sizeof(bool));
 
     int fov = 10;
     playerTileX = p->x / TILE_SIZE;
@@ -486,7 +484,7 @@ void Player_Update(World* world)
 
     if(p->playerC->vision_timer > 60)
     {
-        Player_FieldOfView(p, world);
+       // Player_FieldOfView(p, world);
         p->playerC->vision_timer = 0;
     }
 
@@ -506,8 +504,8 @@ void Player_Update(World* world)
         }
 
 
-        Entity_CollisionWithStuff(p, world);
-        Player_CheckBonusCollision(p, &world->bonus_vector);
+        //Entity_CollisionWithStuff(p, world);
+        //Player_CheckBonusCollision(p, &world->bonus_vector);
     }
 
 
