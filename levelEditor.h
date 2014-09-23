@@ -13,4 +13,5 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer);
 
 void LevelEditor_QuickTry(World* world);
 void LevelEditor_BackToEditing(World* world);
+void LevelEditor_LoadMapToEdit(char* complete_name, World* world);
 #endif // LEVELEDITOR_H

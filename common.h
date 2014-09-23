@@ -223,6 +223,9 @@ float C_GenerateRandomAngle();
 float C_GenerateAngleInOppositeDirection(Direction direction);
 float C_DifferenceBetweenAngles(float angle1, float angle2);
 float C_ConvertAngle2PiCirlce(float angle);
+float C_GetSlopeBetween2Points(float xa, float ya, float xb, float yb, bool reverse_slope);
+float C_DistanceSquaredBetween2Points(int xa, int ya, int xb, int yb);
+
 void Game_InitData();
 
 typedef struct Vec2
@@ -264,6 +267,7 @@ extern bool            display_menu_g;
 #define BASE_PLAYER_SPEED 0.2
 #define LEVEL_EDITOR_SPEED 0.6
 
+#define MAP_SIZE 100
 #define PI 3.14159265359
 #define HALF_PI 1.5707963267
 #endif

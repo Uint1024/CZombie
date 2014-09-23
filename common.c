@@ -117,6 +117,30 @@ float C_DistanceBetween2Points(int xa, int ya, int xb, int yb)
     return pythDistance;
 }
 
+float C_DistanceSquaredBetween2Points(int xa, int ya, int xb, int yb)
+{
+    float distanceX =  xa - xb;
+    float distanceY = ya - yb;
+    float distance = distanceX * distanceX +
+                                distanceY * distanceY;
+
+    return distance;
+}
+
+
+float C_GetSlopeBetween2Points(float xa, float ya, float xb, float yb, bool reverse_slope)
+{
+    if(reverse_slope)
+    {
+        return (float)(ya - yb) / (float)(xa - xb);
+    }
+    else
+    {
+
+        return (float)(xa - xb) / (float)(ya - yb);
+    }
+}
+
 //generate angle between -pi and +pi
 float C_GenerateRandomAngle()
 {

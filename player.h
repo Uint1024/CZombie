@@ -18,6 +18,7 @@ typedef struct PlayerC
     bool                    running;
     float                   cameraX;
     float                   cameraY;
+    float vision_timer;
 }PlayerC;
 
 PlayerC* PlayerC_Create();
@@ -31,5 +32,8 @@ void Player_Run(Entity* p);
 void Player_StartRunning(Entity* p);
 void Player_StopRunning(Entity* p);
 void Player_Walk(Entity* p);
-
+void Player_FieldOfView(Entity* p, World* world);
+void Player_ScanOctant(int depth, int octant, float start_slope,
+                       float end_slope,
+                       World* world);
 #endif

@@ -103,7 +103,7 @@ void MenuManager_Update(MenuManager* mm,
     }
 
     //map load menu -> loading all the saves in the saves/ folder
-    else if(menu->name == LoadMap_menu)
+    else if(menu->name == LoadMap_menu && mm->click_timer <= 0)
     {
         Vector_Clear(&menu->file_list);
 
@@ -127,6 +127,7 @@ void MenuManager_Update(MenuManager* mm,
           printf ("Can't find file\n");
         }
 
+
         for(int i = 0 ; i < Vector_Count(&menu->file_list) ; i++)
         {
             MenuButton* button = (MenuButton*)Vector_Get(&menu->file_list, i);
@@ -136,6 +137,8 @@ void MenuManager_Update(MenuManager* mm,
                controls->pressedMouseButtons[SDL_BUTTON_LEFT] &&
                BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &button->box))
             {
+
+
                 char* complete_name = malloc(sizeof(button->text) + 6);
                 strcpy(complete_name, "saves/");
                 strcat(complete_name, button->text);
@@ -144,25 +147,15 @@ void MenuManager_Update(MenuManager* mm,
                 //determine if we're loading the file to modify it or play it
                 //if we want to modify it, configure the game to level editor mode...
                 //problem : how do I know why the user wants to load it??
-                display_menu_g = false;
-                game_state_g = GameState_Editing_Map;
-                world->player.visible = false;
-                world->player.solid = false;
-                mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
-
-
-                Level_Load(complete_name, world);
-
+                LevelEditor_LoadMapToEdit(complete_name, world);
 
             }
-
-
         }
-
     }
 
     if(mm->click_timer <= 0)
     {
+        mm->click_timer = 100;
         for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
         {
             MenuButton* button = Vector_Get(&menu->buttons, i);
@@ -209,7 +202,7 @@ void MenuManager_Update(MenuManager* mm,
                     }
                     else if(button->name == NewMap_button)
                     {
-                        World_Reset(world, 100,100);
+                        World_Reset(world, MAP_SIZE,MAP_SIZE);
                         mm->previous_active_menu = mm->active_menu;
                         mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
 

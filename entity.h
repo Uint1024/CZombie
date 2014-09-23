@@ -31,7 +31,7 @@ typedef struct Entity
     int                     hp;//player and zombies can die, walls be destroyed
 	bool                    alive;
     int                     alive_timer;//used by explosions, bullets
-
+    bool                    in_dark;
 	bool                    is_ennemy;//zombies, bullets, explosions
     int                     damage;//zombies, bullets, explosions
 

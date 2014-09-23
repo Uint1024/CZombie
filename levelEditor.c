@@ -26,6 +26,7 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
     if(buffer->movementC != NULL)
     {
+        printf("saving movement\n");
         bool has_movementC = true;
         fwrite(&has_movementC, sizeof(bool), 1, save_file);
         MovementC* mc = buffer->movementC;
@@ -42,6 +43,7 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
     if(buffer->zombieC != NULL)
     {
+        printf("saving zpmbie\n");
         bool is_zombie = true;
         fwrite(&is_zombie, sizeof(bool), 1, save_file);
 
@@ -62,11 +64,15 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
     if(buffer->weaponsC != NULL)
     {
+        printf("saving weaponsc\n");
         bool has_weaponC = true;
         fwrite(&has_weaponC, sizeof(bool), 1, save_file);
 
         WeaponsC* wc = buffer->weaponsC;
-        fwrite(&wc->bullets, sizeof(int), 1, save_file);
+        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
+        {
+            fwrite(&wc->bullets[i], sizeof(int), 1, save_file);
+        }
         fwrite(&wc->is_monster, sizeof(bool), 1, save_file);
         fwrite(&wc->last_reload, sizeof(int), 1, save_file);
         fwrite(&wc->reloading, sizeof(bool), 1, save_file);
@@ -96,9 +102,12 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
             if(wc->weapons_inventory[i] != NULL)
             {
                 //we only save these 3 variables because we can load the rest with Weapon_Create
+
+                //first we write the weapon type, because in fread we'll need it to call Weapon_Create
+                fwrite(&wc->weapons_inventory[i]->type, sizeof(Weapon_Type), 1, save_file);
                 fwrite(&wc->weapons_inventory[i]->last_shot, sizeof(int), 1, save_file);
                 fwrite(&wc->weapons_inventory[i]->magazine_bullets, sizeof(int), 1, save_file);
-                fwrite(&wc->weapons_inventory[i]->type, sizeof(Weapon_Type), 1, save_file);
+
             }
         }
 
@@ -157,74 +166,61 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&zc->zombie_type, sizeof(Zombie_Type), 1, save_file);
         buffer->zombieC = zc;
 
-        if(zombie_weapon_g[zc->zombie_type] != No_Weapon)
+       /* if(zombie_weapon_g[zc->zombie_type] != No_Weapon)
         {
             buffer->weaponsC = WeaponsComponent_Create(true);
             WeaponsComponent_AddWeaponToInventory(buffer->weaponsC,
                                               Weapon_Create(zombie_weapon_g[buffer->zombieC->zombie_type]));
-        }
+        }*/
     }
 
     bool has_weaponC = true;
     fread(&has_weaponC, sizeof(bool), 1, save_file);
-
+    printf("%d\n", has_weaponC);
     if(has_weaponC)
     {
-        WeaponsC* wc = buffer->weaponsC;
-        fread(&wc->bullets, sizeof(int), 1, save_file);
+        WeaponsC* wc = WeaponsComponent_Create();
+        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
+        {
+            fread(&wc->bullets[i], sizeof(int), 1, save_file);
+        }
         fread(&wc->is_monster, sizeof(bool), 1, save_file);
         fread(&wc->last_reload, sizeof(int), 1, save_file);
         fread(&wc->reloading, sizeof(bool), 1, save_file);
         fread(&wc->reload_timer, sizeof(int), 1, save_file);
 
-        //we write only the weapon type, then in the loading function
+        //we read only the weapon type, then
         //we'll find the weapon in the inventory and set the pointer to it
-        fread(&wc->current_weapon->type, sizeof(Weapon_Type), 1, save_file);
+        Weapon_Type current_weapon = No_Weapon;
+        fread(&current_weapon, sizeof(Weapon_Type), 1, save_file);
 
-        //to fread the weapon inventory, we have to loop through the inventory array
-        //and write every individual weapon... but first we have to count them and fread
-        //the number of weapons or else we won't know how much to fread
+
         int nb_of_weapons = 0;
-
-        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
-        {
-            if(wc->weapons_inventory[i] != NULL)
-            {
-                nb_of_weapons ++;
-            }
-        }
 
         fread(&nb_of_weapons, sizeof(int), 1, save_file);
 
-        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
+        for(int i = 0 ; i < nb_of_weapons ; i++)
         {
-            if(wc->weapons_inventory[i] != NULL)
+            Weapon_Type weapon_type = No_Weapon;
+            fread(&weapon_type, sizeof(Weapon_Type), 1, save_file);
+
+            Weapon* weapon = Weapon_Create(weapon_type);
+
+            fread(&weapon->last_shot, sizeof(int), 1, save_file);
+            fread(&weapon->magazine_bullets, sizeof(int), 1, save_file);
+
+            if(weapon_type == current_weapon)
             {
-                fread(&wc->weapons_inventory[i]->corresponding_pickup, sizeof(Bonus_Type), 1, save_file);
-                fread(&wc->weapons_inventory[i]->delay_between_shots, sizeof(int), 1, save_file);
-                fread(&wc->weapons_inventory[i]->last_shot, sizeof(int), 1, save_file);
-                fread(&wc->weapons_inventory[i]->magazine_bullets, sizeof(int), 1, save_file);
-                fread(&wc->weapons_inventory[i]->magazine_max_bullets, sizeof(int), 1, save_file);
-                fread(&wc->weapons_inventory[i]->reloading_time, sizeof(int), 1, save_file);
-                fread(&wc->weapons_inventory[i]->type, sizeof(Weapon_Type), 1, save_file);
-
-                //write the char* name of the weapon, first the char numbers
-
-                int name_length = stlen(&wc->weapons_inventory[i]->name);
-                fread(&name_length, sizeof(int), 1, save_file);
-
-                for(int i = 0 ; i < name_length ; i++)
-                {
-                     fread(wc->weapons_inventory[i]->name[i], sizeof(Bonus_Type), 1, save_file);
-                }
+                wc->current_weapon = weapon;
             }
+
+            weapon->parent = wc;
+
+            //adding the weapon to the inventory
+            WeaponsComponent_AddWeaponToInventory(wc, weapon);
         }
 
-    }
-    else
-    {
-        bool has_weaponC = false;
-        fread(&has_weaponC, sizeof(bool), 1, save_file);
+        buffer->weaponsC = wc;
     }
 }
 
@@ -260,7 +256,7 @@ void Level_Save(char* file_name, World* w)
 
         int num_of_zombies = Vector_Count(&w->monsters_vector);
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
-        printf("Saving %d mobs\n", num_of_zombies);
+        printf("Saving %d mobs, ftell = %d\n", num_of_zombies, ftell(save_file));
 
         for(int i = 0 ; i < num_of_zombies ; i++)
         {
@@ -283,10 +279,23 @@ void LevelEditor_QuickTry(World* world)
 //quitting the "quick try" mode : loading the temp save and returning to level editor
 void LevelEditor_BackToEditing(World* world)
 {
+    display_menu_g = false;
     game_state_g = GameState_Editing_Map;
     world->player.visible = false;
     world->player.solid = false;
     Level_Load("saves/tempLevelEditor.sav", world);
+}
+
+void LevelEditor_LoadMapToEdit(char* complete_name, World* world)
+{
+    display_menu_g = false;
+    game_state_g = GameState_Editing_Map;
+    world->player.visible = false;
+    world->player.solid = false;
+    //mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
+
+
+    Level_Load(complete_name, world);
 }
 
 void Level_Load(char* file_name, World* w)
@@ -338,7 +347,7 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);
-    printf("Loading %d mobs\n", num_of_zombies);
+    printf("Loading %d mobs ftell = %d\n", num_of_zombies, ftell(save_file));
     for(int i = 0 ; i < num_of_zombies ; i++)
     {
         Entity* buffer = Entity_Spawn();

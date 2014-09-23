@@ -33,7 +33,7 @@ Entity* Entity_Spawn()
     ent->texture                    = No_texture;
     ent->visible                    = true;
 
-
+    ent->in_dark = false;
 	ent->alive                      = true;
 	ent->hp                         = 0;
 

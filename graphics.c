@@ -101,7 +101,7 @@ void Graphics_RenderGame(Graphics* g, World* world,
                          Controls* controls, float fps, Window* level_editor,
                          GameManager* gm)
  {
-     SDL_SetRenderDrawColor(g->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+     SDL_SetRenderDrawColor(g->renderer, 0x00, 0x00, 0x00, 0xFF);
      SDL_RenderClear(g->renderer);
      Graphics_RenderWorld(g, world);
      Graphics_RenderUI(g, world, controls, fps, level_editor, gm);
@@ -258,21 +258,25 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
                             object->box.height };
 
 
-    if(object->movementC != NULL && object->visible)
+    if(!object->in_dark || game_state_g == GameState_Editing_Map)
     {
-        SDL_RenderCopyEx(graphics->renderer,
-                         graphics->textures[object->texture],
-                         NULL,
-                         &rect,
-                         object->movementC->angle * 57.32f,//convert radian to degree
-                         NULL,
-                         SDL_FLIP_NONE);
+        if(object->movementC != NULL && object->visible)
+        {
+            SDL_RenderCopyEx(graphics->renderer,
+                             graphics->textures[object->texture],
+                             NULL,
+                             &rect,
+                             object->movementC->angle * 57.32f,//convert radian to degree
+                             NULL,
+                             SDL_FLIP_NONE);
+        }
+        else if(object->movementC == NULL && object->visible)
+        {
+            SDL_RenderCopy(graphics->renderer, graphics->textures[object->texture],
+                           NULL, &rect);
+        }
     }
-    else if(object->movementC == NULL && object->visible)
-    {
-        SDL_RenderCopy(graphics->renderer, graphics->textures[object->texture],
-                       NULL, &rect);
-    }
+
 
 
 	if(debug_mode)

@@ -8,6 +8,10 @@
 #include "weapons_component.h"
 #include "world.h"
 #include "movement_component.h"
+
+static int playerTileX = 0;
+static int playerTileY = 0;
+
 PlayerC* PlayerC_Create()
 {
     PlayerC* pc                 = (PlayerC*)malloc(sizeof(PlayerC));
@@ -17,9 +21,168 @@ PlayerC* PlayerC_Create()
     pc->stamina                 = 100;
     pc->max_stamina             = 100;
     pc->running                 = false;
+    pc->vision_timer            =  0;
     return pc;
 }
 
+void Player_FieldOfView(Entity* p, World* world)
+{
+    float playerMiddleX = 0;
+    float playerMiddleY = 0;
+    Entity_GetMiddleCoordinates(p, &playerMiddleX, &playerMiddleY);
+
+    for(int i = 0 ; i < world->map_size ; i++)
+    {
+        if(Entity_CheckNear(p, world->ground_map[i]))
+        {
+            world->ground_map[i]->in_dark = true;
+        }
+    }
+    bool* wall = calloc(world->map_size, sizeof(bool));
+    bool* visible = calloc(world->map_size, sizeof(bool));
+
+    int fov = 10;
+    playerTileX = p->x / TILE_SIZE;
+    playerTileY = p->y / TILE_SIZE;
+
+    for(int i = 1 ; i < 3 ; i++)
+    {
+        Player_ScanOctant(1, i, 1, 0, world);
+    }
+
+
+
+}
+
+void Player_ScanOctant(int depth, int octant, float start_slope,
+                       float end_slope,
+                       World* world)
+{
+int y = 0;
+int x = 0;
+    //can see 10 tiles away
+    int vision_distance = 10;
+    int vision_distance2 = vision_distance * vision_distance;
+
+    switch(octant)
+    {
+    case 1:
+        //tile being scanned
+        y = playerTileY - depth;
+        if(y < 0) y = 0;
+
+        x = playerTileX - (int)(start_slope * depth);
+        if(x < 0) x = 0;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) >= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                //current tile
+                int  i = y * world->map_width + x;
+
+                if(world->map[i]->solid)
+                {
+                    //tile on the left is not a wall
+                    if(x - 1 >= 0 && !world->map[i - 1]->solid)
+                    {
+                        //scan row right over this one with adjusted end slope
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   false),
+                                          world);
+                    }
+                }
+                else
+                {
+                    //tile on the left is a wall
+                     if(y - 1 >= 0 && world->map[i - 1]->solid)
+                     {
+                         //adjust start slope
+                         start_slope = C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
+                                                                playerTileX, playerTileY, false);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            x++;
+
+        }
+        x--;
+        break;
+    case 2://nne
+        y = playerTileY - depth;
+        if(y < 0) y = 0;
+
+        x = playerTileX + (int)(start_slope * depth);
+        if(x >= world->map_width) x = world->map_width - 1;
+
+        while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) <= end_slope)
+        {
+            if(C_DistanceSquaredBetween2Points(x, y,
+                                playerTileX, playerTileY) <= vision_distance2)
+            {
+                int  i = y * world->map_width + x;
+
+                if(world->map[i]->solid)
+                {
+                    if(x + 1 <= world->map_width && !world->map[i + 1]->solid)
+                    {
+                        Player_ScanOctant(depth + 1, octant, start_slope,
+                                          C_GetSlopeBetween2Points(x + 0.5f, y + 0.5f,
+                                                                   playerTileX, playerTileY,
+                                                                   false),
+                                          world);
+                    }
+                }
+                else
+                {
+                     if(x + 1 <= world->map_width && world->map[i + 1]->solid)
+                     {
+                         start_slope = -C_GetSlopeBetween2Points(x + 0.5f, y - 0.5f,
+                                                                playerTileX, playerTileY, false);
+                     }
+
+
+                     world->ground_map[i]->in_dark = false;
+
+                }
+            }
+            x--;
+
+        }
+        x++;
+        break;
+    }
+
+    if (x < 0)
+    {
+        x = 0;
+    }
+    else if(x >= world->map_width)
+    {
+        x = world->map_width - 1;
+    }
+
+    if (y < 0)
+    {
+        y = 0;
+    }
+    else if(y >= world->map_height)
+    {
+        y = world->map_height - 1;
+    }
+
+    if (depth < vision_distance && !world->map[y * world->map_width + x]->solid)
+    {
+        Player_ScanOctant(depth + 1, octant, start_slope, end_slope, world);
+    }
+}
 
 void Player_Update(World* world)
 {
@@ -33,12 +196,20 @@ void Player_Update(World* world)
         Player_Walk(p);
     }
 
+    p->playerC->vision_timer += delta_g;
+
+    if(p->playerC->vision_timer > 60)
+    {
+        Player_FieldOfView(p, world);
+        p->playerC->vision_timer = 0;
+    }
+
+
     if(game_state_g == GameState_Editing_Map)
     {
         p->movementC->speed = LEVEL_EDITOR_SPEED;
     }
-    //p->playerC->dx = 0;
-	//p->camera->dy = 0;
+
 
     if(game_state_g != GameState_Editing_Map)
     {
@@ -76,8 +247,8 @@ Entity Player_Create(float x, float y, int w, int h)
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   50;
-
-    p.movementC                     =   MovementC_Create();
+    p.in_dark = false;
+    p.movementC                       =   MovementC_Create();
     p.movementC->speed              =   BASE_PLAYER_SPEED;
 
     p.playerC                       =   PlayerC_Create();

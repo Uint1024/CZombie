@@ -69,7 +69,11 @@ void Vector_Clear(Vector* v)
 {
     for(int i = 0 ; i < v->count ; i++)
     {
-        Entity_Destroy(v->data[i]);
+        //Entity* ent = (Entity*)Vector_Get(v, i);
+        //if(ent. != NULL)
+         //   Entity_Destroy(v->data[i]);
+        //else
+            free(v->data[i]);
     }
     free(v->data);
     v->size = 0;

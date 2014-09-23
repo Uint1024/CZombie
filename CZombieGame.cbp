@@ -65,6 +65,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="controls.h" />
+		<Unit filename="decals.h" />
 		<Unit filename="dirent.h" />
 		<Unit filename="door.c">
 			<Option compilerVar="CC" />
