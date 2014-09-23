@@ -30,6 +30,7 @@
 bool           debug_mode = false;
 bool           display_menu_g = true;
 Game_State      game_state_g = GameState_Main_Menu;
+bool             unlimited_ammo = false;
 int screen_width_g = 1080;
 int screen_height_g = 768;
 int delta_g = 0;

@@ -150,7 +150,9 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.3, 0.4, wc->is_monster));
         }
 
-        weapon->magazine_bullets -= wc->is_monster ? 0 : 1;
+        if(!unlimited_ammo)
+            weapon->magazine_bullets -= wc->is_monster ? 0 : 1;
+
         weapon->last_shot = SDL_GetTicks();
     }
     else if(weapon->magazine_bullets <= 0)

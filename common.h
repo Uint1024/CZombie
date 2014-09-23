@@ -161,7 +161,8 @@ typedef enum {
     Tex_Decals_Corpse_Zombie_Normal,
     Tex_Decals_Corpse_Zombie_Heavy,
     Tex_Decals_Corpse_Zombie_Trooper,
-
+    Tex_Decals_Corpse_Zombie_Fast,
+    Tex_Decals_Corpse_Zombie_Huge,
 
     Tex_Event_PlayerSpawn,
     Tex_Event_TeleportOtherMap,
@@ -172,8 +173,7 @@ typedef enum {
     Cursor_resize_left_right_tex,
 
     NB_OF_TEXTURES,
-        Tex_Decals_Corpse_Zombie_Fast,
-    Tex_Decals_Corpse_Zombie_Huge,
+
 
     No_texture
 } Texture_Type;
@@ -261,7 +261,7 @@ extern int              bonus_width_g[NB_OF_BONUS_TYPES];
 extern int              bonus_height_g[NB_OF_BONUS_TYPES];
 extern Game_State       game_state_g;
 extern bool            display_menu_g;
-
+extern bool             unlimited_ammo;
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
 #define BASE_PLAYER_SPEED 0.2

@@ -22,31 +22,6 @@ Texture_Type     all_textures_g[NB_OF_CAT][100];
         15, 15, 15, 15
     };
 
-        /*ZOMBIES DEFINITION*/
-    //TODO : put in a moddable external file
-
-
-    /*
-                Normal, Heavy,  Fast,   Huge,
-                Trooper,
-                NB_ZOMBIE_TYPES, Not_a_zombie
-    */
-
-
-    float   calm_speed_g[NB_ZOMBIE_TYPES] =
-            {
-                0.05,   0.05,    0.05,   0.05,
-                0.05
-            };
-
-    float   angry_speed_g[NB_ZOMBIE_TYPES] =
-            {
-                0.26,   0.1,   0.3,   0.1,
-                0.1
-            };
-
-
-
 void Game_InitData()
 {
     /*Texture of objects*/

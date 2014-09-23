@@ -33,7 +33,7 @@ void Door_Die(Entity* d)
 
 void Door_Switch(Entity* d)
 {
-    if(SDL_GetTicks() - door_switch_timer > 60)
+    if(SDL_GetTicks() - door_switch_timer > 150)
     {
         door_switch_timer = SDL_GetTicks();
         d->solid = d->solid ? false : true;

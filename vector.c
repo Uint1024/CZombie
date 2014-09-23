@@ -82,9 +82,6 @@ void Vector_Clear(Vector* v)
 }
 void Vector_Delete(Vector *v, int index)
 {
-
-    Entity* to_delete = (Entity*)Vector_Get(v, index);
-
 	if (index >= v->count)
     {
         printf("Index too high");
@@ -114,7 +111,6 @@ void Vector_Delete(Vector *v, int index)
 
 
     v->data[v->count-1] = NULL;
-    Entity_Destroy(to_delete);
 
 	v->count--;
 

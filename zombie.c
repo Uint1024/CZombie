@@ -27,10 +27,22 @@ ZombieC* ZombieC_Create()
     return zc;
 }
 
+    float   calm_speed_g[NB_ZOMBIE_TYPES] =
+            {
+                0.03,   0.05,    0.05,   0.05,
+                0.05
+            };
+
+    float   angry_speed_g[NB_ZOMBIE_TYPES] =
+            {
+                0.18,   0.1,   0.3,   0.1,
+                0.1
+            };
+
 
 void Zombie_Update(Entity* z, World* world)
 {
-
+    Entity_CalculateVisibility(z, world);
     Entity_CalculateVelocity(z);
 
     z->zombieC->ai_timer += delta_g;
@@ -55,7 +67,7 @@ void Zombie_Update(Entity* z, World* world)
         Entity_CollisionWithExplosions(z, &world->explosions_vector);
 
         if(zc->aggressive &&
-           (zc->zombie_type == Heavy_Zombie || zc->zombie_type == Trooper_Zombie))
+           z->weaponsC != NULL)
         {
             Zombie_Shoot(z, world);
         }
@@ -104,7 +116,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     switch(type)
     {
     case Normal_Zombie:
-        z->hp = 7;
+        z->hp = 5;
         z->damage = 3;
         break;
     case Heavy_Zombie:
@@ -115,7 +127,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         weapon = Fireball_w;
         break;
     case Fast_Zombie:
-        z->hp = 20;
+        z->hp = 2;
         z->damage = 3;
         break;
     case Trooper_Zombie:
@@ -126,9 +138,9 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         weapon = TripleFireball_w;
        break;
     case Huge_Zombie:
-        width = 100;
-        height = 100;
-        z->hp = 20;
+        width = 120;
+        height = 120;
+        z->hp = 200;
         z->damage = 100;
         weapon = TripleFireball_w;
         break;
@@ -308,5 +320,4 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
 
     Vector_Push(decals_vector, Decal_Create(zombie, Corpse, zombie->zombieC->zombie_type));
 
-    Entity_Destroy(zombie);
 }

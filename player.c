@@ -36,6 +36,7 @@ void Player_FieldOfView(Entity* p, World* world)
         if(Entity_CheckNear(p, world->ground_map[i]))
         {
             world->ground_map[i]->in_dark = true;
+            world->map[i]->in_dark = true;
         }
     }
     bool* wall = calloc(world->map_size, sizeof(bool));
@@ -83,9 +84,10 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
                 if(world->map[i]->solid)
                 {
+
                     //tile on the left is not a wall
                     if(x - 1 >= 0 && !world->map[i - 1]->solid)
                     {
@@ -103,6 +105,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                      if(y - 1 >= 0 && world->map[i - 1]->solid)
                      {
                          //adjust start slope
+                         world->map[i - 1]->in_dark = false;
                          start_slope = C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
                                                                 playerTileX, playerTileY, false);
                      }
@@ -123,15 +126,17 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
         x = playerTileX + (int)(start_slope * depth);
         if (x >= world->map_width) x = world->map_width - 1;
 
+
         while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) <= end_slope)
         {
             if(C_DistanceSquaredBetween2Points(x, y,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
                 if(world->map[i]->solid)
                 {
+
                     if(x + 1 <= world->map_width && !world->map[i + 1]->solid)
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -145,6 +150,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(x + 1 <= world->map_width && world->map[i + 1]->solid)
                      {
+                         world->map[i + 1]->in_dark = false;
                          start_slope = -C_GetSlopeBetween2Points(x + 0.5f, y - 0.5f,
                                                                 playerTileX, playerTileY, false);
                      }
@@ -174,9 +180,10 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
                 if(world->map[i]->solid)
                 {
+
                     if(y - 1 > 0 && !world->map[i - world->map_width]->solid)
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -190,6 +197,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(y - 1 > 0 && world->map[i - world->map_width]->solid)
                      {
+                         world->map[i - world->map_width]->in_dark = false;
                          start_slope = -C_GetSlopeBetween2Points(x + 0.5f, y - 0.5f,
                                                                 playerTileX, playerTileY, true);
                      }
@@ -211,18 +219,21 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
         y = playerTileY + (int)(start_slope * depth);
         if(y >= world->map_height) y = world->map_height - 1;
 
+
         while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, true) >= end_slope)
         {
             if(C_DistanceSquaredBetween2Points(x, y,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
 
                 if(world->map[i]->solid)
                 {
+
                     if(y + 1 < world->map_height && !world->map[i + world->map_width]->solid)
                     {
+
                         Player_ScanOctant(depth + 1, octant, start_slope,
                                           C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
                                                                    playerTileX, playerTileY,
@@ -234,6 +245,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(y + 1 < world->map_height && world->map[i + world->map_width]->solid)
                      {
+                         world->map[i + world->map_width]->in_dark = false;
                          start_slope = C_GetSlopeBetween2Points(x + 0.5f, y + 0.5f,
                                                                 playerTileX, playerTileY, true);
                      }
@@ -255,16 +267,18 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
         x = playerTileX + (int)(start_slope * depth);
         if(x >= world->map_width) x = world->map_width - 1;
 
+
         while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) >= end_slope)
         {
             if(C_DistanceSquaredBetween2Points(x, y,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
 
                 if(world->map[i]->solid)
                 {
+
                     if(x + 1 < world->map_width && !world->map[i + 1]->solid)
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -278,6 +292,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(x + 1 < world->map_width && world->map[i + 1]->solid)
                      {
+                         world->map[i + 1]->in_dark = false;
                          start_slope = C_GetSlopeBetween2Points(x + 0.5f, y + 0.5f,
                                                                 playerTileX, playerTileY, false);
                      }
@@ -298,7 +313,6 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
 
         x = playerTileX - (int)(start_slope * depth);
         if(x <0 ) x = 0;
-
         while(C_GetSlopeBetween2Points(x, y, playerTileX, playerTileY, false) <= end_slope)
         {
             if(C_DistanceSquaredBetween2Points(x, y,
@@ -306,9 +320,10 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
             {
                 i = y * world->map_width + x;
 
-
+                world->map[i]->in_dark = false;
                 if(world->map[i]->solid)
                 {
+                    world->map[i]->in_dark = false;
                     if(x - 1 >= 0 && !world->map[i - 1]->solid)
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -322,6 +337,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(x - 1 >= 0 && world->map[i - 1]->solid)
                      {
+                         world->map[i - 1]->in_dark = false;
                          start_slope = -C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
                                                                 playerTileX, playerTileY, false);
                      }
@@ -349,10 +365,11 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
 
                 if(world->map[i]->solid)
                 {
+                    world->map[i]->in_dark = false;
                     if(y + 1 < world->map_height && !world->map[i + world->map_width]->solid)
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -366,6 +383,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(y + 1 < world->map_height && world->map[i + world->map_width]->solid)
                      {
+                         world->map[i  + world->map_width ]->in_dark = false;
                          start_slope = -C_GetSlopeBetween2Points(x - 0.5f, y + 0.5f,
                                                                 playerTileX, playerTileY, true);
                      }
@@ -393,10 +411,11 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-
+                world->map[i]->in_dark = false;
 
                 if(world->map[i]->solid)
                 {
+                    world->map[i]->in_dark = false;
                     if(y - 1 > 0 && !world->map[i - world->map_width]->solid)
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -410,6 +429,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                 {
                      if(y - 1 > 0 && world->map[i - world->map_width]->solid)
                      {
+                         world->map[i - world->map_width]->in_dark = false;
                          start_slope = C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
                                                                 playerTileX, playerTileY, true);
                      }
@@ -503,6 +523,26 @@ void Player_Move(Entity* p, float dx, float dy)
     p->playerC->cameraY += dy;
 }
 
+void Player_Reset(Entity* player)
+{
+    //destroy all the pointers
+    Entity_Destroy(player);
+
+    player->playerC = PlayerC_Create();
+
+    player->movementC                     =   MovementC_Create();
+    player->movementC->speed              =   BASE_PLAYER_SPEED;
+    player->hp                            =   10;
+
+    player->weaponsC                      =   WeaponsComponent_Create();
+    WeaponsComponent_AddWeaponToInventory(player->weaponsC,
+                                          Weapon_Create(Handgun_w));
+    WeaponsComponent_ChangeWeapon(player->weaponsC,
+                                  Handgun_w);
+    player->weaponsC->bullets[Handgun_w] = 100;
+
+    player->weaponsC->is_monster = false;
+}
 
 Entity Player_Create(float x, float y, int w, int h)
 {
@@ -512,26 +552,27 @@ Entity Player_Create(float x, float y, int w, int h)
 	p.texture                       =   Tex_Player;
 	p.x                             =   x;
 	p.y                             =   y;
-    p.hp                            =   50;
+    p.hp                            =   10;
     p.in_dark = false;
     p.movementC                       =   MovementC_Create();
     p.movementC->speed              =   BASE_PLAYER_SPEED;
 
     p.playerC                       =   PlayerC_Create();
-
+    p.playerC->cameraX = -screen_width_g/2 + p.x;
+    p.playerC->cameraY = -screen_height_g/2 + p.y;
     p.weaponsC                      =   WeaponsComponent_Create();
-
+    p.weaponsC->bullets[Handgun_w] = 100;
     BoundingBox_Create(&p, w, h);
 
 
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(Handgun_w));
-    WeaponsComponent_AddWeaponToInventory(p.weaponsC,
+    /*WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(Shotgun_w));
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(GrenadeLauncher_w));
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
-                                            Weapon_Create(AutomaticRifle_w));
+                                            Weapon_Create(AutomaticRifle_w));*/
 
     WeaponsComponent_ChangeWeapon(p.weaponsC,
                                   Handgun_w);
@@ -634,6 +675,7 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
 void Player_TakeDamage(Entity* p, Entity** attacker)
 {
 
+
     //push player in the opposite direction of the attacker
     if(attacker[Left])
     {
@@ -657,6 +699,9 @@ void Player_TakeDamage(Entity* p, Entity** attacker)
         p->hp -= attacker[Bottom]->damage;
         Player_Move(p, 0,   -20);
     }
+
+
+
     p->playerC->invulnerability_timer = 2000;
 }
 

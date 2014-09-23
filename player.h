@@ -36,4 +36,5 @@ void Player_FieldOfView(Entity* p, World* world);
 void Player_ScanOctant(int depth, int octant, float start_slope,
                        float end_slope,
                        World* world);
+void Player_Reset(Entity* player);
 #endif

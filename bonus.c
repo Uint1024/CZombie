@@ -30,7 +30,6 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 
 void Bonus_Update(Entity* bonus, Entity* player)
 {
-    //if(abs(bonus->x - player->x) < 150 && abs(bonus->y - player->y) < 150)
     if(Entity_CheckDistance(player, bonus, 150))
     {
         bonus->movementC->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);

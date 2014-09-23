@@ -111,6 +111,8 @@ void Bullet_Update(Entity* bullet, World* world)
                 Player_TakeDamage(&world->player, collision_direction);
 
                 bullet->alive = false;
+
+
             }
 
             free(temp);

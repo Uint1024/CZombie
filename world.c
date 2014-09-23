@@ -21,8 +21,7 @@ World World_Initialize(int map_width, int map_height)
     world.player            =   Player_Create(100,
                                               100,
                                               20, 20);
-    world.player.playerC->cameraX = -screen_width_g/2 + world.player.x;
-    world.player.playerC->cameraY = -screen_height_g/2 + world.player.y;
+
 
     for(int i = 0 ; i < world.map_size ; i++)
     {

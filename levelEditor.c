@@ -6,6 +6,7 @@
 #include "weapon.h"
 #include "weapons_component.h"
 #include "movement_component.h"
+#include "player.h"
 
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 {
@@ -26,7 +27,6 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
     if(buffer->movementC != NULL)
     {
-        printf("saving movement\n");
         bool has_movementC = true;
         fwrite(&has_movementC, sizeof(bool), 1, save_file);
         MovementC* mc = buffer->movementC;
@@ -43,7 +43,6 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
     if(buffer->zombieC != NULL)
     {
-        printf("saving zpmbie\n");
         bool is_zombie = true;
         fwrite(&is_zombie, sizeof(bool), 1, save_file);
 
@@ -64,7 +63,6 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
     if(buffer->weaponsC != NULL)
     {
-        printf("saving weaponsc\n");
         bool has_weaponC = true;
         fwrite(&has_weaponC, sizeof(bool), 1, save_file);
 
@@ -176,7 +174,6 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 
     bool has_weaponC = true;
     fread(&has_weaponC, sizeof(bool), 1, save_file);
-    printf("%d\n", has_weaponC);
     if(has_weaponC)
     {
         WeaponsC* wc = WeaponsComponent_Create();
@@ -188,6 +185,43 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&wc->last_reload, sizeof(int), 1, save_file);
         fread(&wc->reloading, sizeof(bool), 1, save_file);
         fread(&wc->reload_timer, sizeof(int), 1, save_file);
+
+         /*
+
+
+                //we write only the weapon type, then in the loading function
+        //we'll find the weapon in the inventory and set the pointer to it
+        fwrite(&wc->current_weapon->type, sizeof(Weapon_Type), 1, save_file);
+
+
+        //to fwrite the weapon inventory, we have to loop through the inventory array
+        //and write every individual weapon... but first we have to count them and fwrite
+        //the number of weapons or else we won't know how much to fread
+        int nb_of_weapons = 0;
+
+        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
+        {
+            if(wc->weapons_inventory[i] != NULL)
+            {
+                nb_of_weapons ++;
+            }
+        }
+
+        fwrite(&nb_of_weapons, sizeof(int), 1, save_file);
+
+        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
+        {
+            if(wc->weapons_inventory[i] != NULL)
+            {
+                //we only save these 3 variables because we can load the rest with Weapon_Create
+
+                //first we write the weapon type, because in fread we'll need it to call Weapon_Create
+                fwrite(&wc->weapons_inventory[i]->type, sizeof(Weapon_Type), 1, save_file);
+                fwrite(&wc->weapons_inventory[i]->last_shot, sizeof(int), 1, save_file);
+                fwrite(&wc->weapons_inventory[i]->magazine_bullets, sizeof(int), 1, save_file);
+
+            }
+            */
 
         //we read only the weapon type, then
         //we'll find the weapon in the inventory and set the pointer to it
@@ -247,7 +281,6 @@ void Level_Save(char* file_name, World* w)
 
         int num_of_events = Vector_Count(&w->events_vector);
         fwrite(&num_of_events, sizeof(int), 1, save_file);
-        printf("savin %d events", num_of_events);
         for(int i = 0 ; i < num_of_events ; i++)
         {
             Entity* buffer = (Entity*)Vector_Get(&w->events_vector, i);
@@ -256,7 +289,6 @@ void Level_Save(char* file_name, World* w)
 
         int num_of_zombies = Vector_Count(&w->monsters_vector);
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
-        printf("Saving %d mobs, ftell = %d\n", num_of_zombies, ftell(save_file));
 
         for(int i = 0 ; i < num_of_zombies ; i++)
         {
@@ -290,6 +322,7 @@ void LevelEditor_LoadMapToEdit(char* complete_name, World* world)
 {
     display_menu_g = false;
     game_state_g = GameState_Editing_Map;
+
     world->player.visible = false;
     world->player.solid = false;
     //mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
@@ -298,14 +331,57 @@ void LevelEditor_LoadMapToEdit(char* complete_name, World* world)
     Level_Load(complete_name, world);
 }
 
-void Level_Load(char* file_name, World* w)
+void Level_Clear(World* w)
 {
+    for(int i = 0 ; i < Vector_Count(&w->monsters_vector) ; i++)
+    {
+        Entity* ent = Vector_Get(&w->monsters_vector, i);
+        Entity_Destroy(ent);
+        Vector_Delete(&w->monsters_vector, i);
+    }
+    for(int i = 0 ; i < Vector_Count(&w->bonus_vector) ; i++)
+    {
+        Entity* ent = Vector_Get(&w->bonus_vector, i);
+        Entity_Destroy(ent);
+        Vector_Delete(&w->bonus_vector, i);
+    }
+    for(int i = 0 ; i < Vector_Count(&w->bullets_vector) ; i++)
+    {
+        Entity* ent = Vector_Get(&w->bullets_vector, i);
+        Entity_Destroy(ent);
+        Vector_Delete(&w->bullets_vector, i);
+    }
+    for(int i = 0 ; i < Vector_Count(&w->explosions_vector) ; i++)
+    {
+        Entity* ent = Vector_Get(&w->explosions_vector, i);
+        Entity_Destroy(ent);
+        Vector_Delete(&w->explosions_vector, i);
+    }
+
     Vector_Clear(&w->monsters_vector);
     Vector_Clear(&w->bonus_vector);
     Vector_Clear(&w->events_vector);
     Vector_Clear(&w->bullets_vector);
     Vector_Clear(&w->explosions_vector);
     Vector_Clear(&w->decals_vector);
+
+    for(int i = 0 ; i < w->map_size ; i++)
+    {
+        free(w->map[i]);
+
+    }
+
+    for(int i = 0 ; i < w->map_size ; i++)
+    {
+        free(w->ground_map[i]);
+    }
+
+    //Player_Reset(&w->player);
+
+}
+void Level_Load(char* file_name, World* w)
+{
+    Level_Clear(w);
 
     printf("LOADING\n");
     FILE *save_file;
@@ -335,7 +411,6 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_events = 0;
     fread(&num_of_events, sizeof(int), 1, save_file);
-    printf("loading %d events\n", num_of_events);
     for(int i = 0 ; i < num_of_events ; i++)
     {
         Entity* buffer = Entity_Spawn();
@@ -347,7 +422,6 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);
-    printf("Loading %d mobs ftell = %d\n", num_of_zombies, ftell(save_file));
     for(int i = 0 ; i < num_of_zombies ; i++)
     {
         Entity* buffer = Entity_Spawn();

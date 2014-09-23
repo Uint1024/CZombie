@@ -33,7 +33,7 @@ Entity* Entity_Spawn()
     ent->texture                    = No_texture;
     ent->visible                    = true;
 
-    ent->in_dark = false;
+    ent->in_dark = true;
 	ent->alive                      = true;
 	ent->hp                         = 0;
 
@@ -53,12 +53,19 @@ Entity* Entity_Spawn()
 
 void Entity_Destroy(Entity* ent)
 {
+    if(ent->weaponsC != NULL)
+    {
+        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
+        {
+            free(ent->weaponsC->weapons_inventory[i]);
+        }
+    }
+
     free(ent->weaponsC);
     free(ent->explosiveC);
     free(ent->zombieC);
     free(ent->movementC);
     free(ent->playerC);
-    free(ent);
 }
 
 bool Entity_CheckNear(Entity* ent1, Entity* ent2)
@@ -201,7 +208,22 @@ bool Entity_CollisionWithStuff(Entity* ent, World* world)
     return (collision_with_walls || collision_with_mobs);
 }
 
+void Entity_CalculateVisibility(Entity* ent, World* world)
+{
+    bool in_dark = true;
+    for (int i = 0; i < world->map_size; i++)
+	{
+		if (!world->ground_map[i]->in_dark)
+		{
+		    if(BoundingBox_CheckSimpleCollision(&world->ground_map[i]->box, &ent->box))
+            {
+                in_dark = false;
+            }
+		}
+	}
 
+	ent->in_dark = in_dark;
+}
 
 bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 {

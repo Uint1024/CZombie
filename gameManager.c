@@ -73,6 +73,7 @@ void Game_StartMap(World* world)
             world->player.playerC->cameraX = -screen_width_g/2 + world->player.x;
             world->player.playerC->cameraY = -screen_height_g/2 + world->player.y;
         }
+
     }
 
 
@@ -102,13 +103,14 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
 
 
+
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
         if(Vector_Get(bullets_vector, i) != NULL)
         {
 
             Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
-
+            Entity_CalculateVisibility(projectile, world);
             if(projectile->t == Cat_Bullet)
             {
 
@@ -126,6 +128,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
             if (projectile->alive == false)
             {
+                Entity_Destroy(projectile);
                 Vector_Delete(bullets_vector, i);
             }
         }
@@ -141,8 +144,10 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
             Bonus_Update(bonus, &world->player);
+            Entity_CalculateVisibility(bonus, world);
             if (bonus->alive == false)
             {
+                Entity_Destroy(bonus);
                 Vector_Delete(bonus_vector, i);
             }
         }
@@ -150,6 +155,12 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         {
             printf("Error during update of bonus vector : bonus = NULL");
         }
+    }
+
+    for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
+    {
+        Entity* decal = (Entity*)Vector_Get(decals_vector, i);
+        Entity_CalculateVisibility(decal, world);
     }
 
     if(gm->ai_on)
@@ -165,6 +176,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
                     if (mob->alive == false)
                     {
                         Zombie_Die(mob, bonus_vector, decals_vector);
+                        Entity_Destroy(mob);
                         Vector_Delete(monsters_vector, i);
 
                     }
@@ -181,8 +193,10 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     {
         Entity* exp = (Entity*)Vector_Get(explosions_vector, i);
         Explosion_Update(exp, world);
+        Entity_CalculateVisibility(exp, world);
         if (!exp->alive)
         {
+            Entity_Destroy(exp);
             Vector_Delete(explosions_vector, i);
         }
     }

@@ -27,8 +27,16 @@ Entity* Decal_Create(Entity* parent, Decal_Type type, int sub_type)
             break;
         case Trooper_Zombie:
             decals->texture = Tex_Decals_Corpse_Zombie_Trooper;
-            width = 120;
-            height = 75;
+            width = 60;
+            height = 45;
+            break;
+        case Fast_Zombie:
+            decals->texture = Tex_Decals_Corpse_Zombie_Fast;
+            break;
+        case Huge_Zombie:
+            decals->texture = Tex_Decals_Corpse_Zombie_Huge;
+            width = 150;
+            height = 150;
             break;
         }
     }

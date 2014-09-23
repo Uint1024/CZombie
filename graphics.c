@@ -73,9 +73,8 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Tex_Decals_Corpse_Zombie_Heavy]              =   "corpse_heavyzombie.png";
     g->textures_names[Tex_Wall_Cool]              =   "wall_cool.png";
     g->textures_names[Tex_Decals_Corpse_Zombie_Trooper] = "corpse_trooperzombie.png";
-    //g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "bonus_handgun.png";
-    //g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "bonus_handgun.png";
-    //g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "bonus_handgun.png";
+    g->textures_names[Tex_Decals_Corpse_Zombie_Huge] = "corpse_zombie_huge.png";
+    g->textures_names[Tex_Decals_Corpse_Zombie_Fast] = "corpse_zombie_fast.png";
 
 
 
@@ -131,6 +130,15 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
     }
 
 
+    for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
+    {
+        Entity* decal = (Entity*)Vector_Get(decals_vector, i);
+        if(Entity_CheckNear(&world->player, decal))
+        {
+            Graphics_RenderObject(graphics, decal, world->player.playerC);
+
+        }
+    }
 
     for (int i = 0; i < world->map_size; i++)
     {
@@ -143,15 +151,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
             }
         }
     }
-    for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
-    {
-        Entity* decal = (Entity*)Vector_Get(decals_vector, i);
-        if(Entity_CheckNear(&world->player, decal))
-        {
-            Graphics_RenderObject(graphics, decal, world->player.playerC);
 
-        }
-    }
 
     for(int i = 0 ; i < Vector_Count(events_vector) ; i++)
     {

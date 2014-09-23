@@ -3,6 +3,7 @@
 #include "explosive.h"
 #include "entity.h"
 #include "movement_component.h"
+#include "world.h"
 
 Explosive* ExplosiveComponent_Create(float x, float y, float angle, float speed,
                             float destinationX, float destinationY)
@@ -56,6 +57,18 @@ void Grenade_Update(Entity* g, World* world)
     {
         g->movementC->dx = 0;
         g->movementC->dy = 0;
+    }
+
+    for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
+    {
+        Entity* mob = (Entity*)Vector_Get(&world->monsters_vector, i);
+        if(Entity_CheckNear(g, mob))
+        {
+            if(BoundingBox_CheckSimpleCollision(&g->box, &mob->box))
+            {
+                g->alive = false;
+            }
+        }
     }
 
     moveEntity(g, g->movementC->dx, g->movementC->dy);
