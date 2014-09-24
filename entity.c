@@ -39,7 +39,7 @@ Entity* Entity_Spawn()
     ent->in_dark = true;
 	ent->alive                      = true;
 ent->nb_penetrations = 0;
-
+ent->transparent = false;
     ent->damage                     = 0;
 
 	//components
@@ -285,6 +285,11 @@ bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
                     {
                         Structure_GetAttacked(map[i], ent);
                         ent->zombieC->attack_timer = 0;
+                    }
+
+                    if(ent->t = Cat_Player && map[i]->t == Cat_Door)
+                    {
+                        Door_Open(map[i]);
                     }
                 }
             }

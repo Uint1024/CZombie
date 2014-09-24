@@ -33,6 +33,7 @@ void Game_InitData()
 
     all_textures_g[Cat_Wall][Wall_Normal] = Tex_Wall_Normal;
     all_textures_g[Cat_Wall][Wall_Cool] = Tex_Wall_Cool;
+    all_textures_g[Cat_Wall][Wall_Glass] = Tex_Wall_Glass;
 
     all_textures_g[Cat_Ground][Ground_Dirt] = Tex_Ground_Dirt;
     all_textures_g[Cat_Ground][Ground_Grass] = Tex_Ground_Grass;

@@ -55,6 +55,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Tex_Bullet]                   =   "bullet.png";
     g->textures_names[Tex_Fireball]                 =   "fireball.png";
     g->textures_names[Tex_Wall_Normal]                     =   "wall.png";
+    g->textures_names[Tex_Wall_Glass]                     =   "glass.png";
     g->textures_names[Explosion1_tex]               =   "explosion.png";
     g->textures_names[Tex_Cursor_Aiming]            =   "aim.png";
     g->textures_names[Tex_Ground_Grass]              =   "ground_grass.png";

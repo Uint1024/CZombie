@@ -24,8 +24,9 @@ typedef struct Entity
 	float                   x;
 	float                   y;
     Texture_Type            texture;
-    bool                    visible;
-    bool                    solid;
+    bool                    visible;//for hidden secrets :D
+    bool                    solid;//for hidden secrets :D
+    bool                    transparent;//for glass
 	Box                     box;
     int                     penetration_chance; //between 0 and 1000
     unsigned char           nb_penetrations;

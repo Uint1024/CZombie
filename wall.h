@@ -10,4 +10,6 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_);
 void Structure_GetAttacked(Entity* d, Entity* attacker);
 void Structure_Die(Entity* d);
 Entity* Wall_CreateEmpty();
+
+bool Wall_IsWall(Entity* w);
 #endif

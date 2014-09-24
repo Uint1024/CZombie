@@ -42,10 +42,6 @@ Controls* CreateControls()
 	{
 		controls->pressedKeys[i] = false;
 	}
-		for (int i = 0; i < 200; i++)
-	{
-		controls->previpressedKeys[i] = false;
-	}
 		for (int i = 0; i < 20; i++)
 	{
 		controls->pressedMouseButtons[i] = false;
@@ -466,16 +462,19 @@ void Inputs_ApplyInputs( Controls* controls,
         player->movementC->dx = 0;
         player->movementC->dy = 0;
 
-        //determine if running
-        if(!world->player.playerC->running &&
-               controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+        if(!using_controller_g)
         {
-            Player_StartRunning(&world->player);
-        }
-        else if(world->player.playerC->running &&
-               !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
-        {
-            Player_StopRunning(&world->player);
+            //determine if running
+            if(!world->player.playerC->running &&
+                   controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+            {
+                Player_StartRunning(&world->player);
+            }
+            else if(world->player.playerC->running &&
+                   !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+            {
+                Player_StopRunning(&world->player);
+            }
         }
 
         //apply keyboard controls to player movement
@@ -511,18 +510,36 @@ void Inputs_ApplyInputs( Controls* controls,
             controller_rightAxisY = SDL_JoystickGetAxis(controller, 3);
             controller_leftTrigger = SDL_JoystickGetAxis(controller, 4);
             controller_rightTrigger = SDL_JoystickGetAxis(controller, 5);
+            bool running = false;
+
+            if(controller_leftTrigger > 0)
+            {
+                running = true;
+            }
+
+            float axis_divide = 150000;
+
+            if(player->playerC->stamina > 0 && running)
+            {
+                axis_divide = 100000;
+                Player_Run(player);
+            }
+            else
+            {
+                Player_Walk(player);
+            }
 
             if(controller_leftAxisX < -deadzone || controller_leftAxisX > deadzone)
             {
-                player->movementC->dx = ((float)controller_leftAxisX / 140000.0f) * delta_g;
+                player->movementC->dx = ((float)controller_leftAxisX / axis_divide) * delta_g;
             }
             if(controller_leftAxisY < -deadzone || controller_leftAxisY > deadzone)
             {
-                player->movementC->dy = ((float)controller_leftAxisY / 140000.0f) * delta_g;
+                player->movementC->dy = ((float)controller_leftAxisY / axis_divide) * delta_g;
             }
 
-            if(controller_rightAxisX > deadzone || controller_rightAxisX < -deadzone ||
-               controller_rightAxisY > deadzone || controller_rightAxisY < -deadzone)
+            if(controller_rightAxisX > deadzone * 2 || controller_rightAxisX < -deadzone * 2 ||
+               controller_rightAxisY > deadzone * 2 || controller_rightAxisY < -deadzone * 2)
             {
 
                 player->movementC->angle = atan2(controller_rightAxisY, controller_rightAxisX);

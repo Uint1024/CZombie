@@ -1,5 +1,6 @@
 #include "door.h"
 #include "entity.h"
+#include "world.h"
 
 static int door_switch_timer = 0;
 
@@ -44,4 +45,16 @@ void Door_Switch(Entity* d)
 void Door_Open(Entity* d)
 {
     d->solid = false;
+}
+
+void Door_Update(Entity* d, World* w)
+{
+    if(BoundingBox_CheckSimpleCollision(&d->box, &w->player.box))
+    {
+        d->solid = false;
+    }
+    else
+    {
+        d->solid = true;
+    }
 }

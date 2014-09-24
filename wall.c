@@ -25,8 +25,19 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 
 	ent->hp = 50;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
-
+    //ent->solid = false;
+    if(type == Wall_Glass)
+    {
+        ent->transparent = true;
+    }
 	return ent;
+}
+
+bool Wall_IsWall(Entity* w)
+{
+    bool is_wall = w->solid && w->visible && !w->transparent;
+   // printf("%d\n", is_wall);
+    return is_wall;
 }
 
 Entity* Ground_Create(Ground_Type type, float x, float y)

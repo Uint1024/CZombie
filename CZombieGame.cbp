@@ -17,7 +17,7 @@
 					<Add directory="C:/SDL2-2.0.3/include/SDL2" />
 				</Compiler>
 				<Linker>
-					<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -Wall -Wextra" />
+					<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -Wall -Wextra" />
 					<Add directory="C:/SDL2-2.0.3/lib" />
 				</Linker>
 			</Target>
@@ -101,6 +101,9 @@
 		<Unit filename="map.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mapEvent.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="mapEvent.h" />
 		<Unit filename="menu.c">
 			<Option compilerVar="CC" />
@@ -122,6 +125,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="player.h" />
+		<Unit filename="sound.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sound.h" />
 		<Unit filename="string.h" />
 		<Unit filename="thing.c">
 			<Option compilerVar="CC" />

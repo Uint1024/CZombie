@@ -2,6 +2,7 @@
 #define DOOR_H
 #include "common.h"
 
+typedef struct World World;
 typedef struct Entity Entity;
 
 //doors are Entity
@@ -11,4 +12,5 @@ void Door_Close(Entity* d);
 void Door_Switch(Entity* d);
 void Door_Die(Entity* d);
 void Door_GetAttacked(Entity* d, Entity* attacker);
+void Door_Update(Entity* d, World* w);
 #endif // DOOR_H

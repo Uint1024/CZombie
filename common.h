@@ -90,6 +90,7 @@ typedef enum {
 typedef enum {
     Wall_Normal,
     Wall_Cool,
+    Wall_Glass,
     NB_OF_WALL_TYPES
 } Wall_Type
 ;
@@ -138,6 +139,7 @@ typedef enum {
 
     Tex_Wall_Normal,
     Tex_Wall_Cool,
+    Tex_Wall_Glass,
 
     Tex_Door_Normal,
     Tex_Door_Dead,

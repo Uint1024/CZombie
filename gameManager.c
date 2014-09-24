@@ -102,7 +102,16 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     Vector* decals_vector = &world->decals_vector;
 
 
-
+    for(int i = 0 ; i < world->map_size ; i++)
+    {
+        if(world->map[i] != NULL && world->map[i]->x != 0)
+        {
+            if(world->map[i]->t == Cat_Door)
+            {
+                Door_Update(world->map[i], world);
+            }
+        }
+    }
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
