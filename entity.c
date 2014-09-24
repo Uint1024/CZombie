@@ -35,11 +35,10 @@ Entity* Entity_Spawn()
     ent->solid                      = true;
     ent->texture                    = No_texture;
     ent->visible                    = true;
-
+    ent->penetration_chance = 0;
     ent->in_dark = true;
 	ent->alive                      = true;
-	ent->hp                         = 0;
-
+ent->nb_penetrations = 0;
 
     ent->damage                     = 0;
 
@@ -281,9 +280,11 @@ bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
 
                     if(ent->t == Cat_Zombie && ent->zombieC->aggressive &&
                        map[i]->solid &&
-                       (map[i]->t == Cat_Door || map[i]->t == Cat_Wall))
+                       (map[i]->t == Cat_Door || map[i]->t == Cat_Wall) &&
+                       ent->zombieC->attack_timer >= ent->zombieC->attack_delay)
                     {
                         Structure_GetAttacked(map[i], ent);
+                        ent->zombieC->attack_timer = 0;
                     }
                 }
             }

@@ -15,6 +15,8 @@ typedef struct Weapon
     int                 delay_between_shots;
     WeaponsC*   parent;
     int                 reloading_time;
+    int                 bullet_height;
+    int                 bullet_width;
 } Weapon;
 
 Weapon* Weapon_Create(Weapon_Type type);

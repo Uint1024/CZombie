@@ -597,6 +597,7 @@ void Player_CheckBonusCollision(Entity* player, Vector* bonus_vector)
         collision = BoundingBox_CheckSimpleCollision(&player->box, &bonus->box);
         if(collision)
         {
+            Sound_PlayPickUp();
             Player_PickUpBonus(player, bonus);
 
         }

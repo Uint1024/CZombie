@@ -42,6 +42,15 @@ Controls* CreateControls()
 	{
 		controls->pressedKeys[i] = false;
 	}
+		for (int i = 0; i < 200; i++)
+	{
+		controls->previpressedKeys[i] = false;
+	}
+		for (int i = 0; i < 20; i++)
+	{
+		controls->pressedMouseButtons[i] = false;
+	}
+
     controls->mouseWheelPos = 0;
     controls->active_window = NULL;
     controls->cursor_resize_left_right = false;
@@ -287,7 +296,20 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                                                    controls->mousePositionInWorldY,
                                                    &mob->box))
                 {
+                    Entity_Destroy(mob);
                     Vector_Delete(&world->monsters_vector, i);
+
+                }
+            }
+            for(int i = 0 ; i < Vector_Count(&world->bonus_vector) ; i++)
+            {
+                Entity* bonus = (Entity*)Vector_Get(&world->bonus_vector, i);
+                if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
+                                                   controls->mousePositionInWorldY,
+                                                   &bonus->box))
+                {
+                    Entity_Destroy(bonus);
+                    Vector_Delete(&world->bonus_vector, i);
 
                 }
             }
@@ -492,11 +514,11 @@ void Inputs_ApplyInputs( Controls* controls,
 
             if(controller_leftAxisX < -deadzone || controller_leftAxisX > deadzone)
             {
-                player->movementC->dx = ((float)controller_leftAxisX / 100000.0f) * delta_g;
+                player->movementC->dx = ((float)controller_leftAxisX / 140000.0f) * delta_g;
             }
             if(controller_leftAxisY < -deadzone || controller_leftAxisY > deadzone)
             {
-                player->movementC->dy = ((float)controller_leftAxisY / 100000.0f) * delta_g;
+                player->movementC->dy = ((float)controller_leftAxisY / 140000.0f) * delta_g;
             }
 
             if(controller_rightAxisX > deadzone || controller_rightAxisX < -deadzone ||
@@ -544,7 +566,8 @@ void Inputs_ApplyInputs( Controls* controls,
             float muzzleX = 0;
             float muzzleY = 0;
             Entity_GetMiddleCoordinates(player, &muzzleX, &muzzleY);
-
+            muzzleX -= player->weaponsC->current_weapon->bullet_height / 2;
+            muzzleY -= player->weaponsC->current_weapon->bullet_width / 2;
 
             if(!using_controller_g)
             {

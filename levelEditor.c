@@ -254,6 +254,15 @@ void Level_Save(char* file_name, World* w)
             LevelEditor_WriteEntity(save_file, buffer);
         }
 
+        int num_of_bonus = Vector_Count(&w->bonus_vector);
+        fwrite(&num_of_bonus, sizeof(int), 1, save_file);
+
+        for(int i = 0 ; i < num_of_bonus ; i++)
+        {
+            Entity* buffer = (Entity*)Vector_Get(&w->bonus_vector, i);
+            LevelEditor_WriteEntity(save_file, buffer);
+        }
+
         fclose(save_file);
 }
 
@@ -295,32 +304,29 @@ void Level_Clear(World* w)
     {
         Entity* ent = Vector_Get(&w->monsters_vector, i);
         Entity_Destroy(ent);
-        Vector_Delete(&w->monsters_vector, i);
     }
     for(int i = 0 ; i < Vector_Count(&w->bonus_vector) ; i++)
     {
         Entity* ent = Vector_Get(&w->bonus_vector, i);
         Entity_Destroy(ent);
-        Vector_Delete(&w->bonus_vector, i);
+
     }
     for(int i = 0 ; i < Vector_Count(&w->bullets_vector) ; i++)
     {
         Entity* ent = Vector_Get(&w->bullets_vector, i);
         Entity_Destroy(ent);
-        Vector_Delete(&w->bullets_vector, i);
     }
     for(int i = 0 ; i < Vector_Count(&w->explosions_vector) ; i++)
     {
         Entity* ent = Vector_Get(&w->explosions_vector, i);
         Entity_Destroy(ent);
-        Vector_Delete(&w->explosions_vector, i);
     }
 
-    //Vector_Clear(&w->monsters_vector);
-    //Vector_Clear(&w->bonus_vector);
+    Vector_Clear(&w->monsters_vector);
+    Vector_Clear(&w->bonus_vector);
     Vector_Clear(&w->events_vector);
-    //Vector_Clear(&w->bullets_vector);
-    //Vector_Clear(&w->explosions_vector);
+    Vector_Clear(&w->bullets_vector);
+    Vector_Clear(&w->explosions_vector);
     Vector_Clear(&w->decals_vector);
 
     for(int i = 0 ; i < w->map_size ; i++)
@@ -385,6 +391,16 @@ void Level_Load(char* file_name, World* w)
         Entity* buffer = Entity_Spawn();
         LevelEditor_ReadEntity(save_file, buffer);
         Vector_Push(&w->monsters_vector, buffer);
+
+    }
+
+    int num_of_bonus = 0;
+    fread(&num_of_bonus, sizeof(int), 1, save_file);
+    for(int i = 0 ; i < num_of_bonus ; i++)
+    {
+        Entity* buffer = Entity_Spawn();
+        LevelEditor_ReadEntity(save_file, buffer);
+        Vector_Push(&w->bonus_vector, buffer);
 
     }
     fclose(save_file);

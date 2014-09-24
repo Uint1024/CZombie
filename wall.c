@@ -23,7 +23,7 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 	ent->x = x_;
 	ent->y = y_;
 
-	ent->hp = 1050;
+	ent->hp = 50;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
 	return ent;
@@ -56,6 +56,7 @@ void Structure_GetAttacked(Entity* d, Entity* attacker)
 void Structure_Die(Entity* d)
 {
     //d->texture = door_textures_g[Door_Dead];
+    Sound_PlayWallDestroyed();
     d->solid = false;
     d->visible = false;
 

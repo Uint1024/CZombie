@@ -21,6 +21,8 @@ typedef struct ZombieC
     //else it lags too much...
     int                     ai_timer;
     int                     paths_calculated;
+    int attack_timer;
+    int attack_delay;
 } ZombieC;
 
 ZombieC* ZombieC_Create();

@@ -11,6 +11,10 @@ Weapon* Weapon_Create(Weapon_Type type)
     Weapon* w = (Weapon*)malloc(sizeof(Weapon));
     w->type = type;
 
+
+    w->bullet_width = 10;
+    w->bullet_height = 10;
+
     if(type == Weapon_AutomaticRifle)
     {
         w->name = "Automatic Rifle";
@@ -25,7 +29,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->name = "Handgun";
         w->magazine_max_bullets = 15;
         w->magazine_bullets = 15;
-        w->delay_between_shots = 200;
+        w->delay_between_shots = 500;
         w->reloading_time = 1200;
         //w->corresponding_pickup = ;
     }
@@ -55,6 +59,8 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->delay_between_shots = 35;
         w->reloading_time = 600;
         w->corresponding_pickup = Bonus_TheBigGun;
+        w->bullet_width = 24;
+        w->bullet_height = 24;
     }
     else if(type == Weapon_Fireball)
     {
@@ -63,6 +69,8 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 1;
         w->delay_between_shots = 500;
         w->reloading_time = 0;
+        w->bullet_width = 15;
+        w->bullet_height = 15;
         //w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
     else if(type == Weapon_TripleFireball)
@@ -72,6 +80,8 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 1;
         w->delay_between_shots = 2000;
         w->reloading_time = 0;
+        w->bullet_width = 15;
+        w->bullet_height = 15;
         //w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
 

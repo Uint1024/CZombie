@@ -8,7 +8,7 @@ void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
     //Bonus_type type = rand() % NB_OF_BONUS_TYPES;
     //temporarily we replace random loot with just handgun ammo
 
-    Vector_Push(bonus_vector, Bonus_Create(Weapon_Handgun, source->x, source->y, source->movementC->angle));
+    Vector_Push(bonus_vector, Bonus_Create(Bonus_Handgun, source->x, source->y, source->movementC->angle));
 
 }
 

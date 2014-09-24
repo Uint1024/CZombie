@@ -17,13 +17,15 @@ ZombieC* ZombieC_Create()
     zc->idling = false;
     zc->rand_move_every = 1;
     zc->rand_move_timer = 1;
-    zc->vision_distance =360;
+    zc->vision_distance =300;
     zc->vision_width = 1.2;
     zc->ai_timer = rand() % 500;
     zc->dodging = false;
     zc->dodging_time = 0;
     //if the zombies calculates more than 2 paths between each AI update, he stops looking
     zc->paths_calculated = 0;
+    zc->attack_delay = 500; //can attack every 500ms
+    zc->attack_timer = 0;//when this reaches attack_delay it can reattack
     return zc;
 }
 
@@ -47,7 +49,7 @@ void Zombie_Update(Entity* z, World* world)
 
     z->zombieC->ai_timer += delta_g;
 
-
+    z->zombieC->attack_timer += delta_g;
     Zombie_Ai(z, world);
 
 
@@ -123,7 +125,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         width = 40;
         height = 40;
         z->hp = 20;
-        z->damage = 10;
+        z->damage = 2;
         weapon = Weapon_Fireball;
         break;
     case Fast_Zombie:
@@ -134,14 +136,14 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         width = 45;
         height = 45;
         z->hp = 20;
-        z->damage = 10;
+        z->damage = 5;
         weapon = Weapon_TripleFireball;
        break;
     case Huge_Zombie:
         width = 120;
         height = 120;
         z->hp = 200;
-        z->damage = 100;
+        z->damage = 15;
         weapon = Weapon_TripleFireball;
         break;
     }
@@ -169,7 +171,7 @@ void Zombie_Ai(Entity* z, World* world)
         zc->paths_calculated = 0;
         if(!zc->aggressive)
         {
-            if(Entity_CheckNear(z, player))//600
+            if(Entity_CheckDistance(z, player, z->zombieC->vision_distance))//600
             {
                 float angle_to_player = C_AngleBetween2Entities(z, player);
 
@@ -312,7 +314,7 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
 {
     int random = rand() % 10;
 
-    if(random <= 4)
+    if(random <= 2)
     {
         Bonus_GenerateRandom(bonus_vector, zombie);
     }

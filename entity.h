@@ -27,7 +27,8 @@ typedef struct Entity
     bool                    visible;
     bool                    solid;
 	Box                     box;
-
+    int                     penetration_chance; //between 0 and 1000
+    unsigned char           nb_penetrations;
     int                     hp;//player and zombies can die, walls be destroyed
 	bool                    alive;
     int                     alive_timer;//used by explosions, bullets

@@ -8,8 +8,11 @@
 #include "player.h"
 #include "zombie.h"
 #include "movement_component.h"
+#include "weapon.h"
 
-Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float speed, bool is_ennemy_bullet)
+Entity* Bullet_Create(Weapon_Type type, float x, float y,
+                      float angle, float speed, bool is_ennemy_bullet,
+                      Weapon* parent)
 {
 	Entity* bullet = Entity_Spawn();
 
@@ -24,37 +27,40 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 	bullet->alive_timer = 2000; //die in 2 seconds
 	bullet->damage = 1;
 
+    bullet->box.height = parent->bullet_height;
+    bullet->box.width = parent->bullet_width;
+
 	switch(type)
 	{
     case Weapon_Handgun:
-        bullet->box.height = 10;
-        bullet->box.width = 10;
         bullet->texture = Tex_Bullet;
+        bullet->penetration_chance = 100;
+        bullet->damage = 5;
         break;
     case Weapon_AutomaticRifle:
-        bullet->box.height = 10;
-        bullet->box.width = 10;
         bullet->texture = Tex_Bullet;
+        bullet->penetration_chance = 100;
+        bullet->damage = 2;
         break;
     case Weapon_Shotgun:
-        bullet->box.height = 10;
-        bullet->box.width = 10;
         bullet->texture = Tex_Bullet;
+        bullet->penetration_chance = 400;
+        bullet->damage = 1;
         break;
     case Weapon_Fireball:
-        bullet->box.height = 15;
-        bullet->box.width = 15;
         bullet->texture = Tex_Fireball;
+        bullet->penetration_chance = 0;
+        bullet->damage = 1;
         break;
     case Weapon_TripleFireball:
-        bullet->box.height = 15;
-        bullet->box.width = 15;
         bullet->texture = Tex_Fireball;
+        bullet->penetration_chance = 0;
+        bullet->damage = 1;
         break;
     case Weapon_TheBigGun:
-        bullet->box.height = 30;
-        bullet->box.width = 30;
         bullet->texture = Tex_Bullet;
+        bullet->penetration_chance = 600;
+        bullet->damage = 5;
         break;
     case No_Weapon:
         printf("Error, trying to create a bullet without weapon type");
@@ -97,7 +103,18 @@ void Bullet_Update(Entity* bullet, World* world)
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
                     Zombie_GetAttacked(mob, bullet->damage, world);
-                    bullet->alive = false;
+
+                    //divide the address by 1000 to get a kinda random number
+                    if(bullet->nb_penetrations < 3 &&
+                       (int)bullet % 1000 < bullet->penetration_chance)
+                    {
+                        bullet->nb_penetrations++;
+                    }
+                    else
+                    {
+                        bullet->alive = false;
+                    }
+
                 }
             }
         }
@@ -134,7 +151,7 @@ void Bullet_Update(Entity* bullet, World* world)
 
                     if(BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
                     {
-
+                        Structure_GetAttacked(world->map[i], bullet);
                         bullet->alive = false;
 
                     }
