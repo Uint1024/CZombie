@@ -11,7 +11,7 @@ Weapon* Weapon_Create(Weapon_Type type)
     Weapon* w = (Weapon*)malloc(sizeof(Weapon));
     w->type = type;
 
-    if(type == AutomaticRifle_w)
+    if(type == Weapon_AutomaticRifle)
     {
         w->name = "Automatic Rifle";
         w->magazine_max_bullets = 50;
@@ -20,7 +20,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 3000;
         w->corresponding_pickup = Bonus_Rifle;
     }
-    else if(type == Handgun_w)
+    else if(type == Weapon_Handgun)
     {
         w->name = "Handgun";
         w->magazine_max_bullets = 15;
@@ -29,7 +29,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 1200;
         //w->corresponding_pickup = ;
     }
-    else if(type == Shotgun_w)
+    else if(type == Weapon_Shotgun)
     {
         w->name = "Shotgun";
         w->magazine_max_bullets = 15;
@@ -38,7 +38,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 2000;
         w->corresponding_pickup = Bonus_Shotgun;
     }
-    else if(type == GrenadeLauncher_w)
+    else if(type == Weapon_GrenadeLauncher)
     {
         w->name = "Grenade Launcher";
         w->magazine_max_bullets = 5;
@@ -47,7 +47,16 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 6000;
         w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
-    else if(type == Fireball_w)
+    else if(type == Weapon_TheBigGun)
+    {
+        w->name = "The Big Gun";
+        w->magazine_max_bullets = 200;
+        w->magazine_bullets = 200;
+        w->delay_between_shots = 35;
+        w->reloading_time = 600;
+        w->corresponding_pickup = Bonus_TheBigGun;
+    }
+    else if(type == Weapon_Fireball)
     {
         w->name = "Fireball";
         w->magazine_max_bullets = 1;
@@ -56,7 +65,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 0;
         //w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
-    else if(type == TripleFireball_w)
+    else if(type == Weapon_TripleFireball)
     {
         w->name = "Triple Fireball";
         w->magazine_max_bullets = 1;

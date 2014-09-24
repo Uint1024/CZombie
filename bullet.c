@@ -26,35 +26,40 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y, float angle, float spe
 
 	switch(type)
 	{
-    case Handgun_w:
+    case Weapon_Handgun:
         bullet->box.height = 10;
         bullet->box.width = 10;
         bullet->texture = Tex_Bullet;
         break;
-    case AutomaticRifle_w:
+    case Weapon_AutomaticRifle:
         bullet->box.height = 10;
         bullet->box.width = 10;
         bullet->texture = Tex_Bullet;
         break;
-    case Shotgun_w:
+    case Weapon_Shotgun:
         bullet->box.height = 10;
         bullet->box.width = 10;
         bullet->texture = Tex_Bullet;
         break;
-    case Fireball_w:
+    case Weapon_Fireball:
         bullet->box.height = 15;
         bullet->box.width = 15;
         bullet->texture = Tex_Fireball;
         break;
-    case TripleFireball_w:
+    case Weapon_TripleFireball:
         bullet->box.height = 15;
         bullet->box.width = 15;
         bullet->texture = Tex_Fireball;
+        break;
+    case Weapon_TheBigGun:
+        bullet->box.height = 30;
+        bullet->box.width = 30;
+        bullet->texture = Tex_Bullet;
         break;
     case No_Weapon:
         printf("Error, trying to create a bullet without weapon type");
         break;
-    case GrenadeLauncher_w:
+    case Weapon_GrenadeLauncher:
         printf("Error, trying to create a grenade launcher bullet");
      case NB_WEAPON_TYPES:
         printf("Error, trying to create undefined weapon");

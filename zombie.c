@@ -124,7 +124,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         height = 40;
         z->hp = 20;
         z->damage = 10;
-        weapon = Fireball_w;
+        weapon = Weapon_Fireball;
         break;
     case Fast_Zombie:
         z->hp = 2;
@@ -135,14 +135,14 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         height = 45;
         z->hp = 20;
         z->damage = 10;
-        weapon = TripleFireball_w;
+        weapon = Weapon_TripleFireball;
        break;
     case Huge_Zombie:
         width = 120;
         height = 120;
         z->hp = 200;
         z->damage = 100;
-        weapon = TripleFireball_w;
+        weapon = Weapon_TripleFireball;
         break;
     }
     if(weapon != No_Weapon)

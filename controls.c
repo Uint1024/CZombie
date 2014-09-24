@@ -25,7 +25,7 @@ static int switch_timer = 0;
 static int building_time = 0;
 static int deadzone = 9000;
 static SDL_Joystick* controller;
-static bool using_controller = true;
+bool using_controller_g = true;
 static int controller_leftAxisX;
 static int controller_leftAxisY;
 static int controller_rightAxisX;
@@ -264,8 +264,12 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                             Vector_Delete(&world->events_vector, i);
                         }
                     }
-                    printf("%d\n", x);
                     Vector_Push(&world->events_vector, Entity_Create(category, obj_type, x, y, 0));
+                    building_time = SDL_GetTicks();
+                }
+                else if(category == Cat_Bonus && SDL_GetTicks() - building_time > 150)
+                {
+                    Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, x, y, 0));
                     building_time = SDL_GetTicks();
                 }
             }
@@ -292,7 +296,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
         //deleting every monster
         if(controls->pressedKeys[SDLK_u])
         {
-            Vector_Clear(&world->monsters_vector);
+           // Vector_Clear(&world->monsters_vector); leads to memory leak
         }
 
         //remove wall (replace it with empty entity)
@@ -413,8 +417,10 @@ void Inputs_ApplyInputs( Controls* controls,
 
 
     //press ESC to show menu
-    if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == true)
-    {   if(display_menu_g)
+    if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == true ||
+       SDL_JoystickGetButton(controller, BUTTON_START))
+    {
+        if(display_menu_g)
         {
            display_menu_g = false;
         }
@@ -475,7 +481,7 @@ void Inputs_ApplyInputs( Controls* controls,
         }
 
         //apply controller controls
-        if(using_controller)
+        if(using_controller_g)
         {
             controller_leftAxisX = SDL_JoystickGetAxis(controller, 0);
             controller_leftAxisY = SDL_JoystickGetAxis(controller, 1);
@@ -486,11 +492,11 @@ void Inputs_ApplyInputs( Controls* controls,
 
             if(controller_leftAxisX < -deadzone || controller_leftAxisX > deadzone)
             {
-                player->movementC->dx = ((float)controller_leftAxisX / 37000.0f) * delta_g;
+                player->movementC->dx = ((float)controller_leftAxisX / 100000.0f) * delta_g;
             }
             if(controller_leftAxisY < -deadzone || controller_leftAxisY > deadzone)
             {
-                player->movementC->dy = ((float)controller_leftAxisY / 37000.0f) * delta_g;
+                player->movementC->dy = ((float)controller_leftAxisY / 100000.0f) * delta_g;
             }
 
             if(controller_rightAxisX > deadzone || controller_rightAxisX < -deadzone ||
@@ -502,19 +508,23 @@ void Inputs_ApplyInputs( Controls* controls,
 
             if(SDL_JoystickGetButton(controller, BUTTON_A))
             {
-                WeaponsComponent_ChangeWeapon(player->weaponsC, Handgun_w);
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_Handgun);
             }
             if(SDL_JoystickGetButton(controller, BUTTON_B))
             {
-                WeaponsComponent_ChangeWeapon(player->weaponsC, AutomaticRifle_w);
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_AutomaticRifle);
             }
             if(SDL_JoystickGetButton(controller, BUTTON_X))
             {
-                WeaponsComponent_ChangeWeapon(player->weaponsC, Shotgun_w);
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_Shotgun);
             }
             if(SDL_JoystickGetButton(controller, BUTTON_Y))
             {
-                WeaponsComponent_ChangeWeapon(player->weaponsC, GrenadeLauncher_w);
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_GrenadeLauncher);
+            }
+            if(SDL_JoystickGetButton(controller, BUTTON_LEFT_SHOULDER))
+            {
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_TheBigGun);
             }
 
         }
@@ -522,17 +532,21 @@ void Inputs_ApplyInputs( Controls* controls,
         if(game_state_g != GameState_Editing_Map)
         {
             //reloading
-            if(controls->pressedKeys[SDLK_r])
+            if(reloading_g)
             {
-                WeaponsComponent_Reload(player->weaponsC);
+                if(controls->pressedKeys[SDLK_r])
+                {
+                    WeaponsComponent_Reload(player->weaponsC);
+                }
             }
+
 
             float muzzleX = 0;
             float muzzleY = 0;
             Entity_GetMiddleCoordinates(player, &muzzleX, &muzzleY);
 
 
-            if(!using_controller)
+            if(!using_controller_g)
             {
                 //calculating angle to mouse
                 float mouse_angle = C_AngleBetween2Points(

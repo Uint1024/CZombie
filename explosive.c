@@ -38,7 +38,8 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
 	grenade->movementC->angle = angle;
 	grenade->movementC->speed = speed;
     grenade->explosiveC = ExplosiveComponent_Create(x, y, angle, speed, destinationX, destinationY);
-
+    grenade->movementC->dx = cos(angle) * speed;
+    grenade->movementC->dy = sin(angle) * speed;
     return grenade;
 }
 
@@ -49,14 +50,6 @@ void Grenade_Update(Entity* g, World* world)
     if(g->explosiveC->explosion_timer <= 0)
     {
         g->alive = false;
-    }
-    g->movementC->dx = cos(g->movementC->angle) * g->movementC->speed * delta_g;
-	g->movementC->dy = sin(g->movementC->angle) * g->movementC->speed  * delta_g;
-
-    if(abs(g->x - g->explosiveC->destinationX) < 10)
-    {
-        g->movementC->dx = 0;
-        g->movementC->dy = 0;
     }
 
     for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
@@ -71,5 +64,21 @@ void Grenade_Update(Entity* g, World* world)
         }
     }
 
-    moveEntity(g, g->movementC->dx, g->movementC->dy);
+    Box* temp = BoundingBox_CreateTemp(g);
+
+    for(int i = 0 ; i < world->map_size ; i++)
+    {
+        if(Entity_CheckVeryClose(g, world->map[i]) && world->map[i]->solid)
+        {
+            if(BoundingBox_CheckSimpleCollision(temp, &world->map[i]->box))
+            {
+                g->movementC->dx = 0;
+                g->movementC->dy = 0;
+            }
+        }
+    }
+
+    free(temp);
+
+    moveEntity(g, g->movementC->dx * delta_g, g->movementC->dy * delta_g);
 }

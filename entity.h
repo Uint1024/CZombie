@@ -78,4 +78,6 @@ void Entity_Destroy(Entity* ent);
 void Entity_MoveToPosition(Entity* ent, float x, float y);
 void Entity_CalculateVisibility(Entity* ent, World* world);
 Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle);
+
+bool Entity_CheckVeryClose(Entity* ent1, Entity* ent2);
 #endif

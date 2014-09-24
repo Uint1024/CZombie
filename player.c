@@ -541,10 +541,10 @@ void Player_Reset(Entity* player)
 
     player->weaponsC                      =   WeaponsComponent_Create();
     WeaponsComponent_AddWeaponToInventory(player->weaponsC,
-                                          Weapon_Create(Handgun_w));
+                                          Weapon_Create(Weapon_Handgun));
     WeaponsComponent_ChangeWeapon(player->weaponsC,
-                                  Handgun_w);
-    player->weaponsC->bullets[Handgun_w] = 100;
+                                  Weapon_Handgun);
+    player->weaponsC->bullets[Weapon_Handgun] = 100;
 
     player->weaponsC->is_monster = false;
 }
@@ -566,21 +566,22 @@ Entity Player_Create(float x, float y, int w, int h)
     p.playerC->cameraX = -screen_width_g/2 + p.x;
     p.playerC->cameraY = -screen_height_g/2 + p.y;
     p.weaponsC                      =   WeaponsComponent_Create();
-    p.weaponsC->bullets[Handgun_w] = 100;
+    p.weaponsC->bullets[Weapon_Handgun] = 100;
+    p.weaponsC->bullets[Weapon_GrenadeLauncher] = 100;
     BoundingBox_Create(&p, w, h);
 
 
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
-                                          Weapon_Create(Handgun_w));
-    /*WeaponsComponent_AddWeaponToInventory(p.weaponsC,
-                                          Weapon_Create(Shotgun_w));
+                                          Weapon_Create(Weapon_Handgun));
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
-                                          Weapon_Create(GrenadeLauncher_w));
+                                          Weapon_Create(Weapon_Shotgun));
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
-                                            Weapon_Create(AutomaticRifle_w));*/
+                                          Weapon_Create(Weapon_GrenadeLauncher));
+    WeaponsComponent_AddWeaponToInventory(p.weaponsC,
+                                            Weapon_Create(Weapon_AutomaticRifle));
 
     WeaponsComponent_ChangeWeapon(p.weaponsC,
-                                  Handgun_w);
+                                  Weapon_Handgun);
 
     p.weaponsC->is_monster = false;
 	return p;
@@ -643,16 +644,19 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
     switch(type)
     {
     case Bonus_GrenadeLauncher:
-        weapon_type = GrenadeLauncher_w;
+        weapon_type = Weapon_GrenadeLauncher;
         break;
     case Bonus_Rifle:
-        weapon_type = AutomaticRifle_w;
+        weapon_type = Weapon_AutomaticRifle;
         break;
     case Bonus_Shotgun:
-        weapon_type = Shotgun_w;
+        weapon_type = Weapon_Shotgun;
         break;
     case Bonus_Handgun:
-        weapon_type = Handgun_w;
+        weapon_type = Weapon_Handgun;
+        break;
+    case Bonus_TheBigGun:
+        weapon_type = Weapon_TheBigGun;
         break;
     }
 
@@ -662,12 +666,16 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
         {
             WeaponsComponent_AddAmmo(wc,
                                  weapon_type,
-                                 50);
+                                 wc->weapons_inventory[weapon_type]->magazine_max_bullets);
         }
         else
         {
             WeaponsComponent_AddWeaponToInventory(
                     wc, Weapon_Create(weapon_type));
+            if(!reloading_g)
+            {
+                wc->bullets[weapon_type] += wc->weapons_inventory[weapon_type]->magazine_max_bullets;
+            }
         }
     }
 

@@ -58,5 +58,7 @@ void Structure_Die(Entity* d)
     //d->texture = door_textures_g[Door_Dead];
     d->solid = false;
     d->visible = false;
+
+
 }
 

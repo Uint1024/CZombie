@@ -5,9 +5,10 @@
 
 void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
 {
-    Bonus_type type = rand() % NB_OF_BONUS_TYPES;
+    //Bonus_type type = rand() % NB_OF_BONUS_TYPES;
+    //temporarily we replace random loot with just handgun ammo
 
-    Vector_Push(bonus_vector, Bonus_Create(type, source->x, source->y, source->movementC->angle));
+    Vector_Push(bonus_vector, Bonus_Create(Weapon_Handgun, source->x, source->y, source->movementC->angle));
 
 }
 
@@ -23,7 +24,13 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     bonus->movementC->angle = angle;
 
     bonus->texture = all_textures_g[Cat_Bonus][bonus_type];
-    BoundingBox_Create(bonus, 30, 15);
+    if(bonus_type == Bonus_TheBigGun)
+    {
+        BoundingBox_Create(bonus, 60, 30);
+    }
+    else
+        BoundingBox_Create(bonus, 30, 15);
+
     return bonus;
 }
 

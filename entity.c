@@ -14,6 +14,8 @@
 #include "wall.h"
 #include "movement_component.h"
 #include "mapEvent.h"
+#include "bonus.h"
+
 
 Entity* Entity_Spawn()
 {
@@ -102,6 +104,11 @@ Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle
 bool Entity_CheckNear(Entity* ent1, Entity* ent2)
 {
     return (abs(ent1->x - ent2->x) < 600 && abs(ent1->y - ent2->y) < 600);
+}
+
+bool Entity_CheckVeryClose(Entity* ent1, Entity* ent2)
+{
+    return (abs(ent1->x - ent2->x) < 100 && abs(ent1->y - ent2->y) < 100);
 }
 
 void Entity_CalculateVelocity(Entity* ent)

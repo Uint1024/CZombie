@@ -60,6 +60,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     g->textures_names[Tex_Ground_Grass]              =   "ground_grass.png";
     g->textures_names[Tex_Ground_Dirt]               =   "ground_dirt.png";
     g->textures_names[Tex_Bonus_GrenadeLauncher]    =   "grenadeLauncher.png";
+    g->textures_names[Tex_Bonus_TheBigGun]    =   "weapon_biggun.png";
     g->textures_names[Cursor_resize_up_down_tex]    =   "resize_up_down.png";
     g->textures_names[Cursor_resize_left_right_tex]  =   "resize_left_right.png";
     g->textures_names[Tex_Door_Normal]              =   "door.png";
@@ -601,11 +602,20 @@ void Graphics_RenderGameUI(Graphics* g, World* world)
 
     //bullets left
     char nb_of_bullets_on_player[70];
-    snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
-             world->player.weaponsC->current_weapon->magazine_bullets, " / ",
-             world->player.weaponsC->current_weapon->magazine_max_bullets, " / ",
+    if(reloading_g)
+    {
+        snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d%s%d%s%d",
+                 world->player.weaponsC->current_weapon->magazine_bullets, " / ",
+                 world->player.weaponsC->current_weapon->magazine_max_bullets, " / ",
+                 world->player.weaponsC->bullets[world->player.weaponsC->current_weapon->type]
+                 );
+    }
+    else
+    {
+        snprintf(nb_of_bullets_on_player, sizeof(nb_of_bullets_on_player), "%d ammos",
              world->player.weaponsC->bullets[world->player.weaponsC->current_weapon->type]
              );
+    }
     Graphics_RenderText(g, nb_of_bullets_on_player, Medium, 700, 150, true, White);
 
     //reloading! text
@@ -638,19 +648,23 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
     }
 
     //====Cursor stuff
-    if(!controls->cursor_resize_left_right)
+    if(!using_controller_g || game_state_g == GameState_Editing_Map ||
+       game_state_g == GameState_Main_Menu)
     {
-        SDL_Rect cursor_rect;
-        cursor_rect.x = controls->mouseX - 10;
-        cursor_rect.y = controls->mouseY - 10;
-        cursor_rect.h = 21;
-        cursor_rect.w = 21;
-        SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
-    }
-    else if(controls->cursor_resize_left_right)
-    {
-        SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
-        SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
+        if(!controls->cursor_resize_left_right)
+        {
+            SDL_Rect cursor_rect;
+            cursor_rect.x = controls->mouseX - 10;
+            cursor_rect.y = controls->mouseY - 10;
+            cursor_rect.h = 21;
+            cursor_rect.w = 21;
+            SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
+        }
+        else if(controls->cursor_resize_left_right)
+        {
+            SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
+            SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
+        }
     }
 
 

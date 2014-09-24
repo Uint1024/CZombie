@@ -120,14 +120,18 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
 
     Weapon* weapon = wc->current_weapon;
 
-    if(weapon->magazine_bullets > 0 &&
+    if(wc->bullets[weapon->type] > 0 && weapon->magazine_bullets > 0 &&
         SDL_GetTicks() - weapon->last_shot > weapon->delay_between_shots)
     {
-        if(weapon->type == AutomaticRifle_w || weapon->type == Handgun_w)
+        if(weapon->type == Weapon_AutomaticRifle || weapon->type == Weapon_Handgun)
         {
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 1, wc->is_monster));
         }
-        else if(weapon->type == Shotgun_w)
+        else if(weapon->type == Weapon_AutomaticRifle || weapon->type == Weapon_Handgun)
+        {
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 0.3, wc->is_monster));
+        }
+        else if(weapon->type == Weapon_Shotgun)
         {
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 1, wc->is_monster));
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.05, 1, wc->is_monster));
@@ -135,15 +139,15 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.1, 1, wc->is_monster));
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.05, 1, wc->is_monster));
         }
-        else if(weapon->type == GrenadeLauncher_w)
+        else if(weapon->type == Weapon_GrenadeLauncher)
         {
             Vector_Push(bullets_vector, Grenade_Create(originX, originY, angle, 1, destinationX, destinationY));
         }
-        else if(weapon->type == Fireball_w)
+        else if(weapon->type == Weapon_Fireball)
         {
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 0.4, wc->is_monster));
         }
-        else if(weapon->type == TripleFireball_w)
+        else if(weapon->type == Weapon_TripleFireball)
         {
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 0.4, wc->is_monster));
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.1, 0.4, wc->is_monster));
@@ -154,12 +158,18 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.3, 0.4, wc->is_monster));
         }
 
-        if(!unlimited_ammo)
+        if(!unlimited_ammo_g && reloading_g)
+        {
             weapon->magazine_bullets -= wc->is_monster ? 0 : 1;
+        }
+        else if(!reloading_g)
+        {
+            wc->bullets[weapon->type]--;
+        }
 
         weapon->last_shot = SDL_GetTicks();
     }
-    else if(weapon->magazine_bullets <= 0)
+    else if(weapon->magazine_bullets <= 0 && reloading_g)
     {
         WeaponsComponent_Reload(wc);
     }

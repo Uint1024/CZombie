@@ -107,6 +107,7 @@ typedef enum {
     Bonus_Shotgun,
     Bonus_GrenadeLauncher,
     Bonus_Handgun,
+    Bonus_TheBigGun,
     NB_OF_BONUS_TYPES
 } Bonus_type;
 
@@ -155,6 +156,7 @@ typedef enum {
     Tex_Bonus_Rifle,
     Tex_Bonus_Shotgun,
     Tex_Bonus_Handgun,
+    Tex_Bonus_TheBigGun,
 
     Explosion1_tex,
 
@@ -182,12 +184,13 @@ typedef enum {
 //Weapon_Type
 typedef enum {
     No_Weapon,
-    Handgun_w,
-    AutomaticRifle_w,
-    Shotgun_w,
-    TripleFireball_w,
-    GrenadeLauncher_w,
-    Fireball_w,
+    Weapon_Handgun,
+    Weapon_AutomaticRifle,
+    Weapon_Shotgun,
+    Weapon_TripleFireball,
+    Weapon_GrenadeLauncher,
+    Weapon_Fireball,
+    Weapon_TheBigGun,
     NB_WEAPON_TYPES
 } Weapon_Type;
 
@@ -253,7 +256,9 @@ extern int              bonus_width_g[NB_OF_BONUS_TYPES];
 extern int              bonus_height_g[NB_OF_BONUS_TYPES];
 extern Game_State       game_state_g;
 extern bool            display_menu_g;
-extern bool             unlimited_ammo;
+extern bool             unlimited_ammo_g;
+extern bool             reloading_g;
+extern bool using_controller_g;
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
 #define BASE_PLAYER_SPEED 0.2

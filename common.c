@@ -29,6 +29,7 @@ void Game_InitData()
     all_textures_g[Cat_Bonus][Bonus_Rifle] = Tex_Bonus_Rifle;
     all_textures_g[Cat_Bonus][Bonus_Shotgun] = Tex_Bonus_Shotgun;
     all_textures_g[Cat_Bonus][Bonus_Handgun] = Tex_Bonus_Handgun;
+    all_textures_g[Cat_Bonus][Bonus_TheBigGun] = Tex_Bonus_TheBigGun;
 
     all_textures_g[Cat_Wall][Wall_Normal] = Tex_Wall_Normal;
     all_textures_g[Cat_Wall][Wall_Cool] = Tex_Wall_Cool;
