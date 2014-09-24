@@ -8,59 +8,6 @@
 #include "menu_manager.h"
 
 
-/*Menu* MainMenu_Create(Graphics* graphics)
-{
-    Menu* mainMenu = (Menu*)malloc(sizeof(Menu));
-
-    mainMenu->name                      =   Main_Menu_menu;
-
-    mainMenu->all_buttons = Vector_Create();
-    MenuManager_LoadAllButtons(graphics, mainMenu);
-
-
-    mainMenu->buttons = Vector_Create();
-
-
-
-    //MainMenu_LoadMainEmptyMenu(mainMenu);
-
-    mainMenu->texts = Vector_Create();
-    mainMenu->active_textfield = NULL;
-    return mainMenu;
-}*/
-
-/*void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu)
-{
-    Menu_Button_Name Menu_Button_Name[11] = {Play_button,
-                                            LevelEditor_button,
-                                            NewMap_button,
-                                            LoadMap_button,
-                                            SaveMap_button,
-                                            SaveGame_button,
-                                            LoadGame_button,
-                                            Exit_Level_Editor_button,
-                                            Options_button,
-                                            Quit_button,
-                                            Back_button};
-
-    char* text[11] = {"Play", "Level Editor", "New Map", "Load Map", "Save Map",
-                        "Save Game", "Load Game",
-                        "Exit Level Editor", "Options", "Quit", "Back"};
-
-    for(int i = 0 ; i < 11 ; i++)
-    {
-        MenuButton* button = MenuButton_Create(Menu_Button_Name[i],
-                                      100.0f, 100.0f,
-                                      text[i], true,
-                                      graphics);
-
-        Vector_Push(&mainMenu->all_buttons,
-                    button
-                    );
-    }
-}*/
-
-
 Menu* MainMenu_Create(MenuManager* menu_manager)
 {
     Menu* mainMenuMenu = (Menu*)malloc(sizeof(Menu));

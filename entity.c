@@ -13,6 +13,7 @@
 #include "door.h"
 #include "wall.h"
 #include "movement_component.h"
+#include "mapEvent.h"
 
 Entity* Entity_Spawn()
 {
@@ -68,6 +69,36 @@ void Entity_Destroy(Entity* ent)
     free(ent->playerC);
 }
 
+Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle)
+{
+    Entity* entity;
+
+    switch(cat)
+    {
+    case Cat_Wall:
+        entity = Wall_Create(type, x, y);
+        break;
+    case Cat_Door:
+        entity = Door_Create(type, x, y);
+        break;
+    case Cat_Ground:
+        entity = Ground_Create(type, x, y);
+        break;
+    case Cat_Zombie:
+        entity = CreateZombie(type, x, y);
+        break;
+    case Cat_Event:
+        entity = MapEvent_Create(type, x, y);
+        break;
+    case Cat_Bonus:
+        entity = Bonus_Create(type, x, y, angle);
+        break;
+    }
+
+    return entity;
+}
+
+
 bool Entity_CheckNear(Entity* ent1, Entity* ent2)
 {
     return (abs(ent1->x - ent2->x) < 600 && abs(ent1->y - ent2->y) < 600);
@@ -79,11 +110,6 @@ void Entity_CalculateVelocity(Entity* ent)
     ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed * delta_g;
 }
 
-/*void Entity_CalculateVelocityFromAngle(Entity* ent)
-{
-    ent->dx = cos(ent->angle) * ent->speed * delta_g;
-    ent->dy = sin(ent->angle) * ent->speed * delta_g;
-}*/
 
 void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY)
 {

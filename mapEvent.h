@@ -1,24 +1,7 @@
 #ifndef MAPEVENT_H
 #define MAPEVENT_H
+#include "common.h"
+typedef struct Entity Entity;
 
-/*typedef struct MapEvent
-{
-    int x;
-    int y;
-    MapEvent_Type type;
-    Box box;
-
-} apEvent;*/
-
-Entity* MapEvent_Create(MapEvent_Type type, int x, int y, int width, int height)
-{
-    Entity* me = Entity_Spawn();
-    me->t = Cat_Event;
-    me->sub_category = type;
-    me->x = x;
-    me->y = y;
-    me->box = BoundingBox_CreateBetter(x, y, width, height);
-    me->texture = all_textures_g[Cat_Event][type];
-    return me;
-}
+Entity* MapEvent_Create(MapEvent_Type type, int x, int y);
 #endif // MAPEVENT_H

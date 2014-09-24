@@ -49,10 +49,6 @@ Menu* LoadLevelMenu_Create(Graphics* graphics);
 Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager);
 Menu*  LevelEditorEditing_Create(MenuManager* menu_manager);
 
-/*void MainMenu_LoadLevelEditorMainMenu(Menu* mainMenu);
-void MainMenu_LoadMainEmptyMenu(Menu* mainMenu);
-void MainMenu_LoadAllButtons(Graphics* graphics, Menu* mainMenu);*/
-
 TextField* TextField_Create(int x, int y, int width, int height);
 void TextField_Update(TextField* tf, Controls* controls);
 void TextField_Caret_Update(TextField* tf);

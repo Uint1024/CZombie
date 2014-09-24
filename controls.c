@@ -23,6 +23,16 @@
     bool previousPressedKeys_g[200] = {false};
 static int switch_timer = 0;
 static int building_time = 0;
+static int deadzone = 9000;
+static SDL_Joystick* controller;
+static bool using_controller = true;
+static int controller_leftAxisX;
+static int controller_leftAxisY;
+static int controller_rightAxisX;
+static int controller_rightAxisY;
+static int controller_leftTrigger;
+static int controller_rightTrigger;
+
 Controls* CreateControls()
 {
 
@@ -42,6 +52,8 @@ Controls* CreateControls()
     controls->tileInPixelsY = 0;
     controls->hovering_on_window = false;
     controls->last_ai_switch = 0;
+    controls->temp_object_to_create = NULL;
+    controller = SDL_JoystickOpen(0);
 	return controls;
 }
 
@@ -73,6 +85,13 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
     int position_in_array = controls->mouseTileY * world->map_width + controls->mouseTileX;
 
+    if(controls->temp_object_to_create != NULL)
+    {
+
+        controls->temp_object_to_create->x = controls->mouseX;
+        controls->temp_object_to_create->y = controls->mouseY;
+        BoundingBox_Update(controls->temp_object_to_create);
+    }
 
     Vector* monsters_vector = &world->monsters_vector;
     if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
@@ -89,6 +108,17 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                                                    &level_editor->buttons[i].box))
                 {
                     controls->active_button = &level_editor->buttons[i];
+
+                    if(controls->temp_object_to_create != NULL)
+                    {
+                        Entity_Destroy(controls->temp_object_to_create);
+                        free(controls->temp_object_to_create);
+                    }
+
+                    controls->temp_object_to_create = Entity_Create(controls->active_button->main_category,
+                                                                    controls->active_button->button_type,
+                                                                    controls->mouseX, controls->mouseY,
+                                                                    0);
                 }
             }
         }
@@ -194,27 +224,28 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                 int y = controls->tileInPixelsY;
                 Main_Category category = controls->active_button->main_category;
 
-                if(category == Cat_Wall)
+                if(category == Cat_Wall || category == Cat_Door)
                 {
-                    world->map[position_in_array] = Wall_Create(obj_type, x, y);
-                }
-
-                else if(category == Cat_Door)
-                {
-                    world->map[position_in_array] = Door_Create(obj_type, x, y);
+                    Entity_Destroy(world->map[position_in_array]);
+                    free(world->map[position_in_array]);
+                    world->map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
                 }
 
                 else if(category == Cat_Ground)
                 {
                     Entity_Destroy(world->ground_map[position_in_array]);
-                    world->ground_map[position_in_array] = Ground_Create(obj_type, x, y);
+                    free(world->ground_map[position_in_array]);
+                    world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
                 }
 
                 else if(category == Cat_Zombie &&
                    (SDL_GetTicks() - building_time > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
                 {
                     Vector_Push(monsters_vector,
-                                CreateZombie(obj_type, controls->mousePositionInWorldX, controls->mousePositionInWorldY));
+                               Entity_Create(category, obj_type,
+                                             controls->mousePositionInWorldX,
+                                             controls->mousePositionInWorldY,
+                                             0));
 
                     building_time = SDL_GetTicks();
 
@@ -226,18 +257,15 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                     //there can be only 1 player start and end of level
                     for(int i = 0 ; i < Vector_Count(&world->events_vector) ; i++)
                     {
-
                         Entity* map_event = (Entity*)Vector_Get(&world->events_vector, i);
-
                         if((obj_type == Event_Player_Start || obj_type == Event_End_Level )&&
                            obj_type == map_event->sub_category)
                         {
-
                             Vector_Delete(&world->events_vector, i);
                         }
                     }
-
-                    Vector_Push(&world->events_vector, MapEvent_Create(obj_type, x, y, TILE_SIZE, TILE_SIZE));
+                    printf("%d\n", x);
+                    Vector_Push(&world->events_vector, Entity_Create(category, obj_type, x, y, 0));
                     building_time = SDL_GetTicks();
                 }
             }
@@ -307,6 +335,9 @@ bool Inputs_PoolInputs(Controls* controls, PlayerC* playerC)
     float cameraY = playerC->cameraY;
 
     controls->mouseWheelPos = 0;
+
+
+
 	while (SDL_PollEvent(&controls->e))
 	{
 		if (controls->e.type == SDL_QUIT || controls->e.key.keysym.scancode == SDL_SCANCODE_F4)
@@ -401,6 +432,7 @@ void Inputs_ApplyInputs( Controls* controls,
         PLAYER CONTROL STUFF
         */
 
+
         /*MOVEMENT*/
         //cancel current velocity
         player->movementC->dx = 0;
@@ -418,7 +450,7 @@ void Inputs_ApplyInputs( Controls* controls,
             Player_StopRunning(&world->player);
         }
 
-        //apply controls to player movement
+        //apply keyboard controls to player movement
         if (controls->pressedKeys[SDLK_z] == true)
         {
             player->movementC->dy = -1 * player->movementC->speed * delta_g;
@@ -442,6 +474,50 @@ void Inputs_ApplyInputs( Controls* controls,
             player->movementC->dy *= 0.707106781;
         }
 
+        //apply controller controls
+        if(using_controller)
+        {
+            controller_leftAxisX = SDL_JoystickGetAxis(controller, 0);
+            controller_leftAxisY = SDL_JoystickGetAxis(controller, 1);
+            controller_rightAxisX = SDL_JoystickGetAxis(controller, 2);
+            controller_rightAxisY = SDL_JoystickGetAxis(controller, 3);
+            controller_leftTrigger = SDL_JoystickGetAxis(controller, 4);
+            controller_rightTrigger = SDL_JoystickGetAxis(controller, 5);
+
+            if(controller_leftAxisX < -deadzone || controller_leftAxisX > deadzone)
+            {
+                player->movementC->dx = ((float)controller_leftAxisX / 37000.0f) * delta_g;
+            }
+            if(controller_leftAxisY < -deadzone || controller_leftAxisY > deadzone)
+            {
+                player->movementC->dy = ((float)controller_leftAxisY / 37000.0f) * delta_g;
+            }
+
+            if(controller_rightAxisX > deadzone || controller_rightAxisX < -deadzone ||
+               controller_rightAxisY > deadzone || controller_rightAxisY < -deadzone)
+            {
+
+                player->movementC->angle = atan2(controller_rightAxisY, controller_rightAxisX);
+            }
+
+            if(SDL_JoystickGetButton(controller, BUTTON_A))
+            {
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Handgun_w);
+            }
+            if(SDL_JoystickGetButton(controller, BUTTON_B))
+            {
+                WeaponsComponent_ChangeWeapon(player->weaponsC, AutomaticRifle_w);
+            }
+            if(SDL_JoystickGetButton(controller, BUTTON_X))
+            {
+                WeaponsComponent_ChangeWeapon(player->weaponsC, Shotgun_w);
+            }
+            if(SDL_JoystickGetButton(controller, BUTTON_Y))
+            {
+                WeaponsComponent_ChangeWeapon(player->weaponsC, GrenadeLauncher_w);
+            }
+
+        }
 
         if(game_state_g != GameState_Editing_Map)
         {
@@ -451,16 +527,21 @@ void Inputs_ApplyInputs( Controls* controls,
                 WeaponsComponent_Reload(player->weaponsC);
             }
 
-            //calculating angle to mouse
             float muzzleX = 0;
             float muzzleY = 0;
             Entity_GetMiddleCoordinates(player, &muzzleX, &muzzleY);
-            float mouse_angle = C_AngleBetween2Points(
-                                            muzzleX,
-                                            muzzleY,
-                                            controls->mousePositionInWorldX,
-                                            controls->mousePositionInWorldY  );
-            player->movementC->angle = mouse_angle;
+
+
+            if(!using_controller)
+            {
+                //calculating angle to mouse
+                float mouse_angle = C_AngleBetween2Points(
+                                                muzzleX,
+                                                muzzleY,
+                                                controls->mousePositionInWorldX,
+                                                controls->mousePositionInWorldY  );
+                player->movementC->angle = mouse_angle;
+            }
 
 
             //position of the targeted position in the map array
@@ -484,12 +565,13 @@ void Inputs_ApplyInputs( Controls* controls,
             }
 
             //shooting
-            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT])
+            if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] ||
+               controller_rightTrigger > 0)
             {
                 WeaponsComponent_TryToShoot(player->weaponsC,
                                               muzzleX,
                                               muzzleY,
-                                              mouse_angle,
+                                              player->movementC->angle,
                                               bullets_vector,
                                               controls->mousePositionInWorldX,
                                               controls->mousePositionInWorldY);

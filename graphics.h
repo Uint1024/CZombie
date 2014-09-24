@@ -52,4 +52,9 @@ void Graphics_RenderGameUI(Graphics* g, World* world);
 void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,Window* level_editor, GameManager* gm);
 
 void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha);
+
+void Graphics_RenderFillTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
+
+void Graphics_RenderFillBottomFlatTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
+void Graphics_RenderFillTopFlatTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
 #endif // GRAPHICS_H

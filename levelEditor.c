@@ -164,12 +164,6 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&zc->zombie_type, sizeof(Zombie_Type), 1, save_file);
         buffer->zombieC = zc;
 
-       /* if(zombie_weapon_g[zc->zombie_type] != No_Weapon)
-        {
-            buffer->weaponsC = WeaponsComponent_Create(true);
-            WeaponsComponent_AddWeaponToInventory(buffer->weaponsC,
-                                              Weapon_Create(zombie_weapon_g[buffer->zombieC->zombie_type]));
-        }*/
     }
 
     bool has_weaponC = true;
@@ -186,42 +180,6 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&wc->reloading, sizeof(bool), 1, save_file);
         fread(&wc->reload_timer, sizeof(int), 1, save_file);
 
-         /*
-
-
-                //we write only the weapon type, then in the loading function
-        //we'll find the weapon in the inventory and set the pointer to it
-        fwrite(&wc->current_weapon->type, sizeof(Weapon_Type), 1, save_file);
-
-
-        //to fwrite the weapon inventory, we have to loop through the inventory array
-        //and write every individual weapon... but first we have to count them and fwrite
-        //the number of weapons or else we won't know how much to fread
-        int nb_of_weapons = 0;
-
-        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
-        {
-            if(wc->weapons_inventory[i] != NULL)
-            {
-                nb_of_weapons ++;
-            }
-        }
-
-        fwrite(&nb_of_weapons, sizeof(int), 1, save_file);
-
-        for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
-        {
-            if(wc->weapons_inventory[i] != NULL)
-            {
-                //we only save these 3 variables because we can load the rest with Weapon_Create
-
-                //first we write the weapon type, because in fread we'll need it to call Weapon_Create
-                fwrite(&wc->weapons_inventory[i]->type, sizeof(Weapon_Type), 1, save_file);
-                fwrite(&wc->weapons_inventory[i]->last_shot, sizeof(int), 1, save_file);
-                fwrite(&wc->weapons_inventory[i]->magazine_bullets, sizeof(int), 1, save_file);
-
-            }
-            */
 
         //we read only the weapon type, then
         //we'll find the weapon in the inventory and set the pointer to it
@@ -358,11 +316,11 @@ void Level_Clear(World* w)
         Vector_Delete(&w->explosions_vector, i);
     }
 
-    Vector_Clear(&w->monsters_vector);
-    Vector_Clear(&w->bonus_vector);
+    //Vector_Clear(&w->monsters_vector);
+    //Vector_Clear(&w->bonus_vector);
     Vector_Clear(&w->events_vector);
-    Vector_Clear(&w->bullets_vector);
-    Vector_Clear(&w->explosions_vector);
+    //Vector_Clear(&w->bullets_vector);
+    //Vector_Clear(&w->explosions_vector);
     Vector_Clear(&w->decals_vector);
 
     for(int i = 0 ; i < w->map_size ; i++)

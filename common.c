@@ -58,6 +58,35 @@ void Game_InitData()
 
 }
 
+void C_Sort3Vectors(Vec2* v1, Vec2* v2, Vec2* v3)
+{
+    //sort vectors so v1 has the lowest y
+       // printf("1 = %f %f, %f %f, %f %f\n", v1->x, v1->y, v2->x, v2->y, v3->x, v3->y);
+    if(v3->y < v2->y)
+    {
+        Vec2 temp = *v2;
+        *v2 = *v3;
+        *v3 = temp;
+    }
+        //printf("2 = %f %f, %f %f, %f %f\n", v1->x, v1->y, v2->x, v2->y, v3->x, v3->y);
+    if(v2->y < v1->y)
+    {
+        Vec2 temp = *v1;
+        *v1 = *v2;
+        *v2 = temp;
+    }
+       // printf("3 = %f %f, %f %f, %f %f\n", v1->x, v1->y, v2->x, v2->y, v3->x, v3->y);
+    if(v3->y < v2->y)
+    {
+        Vec2 temp = *v2;
+        *v2 = *v3;
+        *v3 = temp;
+    }
+    //printf("4 = %f %f, %f %f, %f %f\n", v1->x, v1->y, v2->x, v2->y, v3->x, v3->y);
+
+}
+
+
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb)
 {
 	float angle     =    atan2f(yb - ya, xb - xa);
@@ -72,6 +101,19 @@ float C_DifferenceBetweenAngles(float angle1, float angle2)
 
 
     return difference;
+}
+
+float C_GetSlopeBetween2Vec(Vec2 v1, Vec2 v2, bool reverse_slope)
+{
+    if(reverse_slope)
+    {
+        return (float)(v1.y - v2.y) / (float)(v1.x - v2.x);
+    }
+    else
+    {
+
+        return (float)(v1.x - v2.x) / (float)(v1.y - v2.y);
+    }
 }
 
 float C_ConvertAngle2PiCirlce(float angle)

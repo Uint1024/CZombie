@@ -19,6 +19,7 @@ typedef struct PlayerC
     float                   cameraX;
     float                   cameraY;
     float vision_timer;
+    Vec2                    vision_points[200];
 }PlayerC;
 
 PlayerC* PlayerC_Create();
@@ -37,4 +38,6 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                        float end_slope,
                        World* world);
 void Player_Reset(Entity* player);
+
+void Player_ScanVisionPoints(Entity* p, World* world);
 #endif

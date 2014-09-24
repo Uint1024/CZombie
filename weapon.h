@@ -18,6 +18,5 @@ typedef struct Weapon
 } Weapon;
 
 Weapon* Weapon_Create(Weapon_Type type);
-/*void Weapon_TryToShoot(Weapon* weapon, float originX, float originY, float angle, Vector* bullets_vector,
-                       float destinationX, float destinationY, int delta);*/
+
 #endif // WEAPON_H

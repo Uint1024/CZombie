@@ -99,6 +99,12 @@ void Window_UpdateButtonsPositions(Window* w)
         buttons_nb++;
     }
 
+    for(int i = 0 ; i < NB_OF_BONUS_TYPES ; i++)
+    {
+        Button_Create(Cat_Bonus, i, buttons_nb, w);
+        buttons_nb++;
+    }
+
     for(int i = 0 ; i < NB_EVENT_TYPES ; i++)
     {
         Button_Create(Cat_Event, i, buttons_nb, w);

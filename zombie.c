@@ -41,7 +41,7 @@ ZombieC* ZombieC_Create()
 
 
 void Zombie_Update(Entity* z, World* world)
-{/*
+{
     Entity_CalculateVisibility(z, world);
     Entity_CalculateVelocity(z);
 
@@ -73,7 +73,7 @@ void Zombie_Update(Entity* z, World* world)
         }
 
         moveEntity(z, z->movementC->dx, z->movementC->dy);
-    }*/
+    }
 
 }
 

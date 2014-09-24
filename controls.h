@@ -42,6 +42,8 @@ typedef struct Controls
 	Button*     active_button;
 	bool       hovering_on_window;
 	int         last_ai_switch;
+	Entity*     temp_object_to_create;
+	SDL_GameController* controller;
 } Controls;
 
 Controls* CreateControls();

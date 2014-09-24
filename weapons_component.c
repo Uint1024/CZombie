@@ -42,7 +42,11 @@ void WeaponsComponent_ChangeWeapon(WeaponsC* wc, Weapon_Type type)
         wc->reloading = false;
         wc->reload_timer = wc->current_weapon->reloading_time;
     }
-    wc->current_weapon = wc->weapons_inventory[type];
+    if(wc->weapons_inventory[type] != NULL)
+    {
+        wc->current_weapon = wc->weapons_inventory[type];
+    }
+
 }
 
 void WeaponsComponent_AddAmmo(WeaponsC* wc, Weapon_Type type, int quantity)

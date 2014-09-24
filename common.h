@@ -216,6 +216,13 @@ extern int screen_width_g;
 extern int screen_height_g;
 float C_AngleBetween2Points(int xa, int ya, int xb, int yb);
 
+typedef struct Vec2
+{
+    float x;
+    float y;
+} Vec2;
+
+
 typedef struct Entity Entity;
 float C_AngleBetween2Entities(Entity* a, Entity* b);
 float C_DistanceBetween2Points(int xa, int ya, int xb, int yb);
@@ -225,27 +232,12 @@ float C_DifferenceBetweenAngles(float angle1, float angle2);
 float C_ConvertAngle2PiCirlce(float angle);
 float C_GetSlopeBetween2Points(float xa, float ya, float xb, float yb, bool reverse_slope);
 float C_DistanceSquaredBetween2Points(int xa, int ya, int xb, int yb);
-
+void C_Sort3Vectors(Vec2* v1, Vec2* v2, Vec2* v3);
+float C_GetSlopeBetween2Vec(Vec2 v1, Vec2 v2, bool reverse_slope);
 void Game_InitData();
 
-typedef struct Vec2
-{
-    float x;
-    float y;
-} Vec2;
 
-/*
-    Main category of each button in the level editor, the categories are
-    Cat_Wall, Cat_Door, Cat_Zombie etc.
-*/
-//extern Main_Category    button_category_g[NB_OF_LEVEL_EDITOR_BUTTONS];
 
-/*
-    The type inside of the button category
-    For example if the button is a Ground Dirt button, its object type is int = 1,
-    because Ground Dirt is 2nd in the Ground enum
-*/
-extern int              buttons_wall_types_g[NB_OF_WALL_TYPES];
 
 
 //100 is magic number, whatever, it just has to hold enough for each category
@@ -270,4 +262,22 @@ extern bool             unlimited_ammo;
 #define MAP_SIZE 100
 #define PI 3.14159265359
 #define HALF_PI 1.5707963267
+
+enum {
+    BUTTON_UP,
+    BUTTON_DOWN,
+    BUTTON_LEFT,
+    BUTTON_RIGHT,
+    BUTTON_START,
+    BUTTON_SELECT,
+    BUTTON_LEFT_AXIS,
+    BUTTON_RIGHT_AXIS,
+    BUTTON_LEFT_SHOULDER,
+    BUTTON_RIGHT_SHOULDER,
+    BUTTON_A,
+    BUTTON_B,
+    BUTTON_X,
+    BUTTON_Y
+} Xbox_Buttons;
+
 #endif

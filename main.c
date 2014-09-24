@@ -36,6 +36,8 @@ int screen_height_g = 768;
 int delta_g = 0;
 int main(int argc, char* args[])
 {
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
+    TTF_Init();
 
     Game_InitData();
 

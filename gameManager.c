@@ -84,7 +84,7 @@ void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 
     if(game_state_g != GameState_Editing_Map)
     {
-       // GameManage_UpdateWorldEntities(gm, world);
+        GameManage_UpdateWorldEntities(gm, world);
     }
 
     //GameManager_UpdateEnnemyWaves(gm, world, delta);

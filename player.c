@@ -11,7 +11,8 @@
 
 static int playerTileX = 0;
 static int playerTileY = 0;
-
+static float playerMiddleX = 0;
+static float playerMiddleY = 0;
 PlayerC* PlayerC_Create()
 {
     PlayerC* pc                 = (PlayerC*)malloc(sizeof(PlayerC));
@@ -27,8 +28,8 @@ PlayerC* PlayerC_Create()
 
 void Player_FieldOfView(Entity* p, World* world)
 {
-    float playerMiddleX = 0;
-    float playerMiddleY = 0;
+    playerMiddleX = 0;
+    playerMiddleY = 0;
     Entity_GetMiddleCoordinates(p, &playerMiddleX, &playerMiddleY);
 
     for(int i = 0 ; i < world->map_size ; i++)
@@ -40,6 +41,7 @@ void Player_FieldOfView(Entity* p, World* world)
         }
     }
 
+    //Player_ScanVisionPoints(p, world);
     int fov = 10;
     playerTileX = p->x / TILE_SIZE;
     playerTileY = p->y / TILE_SIZE;
@@ -52,6 +54,11 @@ void Player_FieldOfView(Entity* p, World* world)
 
 
 
+}
+
+void Player_ScanVisionPoints(Entity* p, World* world)
+{
+    //Sight and light... I can't even
 }
 
 void Player_ScanOctant(int depth, int octant, float start_slope,
@@ -484,7 +491,7 @@ void Player_Update(World* world)
 
     if(p->playerC->vision_timer > 60)
     {
-       // Player_FieldOfView(p, world);
+        Player_FieldOfView(p, world);
         p->playerC->vision_timer = 0;
     }
 
@@ -504,8 +511,8 @@ void Player_Update(World* world)
         }
 
 
-        //Entity_CollisionWithStuff(p, world);
-        //Player_CheckBonusCollision(p, &world->bonus_vector);
+        Entity_CollisionWithStuff(p, world);
+        Player_CheckBonusCollision(p, &world->bonus_vector);
     }
 
 

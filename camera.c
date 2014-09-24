@@ -4,10 +4,7 @@ Entity* CreateCamera()
 {
 	Entity* camera = (Entity*)malloc(sizeof(Entity));
 	camera->x = 0;
-	camera->y = 0;/*
-	camera->movementC->dx = 0;
-	camera->movementC->dy = 0;
-*/
+	camera->y = 0;
 	return camera;
 }
 

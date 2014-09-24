@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
-
+#include "math.h"
 #include "graphics.h"
 #include "vector.h"
 #include "entity.h"
@@ -19,8 +19,7 @@
 
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
-    SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
+
 
     SDL_ShowCursor(0);
 
@@ -102,8 +101,11 @@ void Graphics_RenderGame(Graphics* g, World* world,
  {
      SDL_SetRenderDrawColor(g->renderer, 50, 50, 50, 0xFF);
      SDL_RenderClear(g->renderer);
-     //Graphics_RenderWorld(g, world);
-     //Graphics_RenderUI(g, world, controls, fps, level_editor, gm);
+
+
+
+     Graphics_RenderWorld(g, world);
+     Graphics_RenderUI(g, world, controls, fps, level_editor, gm);
      Graphics_Flip(g);
  }
 
@@ -155,9 +157,12 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
 
     for(int i = 0 ; i < Vector_Count(events_vector) ; i++)
     {
+
         Entity* event = (Entity*)Vector_Get(events_vector, i);
+
         if(Entity_CheckNear(&world->player, event))
         {
+
             Graphics_RenderObject(graphics, event, world->player.playerC);
 
         }
@@ -208,8 +213,6 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
             Graphics_RenderObject(graphics, explosion, world->player.playerC);
         }
     }
-
-
 }
 
 void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
@@ -347,10 +350,83 @@ void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
     //free(text);
 }
 
+void Graphics_RenderFillBottomFlatTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3)
+{
+    //v1 is at the top
+    float invslope1 = C_GetSlopeBetween2Vec(v2, v1, false);
+    float invslope2 = C_GetSlopeBetween2Vec(v3, v1, false);
+
+    float curX1 = v1.x;
+    float curX2 = v1.x;
+    SDL_RenderDrawLine(g->renderer, v1.x, v1.y, v2.x, v2.y);
+    SDL_RenderDrawLine(g->renderer, v1.x, v1.y, v3.x, v3.y);
+    SDL_RenderDrawLine(g->renderer, v3.x, v3.y, v2.x, v2.y);
+
+    for(int scanlineY = v1.y ; scanlineY < v2.y ; scanlineY++)
+    {
+        SDL_RenderDrawLine(g->renderer, curX1, scanlineY, curX2, scanlineY);
+        curX1 += invslope1;
+        curX2 += invslope2;
+    }
+}
+
+void Graphics_RenderFillTopFlatTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3)
+{
+    //v3 is at the bottom
+    //v1.y = v2.y
+    float slope1 = -C_GetSlopeBetween2Vec(v2, v3, false);
+    float slope2 = -C_GetSlopeBetween2Vec(v1, v3, false);
+
+    float curX1 = v3.x;
+    float curX2 = v3.x;
+
+
+    for(int scanlineY = v3.y ; scanlineY > v2.y ; scanlineY--)
+    {
+        SDL_RenderDrawLine(g->renderer, curX1, scanlineY, curX2, scanlineY);
+        curX1 += slope1;
+        curX2 += slope2;
+
+    }
+}
+
+void Graphics_RenderFillTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3)
+{
+    SDL_SetRenderDrawColor(g->renderer, 250, 0, 60, 255);
+
+    C_Sort3Vectors(&v1,&v2,&v3);
+
+
+
+    if(v2.y == v3.y) //the bottom is flat
+    {
+        Graphics_RenderFillBottomFlatTriangle(g, v1, v2, v3);
+    }
+    else if(v1.y == v2.y) //the top is flat
+    {
+        Graphics_RenderFillTopFlatTriangle(g, v1, v2, v3);
+    }
+    else //split the triangle in 2 triangles and draw each of them
+    {
+
+        Vec2 v4 = {v1.x + ((v2.y - v1.y) / (v3.y - v1.y)) * (v3.x - v1.x), v2.y};
+
+        Graphics_RenderFillBottomFlatTriangle(g, v1, v2, v4);
+        Graphics_RenderFillTopFlatTriangle(g, v4, v2, v3);
+
+    }
+
+}
 void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 {
     SDL_SetRenderDrawColor(g->renderer, 0xE5, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(g->renderer);
+
+    Vec2 v3 = {350,200};
+    Vec2 v2 = {300,500};
+    Vec2 v1 = {controls->mouseX, controls->mouseY};
+
+    Graphics_RenderFillTriangle(g, v1, v2, v3);
 
     //render buttons of currently active menu
     for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
@@ -434,50 +510,7 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
 {
     float cameraX = world->player.playerC->cameraX;
     float cameraY = world->player.playerC->cameraY;
-    if(controls->active_button != NULL)
-    {
-        if(!controls->hovering_on_window)
-        {
-            //-------render temp object on the map...
-            //TODO : instead of doing that, just create an actual temporary
-            //object that sticks to the mouse!
-            int obj_w = 5;
-            int obj_h = 5;
-            int obj_y = 5;
-            int obj_x = 5;
 
-            Main_Category cat = controls->active_button->main_category;
-            int object_type = controls->active_button->button_type;
-            Texture_Type texture_type = No_texture;
-
-            if(cat == Cat_Ground ||
-               cat == Cat_Wall ||
-               cat == Cat_Door ||
-               cat == Cat_Event)
-            {
-                obj_w = TILE_SIZE;
-                obj_h = TILE_SIZE;
-                obj_x = controls->tileInPixelsX - cameraX;
-                obj_y = controls->tileInPixelsY - cameraY;
-            }
-            else if(cat == Cat_Zombie)
-            {
-                obj_w = 20;
-                obj_h = 20;
-
-                obj_x = controls->mousePositionInWorldX - cameraX;
-                obj_y = controls->mousePositionInWorldY - cameraY;
-            }
-            texture_type = all_textures_g[cat][object_type];
-
-            SDL_Rect blueprint_rect = {obj_x, obj_y, obj_w, obj_h };
-            //Graphics_SetTextureAlpha(g, texture_type, 100);
-            SDL_RenderCopy(g->renderer, g->textures[texture_type],
-                           NULL, &blueprint_rect);
-        }
-
-
-    }
 
     //---render level editor window
     SDL_SetRenderDrawColor(g->renderer, 220, 220,220, 255);
@@ -506,6 +539,14 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
     }
 
 
+    if(controls->active_button != NULL)
+    {
+        if(!controls->hovering_on_window)
+        {
+            Graphics_RenderObject(g, controls->temp_object_to_create, &world->player);
+        }
+    }
+
     if(!gm->ai_on)
     {
         char deactivated[] = "AI deactivated";
@@ -526,6 +567,17 @@ void Graphics_RenderGameUI(Graphics* g, World* world)
     float cameraX = world->player.playerC->cameraX;
     float cameraY = world->player.playerC->cameraY;
 
+
+    int aimPointX = world->player.x + cos(world->player.movementC->angle) * 600;
+    int aimPointY = world->player.y + sin(world->player.movementC->angle) * 600;
+
+    float playerMiddleX = 0;
+    float playerMiddleY = 0;
+    Entity_GetMiddleCoordinates(&world->player, &playerMiddleX, &playerMiddleY);
+    SDL_RenderDrawLine(g->renderer, playerMiddleX - cameraX,
+                       playerMiddleY - cameraY,
+                       aimPointX - cameraX + 10,
+                       aimPointY - cameraY + 10);
     //stamina
     char stamina[] = "Stamina";
     Graphics_RenderText(g, stamina, Medium, 50, 700, true, White);
