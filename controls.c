@@ -231,7 +231,6 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
                 if(category == Cat_Wall || category == Cat_Door)
                 {
-                    Entity_Destroy(world->map[position_in_array]);
                     free(world->map[position_in_array]);
                     world->map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
                 }
@@ -320,8 +319,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
         //remove wall (replace it with empty entity)
         if(controls->pressedKeys[SDLK_c])
         {
-            Entity_Destroy(world->map[position_in_array]);
-            world->map[position_in_array] = Wall_CreateEmpty();
+            free(world->map[position_in_array]);
+            world->map[position_in_array] = NULL;//Wall_CreateEmpty();
         }
 
         //cancel current selected object
@@ -435,8 +434,8 @@ void Inputs_ApplyInputs( Controls* controls,
 
 
     //press ESC to show menu
-    if(controls->timer_menu <= 0 && controls->pressedKeys[SDLK_ESCAPE] == true ||
-       SDL_JoystickGetButton(controller, BUTTON_START))
+    if(controls->timer_menu <= 0 && (controls->pressedKeys[SDLK_ESCAPE] == true ||
+       SDL_JoystickGetButton(controller, BUTTON_START)))
     {
         if(display_menu_g)
         {

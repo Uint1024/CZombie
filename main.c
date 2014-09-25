@@ -26,6 +26,7 @@
 #include "gameManager.h"
 #include "window.h"
 #include "menu.h"
+#include "sound.h"
 
 bool           debug_mode = false;
 bool           display_menu_g = true;

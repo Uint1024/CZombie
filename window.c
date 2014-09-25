@@ -126,8 +126,8 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
     Button button;
     button.main_category = cat;
     button.button_type = type;
-    button.texture = 0;
-    button.texture = all_textures_g[cat][type];
+//    button.texture = 0;
+  //  button.texture = all_textures_g[cat][type];
 
     button.x = x + w->x;
     button.y = y + w->y;

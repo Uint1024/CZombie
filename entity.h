@@ -23,7 +23,7 @@ typedef struct Entity
 	int                     sub_category; //normal or hard wall, fast or heavy zombie...
 	float                   x;
 	float                   y;
-    Texture_Type            texture;
+//    Texture_Type            texture;
     bool                    visible;//for hidden secrets :D
     bool                    solid;//for hidden secrets :D
     bool                    transparent;//for glass

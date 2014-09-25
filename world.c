@@ -23,11 +23,12 @@ World World_Initialize(int map_width, int map_height)
                                               20, 20);
 
 
-    for(int i = 0 ; i < world.map_size ; i++)
+    //calloc does that
+    /*for(int i = 0 ; i < world.map_size ; i++)
     {
-        world.map[i] = Wall_CreateEmpty();
+        world.map[i] = NULL;//Wall_CreateEmpty();
 
-    }
+    }*/
 
     for(int i = 0 ; i < world.map_size ; i++)
     {

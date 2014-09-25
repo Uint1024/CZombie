@@ -16,8 +16,8 @@ typedef struct PlayerC PlayerC;
 
 typedef struct Graphics
 {
-    char*                   textures_names[NB_OF_TEXTURES];
-    SDL_Texture*            textures[NB_OF_TEXTURES];
+    //char*                   textures_names[NB_OF_TEXTURES];
+    //SDL_Texture*            textures[NB_OF_TEXTURES];
     TTF_Font*               fonts[10];
     SDL_Window*             window;
     SDL_Renderer*           renderer;
@@ -51,7 +51,7 @@ void Graphics_RenderGameUI(Graphics* g, World* world);
 
 void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,Window* level_editor, GameManager* gm);
 
-void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha);
+//void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha);
 
 void Graphics_RenderFillTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
 

@@ -7,11 +7,12 @@
 #include "weapons_component.h"
 #include "movement_component.h"
 #include "player.h"
+#include "gameManager.h"
 
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 {
 
-    fwrite(&buffer->texture, sizeof(Texture_Type), 1, save_file);
+//    fwrite(&buffer->texture, sizeof(Texture_Type), 1, save_file);
     fwrite(&buffer->sub_category, sizeof(int), 1, save_file);
     fwrite(&buffer->damage, sizeof(float), 1, save_file);
     fwrite(&buffer->x, sizeof(float), 1, save_file);
@@ -119,7 +120,7 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
 void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 {
-    fread(&buffer->texture, sizeof(Texture_Type), 1, save_file);
+//    fread(&buffer->texture, sizeof(Texture_Type), 1, save_file);
     fread(&buffer->sub_category, sizeof(int), 1, save_file);
     fread(&buffer->damage, sizeof(float), 1, save_file);
     fread(&buffer->x, sizeof(float), 1, save_file);
@@ -227,11 +228,28 @@ void Level_Save(char* file_name, World* w)
         }
 
         printf("SAVING\n");
+
+        //the NULL walls aren't written
+        //we need to tell fread how much to read
+        int nb_of_walls = 0;
+
+        for(int i = 0 ; i < w->map_size ; i++)
+        {
+            if(w->map[i] != NULL)
+            {
+                nb_of_walls++;
+            }
+        }
+
+        fwrite(&nb_of_walls, sizeof(int), 1, save_file);
+
+
         for(int i = 0 ; i < w->map_size ; i++)
         {
             fwrite(w->map[i], sizeof(Entity), 1, save_file);
         }
 
+        //there are no NULL ground
         for(int i = 0 ; i < w->map_size ; i++)
         {
             fwrite(w->ground_map[i], sizeof(Entity), 1, save_file);
@@ -357,11 +375,17 @@ void Level_Load(char* file_name, World* w)
 
     }
 
-    for(int i = 0 ; i < w->map_size ; i++)
+    int nb_of_walls = 0;
+    fread(&nb_of_walls, sizeof(int), 1, save_file);
+
+    for(int i = 0 ; i < nb_of_walls ; i++)
     {
         Entity* buffer = (Entity*)malloc(sizeof(Entity)); //Entity_Spawn();
         fread(buffer, sizeof(Entity), 1, save_file);
-        w->map[i] = buffer;
+
+        //always relative to the x and y coordinate
+        int position_in_array = buffer->x / TILE_SIZE + ((buffer->y/ TILE_SIZE) * w->map_width);
+        w->map[position_in_array] = buffer;
     }
 
 
@@ -373,6 +397,7 @@ void Level_Load(char* file_name, World* w)
         w->ground_map[i] = buffer;
     }
 
+
     int num_of_events = 0;
     fread(&num_of_events, sizeof(int), 1, save_file);
     for(int i = 0 ; i < num_of_events ; i++)
@@ -383,6 +408,7 @@ void Level_Load(char* file_name, World* w)
         Vector_Push(&w->events_vector, buffer);
 
     }
+
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);
@@ -403,5 +429,7 @@ void Level_Load(char* file_name, World* w)
         Vector_Push(&w->bonus_vector, buffer);
 
     }
+
+
     fclose(save_file);
 }

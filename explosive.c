@@ -29,11 +29,11 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
     Entity* grenade = Entity_Spawn();
 
     grenade->t = Cat_Grenade;
-	grenade->texture = Tex_Bullet;
+    grenade->sub_category = Grenade_Normal;
 	grenade->x = x;
 	grenade->y = y;
-	grenade->box.height = 10;
-	grenade->box.width = 10;
+	grenade->box.height = 15;
+	grenade->box.width = 15;
 	grenade->movementC = MovementC_Create();
 	grenade->movementC->angle = angle;
 	grenade->movementC->speed = speed;
@@ -71,7 +71,7 @@ void Grenade_Update(Entity* g, World* world)
 
     for(int i = 0 ; i < world->map_size ; i++)
     {
-        if(Entity_CheckVeryClose(g, world->map[i]) && world->map[i]->solid)
+        if(world->map[i] != NULL && Entity_CheckVeryClose(g, world->map[i]))
         {
             if(BoundingBox_CheckSimpleCollision(temp, &world->map[i]->box))
             {

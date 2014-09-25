@@ -33,7 +33,7 @@ Entity* Entity_Spawn()
 	ent->box.right                  = 0;
 	ent->box.bottom                 = 0;
     ent->solid                      = true;
-    ent->texture                    = No_texture;
+//    ent->texture                    = No_texture;
     ent->visible                    = true;
     ent->penetration_chance = 0;
     ent->in_dark = true;
@@ -206,7 +206,8 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
         //looping every walls close to the zombie
         for(int i = 0 ; i < world->map_size ; i++)
         {
-            if(world->map[i]->solid && Entity_CheckNear(ent1, world->map[i]))
+            if(world->map[i] != NULL && Entity_CheckNear(ent1, world->map[i]) &&
+                Wall_IsWall(world->map[i]))
             {
                 //if the end of the line hits a wall, the zombie can't see the player
                 if(BoundingBox_CheckPointCollision(pointX, pointY, &world->map[i]->box))
@@ -243,7 +244,7 @@ bool Entity_CollisionWithStuff(Entity* ent, World* world)
 void Entity_CalculateVisibility(Entity* ent, World* world)
 {
     bool in_dark = true;
-    for (int i = 0; i < world->map_size; i++)
+    for (int i = 0; i < world->map_size && in_dark; i++)
 	{
 		if (!world->ground_map[i]->in_dark)
 		{
@@ -287,7 +288,7 @@ bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
                         ent->zombieC->attack_timer = 0;
                     }
 
-                    if(ent->t = Cat_Player && map[i]->t == Cat_Door)
+                    if(ent->t == Cat_Player && map[i]->t == Cat_Door)
                     {
                         Door_Open(map[i]);
                     }

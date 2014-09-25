@@ -23,7 +23,7 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     bonus->movementC = MovementC_Create();
     bonus->movementC->angle = angle;
 
-    bonus->texture = all_textures_g[Cat_Bonus][bonus_type];
+//    bonus->texture = all_textures_g[Cat_Bonus][bonus_type];
     if(bonus_type == Bonus_TheBigGun)
     {
         BoundingBox_Create(bonus, 60, 30);

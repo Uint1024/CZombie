@@ -8,6 +8,7 @@
 #include "bullet.h"
 #include "bonus.h"
 #include "weapon.h"
+#include "door.h"
 
 GameManager GameManager_Create()
 {
@@ -104,11 +105,17 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
     for(int i = 0 ; i < world->map_size ; i++)
     {
-        if(world->map[i] != NULL && world->map[i]->x != 0)
+        if(world->map[i] != NULL)
         {
             if(world->map[i]->t == Cat_Door)
             {
                 Door_Update(world->map[i], world);
+            }
+
+            if(!world->map[i]->alive)
+            {
+                free(world->map[i]);//walls don't have any compotent, no need to destroy them
+                world->map[i] = NULL;
             }
         }
     }

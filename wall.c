@@ -19,7 +19,7 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 {
 	Entity* ent = Entity_Spawn();
 	ent->t = Cat_Wall;
-	ent->texture = all_textures_g[Cat_Wall][type];
+//	ent->texture = all_textures_g[Cat_Wall][type];
 	ent->x = x_;
 	ent->y = y_;
 
@@ -35,17 +35,22 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 
 bool Wall_IsWall(Entity* w)
 {
-    bool is_wall = w->solid && w->visible && !w->transparent;
-   // printf("%d\n", is_wall);
-    return is_wall;
+    if(w!= NULL)
+    {
+        return (w->solid && w->visible && !w->transparent);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 Entity* Ground_Create(Ground_Type type, float x, float y)
 {
     Entity* ent = Entity_Spawn();
     ent->t = Cat_Ground;
-
-    ent->texture = all_textures_g[Cat_Ground][type];
+    ent->sub_category = type;
+//    ent->texture = all_textures_g[Cat_Ground][type];
 
 	ent->x = x;
 	ent->y = y;
@@ -68,9 +73,10 @@ void Structure_Die(Entity* d)
 {
     //d->texture = door_textures_g[Door_Dead];
     Sound_PlayWallDestroyed();
-    d->solid = false;
-    d->visible = false;
-
+    d->alive = false;
+    //d->solid = false;
+    //d->visible = false;
+    printf("%d\n", d->solid);
 
 }
 

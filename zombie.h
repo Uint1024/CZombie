@@ -17,12 +17,19 @@ typedef struct ZombieC
     bool                   idling;
     bool                   dodging;
     int                   dodging_time;
+    int                     can_dodge_every; //can dodge every x ms
+    int                     dodging_timer;
     //the zombies ai activates every every 700 ms,
     //else it lags too much...
     int                     ai_timer;
     int                     paths_calculated;
     int attack_timer;
     int attack_delay;
+
+    //there's a delay between the time the zombie sees the player
+    //and when it starts chasing him
+    int spot_timer;//nb of ms the zombie has seen the player
+    int reaction_time;
 } ZombieC;
 
 ZombieC* ZombieC_Create();

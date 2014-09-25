@@ -10,6 +10,8 @@ static Mix_Chunk* sound_shot2;
 static Mix_Chunk* sound_shot_shotgun1;
 static Mix_Chunk* sound_shot_handgun1;
 static Mix_Chunk* sound_takeItem;
+static Mix_Chunk* sound_pickupCoin;
+static Mix_Chunk* sound_openDoor;
 static int shot_sound_delay = 150;
 static int shot_sound_timer = 0;//time of last shot sound
 
@@ -24,15 +26,16 @@ void Sound_Init()
     sound_takeItem = Mix_LoadWAV("sounds/Randomize399.wav");
     sound_shot_shotgun1 = Mix_LoadWAV("sounds/shotgun.wav");
     sound_shot_handgun1 = Mix_LoadWAV("sounds/handgun.wav");
-    Mix_VolumeChunk(sound_shot1, 40);
-    Mix_VolumeChunk(sound_shot2, 40);
-     Mix_VolumeChunk(sound_shot_handgun1, 40);
-    Mix_VolumeChunk(sound_shot_shotgun1, 40);
-    Mix_VolumeChunk(sound_takeItem, 15);
-    //Mix_AllocateChannels(100);
-    Mix_PlayChannel(47, sound_shot1, 0 );
+    sound_pickupCoin = Mix_LoadWAV("sounds/coin_pickup.wav");
+    sound_openDoor = Mix_LoadWAV("sounds/open_door.wav");
+    Mix_AllocateChannels(100);
 
+}
 
+void Sound_PlayOpenDoor()
+{
+
+    Mix_PlayChannel(-1, sound_openDoor, 0 );
 }
 
 void Sound_PlayWallDestroyed()
@@ -48,7 +51,7 @@ void Sound_PlayExplosion()
 
 void Sound_PlayPickUp()
 {
-    Mix_PlayChannel(-1, sound_takeItem, 0 );
+    Mix_PlayChannel(-1, sound_pickupCoin, 0 );
 }
 
 void Sound_PlayShot(Weapon_Type type)

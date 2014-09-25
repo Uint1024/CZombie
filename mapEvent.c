@@ -11,6 +11,6 @@ Entity* MapEvent_Create(MapEvent_Type type, int x, int y)
 
 
     me->box = BoundingBox_CreateBetter(x, y, TILE_SIZE, TILE_SIZE);
-    me->texture = all_textures_g[Cat_Event][type];
+//    me->texture = all_textures_g[Cat_Event][type];
     return me;
 }

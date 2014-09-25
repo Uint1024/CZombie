@@ -68,22 +68,43 @@ typedef enum {
     Cat_Texture,
     Cat_Bullet,
     Cat_Grenade,
+    Cat_Decal,
+    Cat_Explosion,
+    Cat_Cursor,
     NB_OF_CAT,
     Nothing
 } Main_Category;
 
+typedef enum {
+    Cursor_Aim,
+    Cursor_Resize_Left_Right,
+    Cursor_Resize_Up_Down
+} Cursor_Type;
+
+typedef enum {
+    Explosion_Normal
+} Explosion_Type;
+
+typedef enum {
+    Grenade_Normal
+} Grenade_Type;
+
+typedef enum {
+    Player_Normal
+} Player_Type;
 
 
-
-//---sub categories : wall, ground, bonus, buttons, zombies, textures, weapons
-//Ground_Type
 typedef enum {
     Ground_Grass,
     Ground_Dirt,
+    Ground_Red,
+    Ground_WhiteDark,
+    Ground_MaroonLight,
+    Ground_Black,
+    Ground_Yellow,
+    Ground_Grey,
     NB_OF_GROUND_TYPES
 } Ground_Type;
-
-//extern Entity ground_templates_g[NB_OF_GROUND_TYPES];
 
 
 //Wall_Type
@@ -112,12 +133,10 @@ typedef enum {
     NB_OF_BONUS_TYPES
 } Bonus_type;
 
-typedef enum
-{
-    Corpse,
-    NB_OF_DECALS_TYPES
-} Decal_Type;
-
+typedef enum {
+    Bullet_Normal,
+    Bullet_Fireball
+} Bullet_Type;
 
 //Zombie_Type
 typedef enum {
@@ -130,57 +149,15 @@ typedef enum {
     Not_a_zombie
 } Zombie_Type;
 
-
-//Texture_Type
-typedef enum {
-    Tex_Player,
-    Tex_Bullet,
-    Tex_Fireball,
-
-    Tex_Wall_Normal,
-    Tex_Wall_Cool,
-    Tex_Wall_Glass,
-
-    Tex_Door_Normal,
-    Tex_Door_Dead,
-
-    Tex_NormalZombie,
-    Tex_FastZombie,
-    Tex_HeavyZombie,
-    Tex_HugeZombie,
-    Tex_TrooperZombie,
-
-    Tex_Ground_Grass,
-    Tex_Ground_Dirt,
-
-    Tex_Bonus_Ammo,
-    Tex_Bonus_GrenadeLauncher,
-    Tex_Bonus_Rifle,
-    Tex_Bonus_Shotgun,
-    Tex_Bonus_Handgun,
-    Tex_Bonus_TheBigGun,
-
-    Explosion1_tex,
-
-    Tex_Decals_Corpse_Zombie_Normal,
-    Tex_Decals_Corpse_Zombie_Heavy,
-    Tex_Decals_Corpse_Zombie_Trooper,
-    Tex_Decals_Corpse_Zombie_Fast,
-    Tex_Decals_Corpse_Zombie_Huge,
-
-    Tex_Event_PlayerSpawn,
-    Tex_Event_TeleportOtherMap,
-    Tex_Event_MapEnd,
-
-    Tex_Cursor_Aiming,
-    Cursor_resize_up_down_tex,
-    Cursor_resize_left_right_tex,
-
-    NB_OF_TEXTURES,
-
-
-    No_texture
-} Texture_Type;
+typedef enum
+{
+    Decal_Corpse_Normal,
+    Decal_Corpse_Heavy,
+    Decal_Corpse_Fast,
+    Decal_Corpse_Huge,
+    Decal_Corpse_Trooper,
+    NB_OF_DECALS_TYPES
+}   Decal_Type;
 
 
 //Weapon_Type
@@ -246,7 +223,8 @@ void Game_InitData();
 
 
 //100 is magic number, whatever, it just has to hold enough for each category
-extern Texture_Type     all_textures_g[NB_OF_CAT][100];
+//extern Texture_Type     all_textures_g[NB_OF_CAT][100];
+
 extern SDL_Color        font_color_g[NBCOLORS];
 
 

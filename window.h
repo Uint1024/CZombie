@@ -10,7 +10,7 @@ typedef struct Button
 
     Box                     box;
     int      button_type;
-    Texture_Type            texture;
+//    Texture_Type            texture;
     Main_Category                    main_category;
 } Button;
 

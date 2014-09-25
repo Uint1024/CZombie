@@ -37,7 +37,7 @@ void Player_FieldOfView(Entity* p, World* world)
         if(Entity_CheckNear(p, world->ground_map[i]))
         {
             world->ground_map[i]->in_dark = true;
-            world->map[i]->in_dark = true;
+            if(world->map[i] != NULL) world->map[i]->in_dark = true;
         }
     }
 
@@ -68,8 +68,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
     int y = 0;
     int x = 0;
     int i = 0;
-    //can see 10 tiles away
-    int vision_distance = 25;
+    int vision_distance = 22;
     int vision_distance2 = vision_distance * vision_distance;
 
     switch(octant)
@@ -89,7 +88,8 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
+
                 if(Wall_IsWall(world->map[i]))
                 {
 
@@ -109,12 +109,12 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                     //tile on the left is a wall
                      if(y - 1 >= 0 && Wall_IsWall(world->map[i - 1]))
                      {
+
                          //adjust start slope
                          world->map[i - 1]->in_dark = false;
                          start_slope = C_GetSlopeBetween2Points(x - 0.5f, y - 0.5f,
                                                                 playerTileX, playerTileY, false);
                      }
-
 
                      world->ground_map[i]->in_dark = false;
 
@@ -138,7 +138,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
                 if(Wall_IsWall(world->map[i]))
                 {
 
@@ -185,7 +185,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
                 if(Wall_IsWall(world->map[i]))
                 {
 
@@ -231,7 +231,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
 
                 if(Wall_IsWall(world->map[i]))
                 {
@@ -279,7 +279,7 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
 
                 if(Wall_IsWall(world->map[i]))
                 {
@@ -325,10 +325,10 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
             {
                 i = y * world->map_width + x;
 
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
                 if(Wall_IsWall(world->map[i]))
                 {
-                    world->map[i]->in_dark = false;
+                    if(world->map[i] != NULL) world->map[i]->in_dark = false;
                     if(x - 1 >= 0 && !Wall_IsWall(world->map[i - 1]))
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -370,11 +370,11 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
 
                 if(Wall_IsWall(world->map[i]))
                 {
-                    world->map[i]->in_dark = false;
+                    if(world->map[i] != NULL) world->map[i]->in_dark = false;
                     if(y + 1 < world->map_height && !Wall_IsWall(world->map[i + world->map_width]))
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -416,11 +416,11 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
                                 playerTileX, playerTileY) <= vision_distance2)
             {
                 i = y * world->map_width + x;
-                world->map[i]->in_dark = false;
+                if(world->map[i] != NULL) world->map[i]->in_dark = false;
 
                 if(Wall_IsWall(world->map[i]))
                 {
-                    world->map[i]->in_dark = false;
+                    if(world->map[i] != NULL) world->map[i]->in_dark = false;
                     if(y - 1 > 0 && !Wall_IsWall(world->map[i - world->map_width]))
                     {
                         Player_ScanOctant(depth + 1, octant, start_slope,
@@ -489,7 +489,9 @@ void Player_Update(World* world)
 
     p->playerC->vision_timer += delta_g;
 
-    if(p->playerC->vision_timer > 15)
+
+    if(game_state_g != GameState_Editing_Map &&
+       p->playerC->vision_timer > 15)
     {
         Player_FieldOfView(p, world);
         p->playerC->vision_timer = 0;
@@ -554,7 +556,7 @@ Entity Player_Create(float x, float y, int w, int h)
     Entity p;
 
 	p.t                             =   Cat_Player;
-	p.texture                       =   Tex_Player;
+	p.sub_category = Player_Normal;
 	p.x                             =   x;
 	p.y                             =   y;
     p.hp                            =   10;

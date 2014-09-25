@@ -17,6 +17,9 @@
 #include "player.h"
 #include "movement_component.h"
 
+
+static SDL_Texture* textures_g[NB_OF_CAT][100];
+
 Graphics* Graphics_Create(int screen_width, int screen_height)
 {
 
@@ -43,46 +46,59 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
                                     );
 
 
-    g->textures_names[Tex_Player]                   =   "player.png";
-    g->textures_names[Tex_NormalZombie]                   =   "zombie.png";
-    g->textures_names[Tex_FastZombie]               =   "fastzombie.png";
-    g->textures_names[Tex_HeavyZombie]              =   "heavyzombie.png";
-    g->textures_names[Tex_TrooperZombie]            =   "trooperzombie.png";
-    g->textures_names[Tex_HugeZombie]               =   "hugezombie.png";
-    g->textures_names[Tex_Bonus_Ammo]               =   "bullet_bonus.png";
-    g->textures_names[Tex_Bonus_Rifle]              =   "rifle.png";
-    g->textures_names[Tex_Bonus_Shotgun]            =   "shotgun.png";
-    g->textures_names[Tex_Bullet]                   =   "bullet.png";
-    g->textures_names[Tex_Fireball]                 =   "fireball.png";
-    g->textures_names[Tex_Wall_Normal]                     =   "wall.png";
-    g->textures_names[Tex_Wall_Glass]                     =   "glass.png";
-    g->textures_names[Explosion1_tex]               =   "explosion.png";
-    g->textures_names[Tex_Cursor_Aiming]            =   "aim.png";
-    g->textures_names[Tex_Ground_Grass]              =   "ground_grass.png";
-    g->textures_names[Tex_Ground_Dirt]               =   "ground_dirt.png";
-    g->textures_names[Tex_Bonus_GrenadeLauncher]    =   "grenadeLauncher.png";
-    g->textures_names[Tex_Bonus_TheBigGun]    =   "weapon_biggun.png";
-    g->textures_names[Cursor_resize_up_down_tex]    =   "resize_up_down.png";
-    g->textures_names[Cursor_resize_left_right_tex]  =   "resize_left_right.png";
-    g->textures_names[Tex_Door_Normal]              =   "door.png";
-    g->textures_names[Tex_Door_Dead]              =   "broken_door.png";
-    g->textures_names[Tex_Event_MapEnd]              =   "event_mapend.png";
-    g->textures_names[Tex_Event_PlayerSpawn]              =   "event_playerstart.png";
-    g->textures_names[Tex_Event_TeleportOtherMap]              =   "event_mapchange.png";
-    g->textures_names[Tex_Bonus_Handgun]              =   "bonus_handgun.png";
-    g->textures_names[Tex_Decals_Corpse_Zombie_Normal]              =   "zombie_corpse.png";
-    g->textures_names[Tex_Decals_Corpse_Zombie_Heavy]              =   "corpse_heavyzombie.png";
-    g->textures_names[Tex_Wall_Cool]              =   "wall_cool.png";
-    g->textures_names[Tex_Decals_Corpse_Zombie_Trooper] = "corpse_trooperzombie.png";
-    g->textures_names[Tex_Decals_Corpse_Zombie_Huge] = "corpse_zombie_huge.png";
-    g->textures_names[Tex_Decals_Corpse_Zombie_Fast] = "corpse_zombie_fast.png";
+    textures_g[Cat_Player][Player_Normal] = IMG_LoadTexture(g->renderer, "player.png");
 
+    textures_g[Cat_Zombie][Normal_Zombie] = IMG_LoadTexture(g->renderer, "zombie_normal.png");
+    textures_g[Cat_Zombie][Fast_Zombie] = IMG_LoadTexture(g->renderer, "zombie_fast.png");
+    textures_g[Cat_Zombie][Heavy_Zombie] = IMG_LoadTexture(g->renderer, "zombie_heavy.png");
+    textures_g[Cat_Zombie][Trooper_Zombie] = IMG_LoadTexture(g->renderer, "zombie_trooper.png");
+    textures_g[Cat_Zombie][Huge_Zombie] = IMG_LoadTexture(g->renderer, "zombie_huge.png");
 
+    textures_g[Cat_Bonus][Bonus_Rifle] = IMG_LoadTexture(g->renderer, "bonus_automaticRifle.png");
+    textures_g[Cat_Bonus][Bonus_GrenadeLauncher] = IMG_LoadTexture(g->renderer, "bonus_grenadeLauncher.png");
+    textures_g[Cat_Bonus][Bonus_Shotgun] = IMG_LoadTexture(g->renderer, "bonus_shotgun.png");
+    textures_g[Cat_Bonus][Bonus_TheBigGun] = IMG_LoadTexture(g->renderer, "bonus_biggun.png");
+    textures_g[Cat_Bonus][Bonus_Handgun] = IMG_LoadTexture(g->renderer, "bonus_handgun.png");
 
-    for(int i = 0 ; i < NB_OF_TEXTURES ; i++)
-    {
-        g->textures[i] =  IMG_LoadTexture(g->renderer, g->textures_names[i]);
-    }
+    textures_g[Cat_Bullet][Weapon_Handgun] = IMG_LoadTexture(g->renderer, "bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_AutomaticRifle] = IMG_LoadTexture(g->renderer, "bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_TheBigGun] = IMG_LoadTexture(g->renderer, "bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_Shotgun] = IMG_LoadTexture(g->renderer, "bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_TripleFireball] = IMG_LoadTexture(g->renderer, "bullet_fireball.png");
+    textures_g[Cat_Bullet][Weapon_Fireball] = IMG_LoadTexture(g->renderer, "bullet_fireball.png");
+
+    textures_g[Cat_Grenade][Grenade_Normal] = IMG_LoadTexture(g->renderer, "bullet_normal.png");
+
+    textures_g[Cat_Wall][Wall_Normal] = IMG_LoadTexture(g->renderer, "wall_normal.png");
+    textures_g[Cat_Wall][Wall_Cool] = IMG_LoadTexture(g->renderer, "wall_cool.png");
+    textures_g[Cat_Wall][Wall_Glass] = IMG_LoadTexture(g->renderer, "wall_glass.png");
+
+    textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(g->renderer, "explosion_normal.png");
+
+    textures_g[Cat_Event][Event_Teleport_To_Other_Map] = IMG_LoadTexture(g->renderer, "event_mapchange.png");
+    textures_g[Cat_Event][Event_End_Level] = IMG_LoadTexture(g->renderer, "event_mapend.png");
+    textures_g[Cat_Event][Event_Player_Start] = IMG_LoadTexture(g->renderer, "event_playerstart.png");
+
+    textures_g[Cat_Ground][Ground_Black] = IMG_LoadTexture(g->renderer, "ground_black.png");
+    textures_g[Cat_Ground][Ground_Dirt] = IMG_LoadTexture(g->renderer, "ground_dirt.png");
+    textures_g[Cat_Ground][Ground_Grass] = IMG_LoadTexture(g->renderer, "ground_grass.png");
+    textures_g[Cat_Ground][Ground_Grey] = IMG_LoadTexture(g->renderer, "ground_grey.png");
+    textures_g[Cat_Ground][Ground_MaroonLight] = IMG_LoadTexture(g->renderer, "ground_maroonLight.png");
+    textures_g[Cat_Ground][Ground_Red] = IMG_LoadTexture(g->renderer, "ground_red.png");
+    textures_g[Cat_Ground][Ground_WhiteDark] = IMG_LoadTexture(g->renderer, "ground_whiteDark.png");
+    textures_g[Cat_Ground][Ground_Yellow] = IMG_LoadTexture(g->renderer, "ground_yellow.png");
+
+    textures_g[Cat_Door][Door_Normal] = IMG_LoadTexture(g->renderer, "door_normal.png");
+
+    textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(g->renderer, "cursor_aim.png");
+    textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(g->renderer, "cursor_resize_left_right.png");
+    textures_g[Cat_Cursor][Cursor_Resize_Up_Down] = IMG_LoadTexture(g->renderer, "cursor_resize_up_down.png");
+
+    textures_g[Cat_Decal][Decal_Corpse_Normal] = IMG_LoadTexture(g->renderer, "decal_corpse_normal.png");
+    textures_g[Cat_Decal][Decal_Corpse_Fast] = IMG_LoadTexture(g->renderer, "decal_corpse_fast.png");
+    textures_g[Cat_Decal][Decal_Corpse_Heavy] = IMG_LoadTexture(g->renderer, "decal_corpse_heavy.png");
+    textures_g[Cat_Decal][Decal_Corpse_Trooper] = IMG_LoadTexture(g->renderer, "decal_corpse_trooper.png");
+    textures_g[Cat_Decal][Decal_Corpse_Huge] = IMG_LoadTexture(g->renderer, "decal_corpse_huge.png");
 
 
     g->fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
@@ -146,7 +162,7 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
 
     for (int i = 0; i < world->map_size; i++)
     {
-        if (world->map[i]->visible)
+        if (world->map[i] != NULL && world->map[i]->visible)
         {
             if(Entity_CheckNear(&world->player, world->map[i]))
             {
@@ -246,15 +262,15 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
                 alpha_value = 255;
             }
 
-            SDL_SetTextureBlendMode(graphics->textures[object->texture], SDL_BLENDMODE_BLEND);
-            SDL_SetTextureAlphaMod(graphics->textures[object->texture], alpha_value);
+            SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
+            SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], alpha_value);
         }
     }
 
     if(object->t == Cat_Door && !object->solid)
     {
-        SDL_SetTextureBlendMode(graphics->textures[object->texture], SDL_BLENDMODE_BLEND);
-        SDL_SetTextureAlphaMod(graphics->textures[object->texture], 50);
+        SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 50);
     }
 
     const SDL_Rect rect = { object->box.left - cameraX,
@@ -268,7 +284,7 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
         if(object->movementC != NULL && object->visible)
         {
             SDL_RenderCopyEx(graphics->renderer,
-                             graphics->textures[object->texture],
+                             textures_g[object->t][object->sub_category],
                              NULL,
                              &rect,
                              object->movementC->angle * 57.32f,//convert radian to degree
@@ -277,7 +293,7 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
         }
         else if(object->movementC == NULL && object->visible)
         {
-            SDL_RenderCopy(graphics->renderer, graphics->textures[object->texture],
+            SDL_RenderCopy(graphics->renderer, textures_g[object->t][object->sub_category],
                            NULL, &rect);
         }
     }
@@ -313,8 +329,8 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
                                                         );
     }
 
-    SDL_SetTextureBlendMode(graphics->textures[object->texture], SDL_BLENDMODE_BLEND);
-    SDL_SetTextureAlphaMod(graphics->textures[object->texture], 255);
+    SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 255);
 }
 
 void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
@@ -449,7 +465,8 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
             underline.h = 10;
             underline.w = button->text_rect.w;
 
-            SDL_RenderCopy(g->renderer, g->textures[Tex_Wall_Normal], NULL, &underline);
+            //SDL_RenderCopy(g->renderer, g->textures[Tex_Wall_Normal], NULL, &underline);
+
         }
     }
 
@@ -502,7 +519,7 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
     cursor_rect.h = 21;
     cursor_rect.w = 21;
 
-    SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
+    SDL_RenderCopy(g->renderer, textures_g[Cat_Cursor][Cursor_Aim], NULL, &cursor_rect);
 
     Graphics_Flip(g);
 }
@@ -510,10 +527,6 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
                                   Window* level_editor, GameManager* gm)
 {
-    float cameraX = world->player.playerC->cameraX;
-    float cameraY = world->player.playerC->cameraY;
-
-
     //---render level editor window
     SDL_SetRenderDrawColor(g->renderer, 220, 220,220, 255);
     SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.width, level_editor->box.height};
@@ -528,7 +541,7 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
         button_rect.h = level_editor->buttons[i].box.height;
         button_rect.w = level_editor->buttons[i].box.width;
 
-        SDL_RenderCopy(g->renderer, g->textures[level_editor->buttons[i].texture],
+        SDL_RenderCopy(g->renderer, textures_g[level_editor->buttons[i].main_category][level_editor->buttons[i].button_type],
                        NULL, &button_rect);
     }
 
@@ -558,11 +571,11 @@ void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
 
 }
 
-void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha)
+/*void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha)
 {
         SDL_SetTextureBlendMode(graphics->textures[texture], SDL_BLENDMODE_BLEND);
         SDL_SetTextureAlphaMod(graphics->textures[texture], alpha);
-}
+}*/
 
 void Graphics_RenderGameUI(Graphics* g, World* world)
 {
@@ -659,12 +672,12 @@ void Graphics_RenderUI(Graphics* g, World* world, Controls* controls,
             cursor_rect.y = controls->mouseY - 10;
             cursor_rect.h = 21;
             cursor_rect.w = 21;
-            SDL_RenderCopy(g->renderer, g->textures[Tex_Cursor_Aiming], NULL, &cursor_rect);
+            SDL_RenderCopy(g->renderer, textures_g[Cat_Cursor][Cursor_Aim], NULL, &cursor_rect);
         }
         else if(controls->cursor_resize_left_right)
         {
             SDL_Rect cursor_rect = {controls->mouseX - 20, controls->mouseY - 10, 40, 20};
-            SDL_RenderCopy(g->renderer, g->textures[Cursor_resize_left_right_tex], NULL, &cursor_rect);
+            SDL_RenderCopy(g->renderer, textures_g[Cat_Cursor][Cursor_Resize_Left_Right], NULL, &cursor_rect);
         }
     }
 

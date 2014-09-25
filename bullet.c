@@ -9,6 +9,8 @@
 #include "zombie.h"
 #include "movement_component.h"
 #include "weapon.h"
+#include "wall.h"
+
 
 Entity* Bullet_Create(Weapon_Type type, float x, float y,
                       float angle, float speed, bool is_ennemy_bullet,
@@ -33,32 +35,26 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
 	switch(type)
 	{
     case Weapon_Handgun:
-        bullet->texture = Tex_Bullet;
         bullet->penetration_chance = 100;
-        bullet->damage = 5;
+        bullet->damage = 4;
         break;
     case Weapon_AutomaticRifle:
-        bullet->texture = Tex_Bullet;
         bullet->penetration_chance = 100;
         bullet->damage = 2;
         break;
     case Weapon_Shotgun:
-        bullet->texture = Tex_Bullet;
         bullet->penetration_chance = 400;
-        bullet->damage = 1;
+        bullet->damage = 5;
         break;
     case Weapon_Fireball:
-        bullet->texture = Tex_Fireball;
         bullet->penetration_chance = 0;
         bullet->damage = 1;
         break;
     case Weapon_TripleFireball:
-        bullet->texture = Tex_Fireball;
         bullet->penetration_chance = 0;
         bullet->damage = 1;
         break;
     case Weapon_TheBigGun:
-        bullet->texture = Tex_Bullet;
         bullet->penetration_chance = 600;
         bullet->damage = 5;
         break;
@@ -103,10 +99,11 @@ void Bullet_Update(Entity* bullet, World* world)
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
                     Zombie_GetAttacked(mob, bullet->damage, world);
+                    int random = ((int)bullet/10000 * (int)bullet->x)% 1000;
 
-                    //divide the address by 1000 to get a kinda random number
+                    //modulo the address by 1000 to get a kinda random number
                     if(bullet->nb_penetrations < 3 &&
-                       (int)bullet % 1000 < bullet->penetration_chance)
+                        random < bullet->penetration_chance)
                     {
                         bullet->nb_penetrations++;
                     }
@@ -144,19 +141,23 @@ void Bullet_Update(Entity* bullet, World* world)
 
         for(int i = 0 ; i < world->map_size && bullet->alive; i++)
         {
-            if(world->map[i] != NULL)
+            if(world->map[i] != NULL && Entity_CheckNear(bullet, world->map[i]) &&
+               world->map[i]->solid &&
+               BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
             {
-                if(Entity_CheckNear(bullet, world->map[i]) && world->map[i]->solid)
+                Structure_GetAttacked(world->map[i], bullet);
+                int random = ((int)bullet/10000 * (int)bullet->x)% 1000;
+
+                //modulo the address by 1000 to get a kinda random number
+                if(bullet->nb_penetrations < 3 &&
+                    random*2 < bullet->penetration_chance)
                 {
-
-                    if(BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
-                    {
-                        Structure_GetAttacked(world->map[i], bullet);
-                        bullet->alive = false;
-
-                    }
+                    bullet->nb_penetrations++;
                 }
-
+                else
+                {
+                    bullet->alive = false;
+                }
             }
 
         }
