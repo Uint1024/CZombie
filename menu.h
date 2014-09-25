@@ -50,7 +50,7 @@ Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager);
 Menu*  LevelEditorEditing_Create(MenuManager* menu_manager);
 
 TextField* TextField_Create(int x, int y, int width, int height);
-void TextField_Update(TextField* tf, Controls* controls);
+void TextField_Update(TextField* tf);
 void TextField_Caret_Update(TextField* tf);
 void TextField_Input(TextField* tf, char c);
 #endif // MENU_H

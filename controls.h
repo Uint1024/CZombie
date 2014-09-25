@@ -57,4 +57,7 @@ void Inputs_ProcessInputs(Controls* controls, World* world, Window* level_editor
 void Inputs_ApplyInputsLevelEditor(Controls* controls,
                             World* world, Window* level_editor,
                             GameManager* gm);
+bool* Inputs_GetPressedKeys();
+
+void Inputs_SavePressedKeys();
 #endif

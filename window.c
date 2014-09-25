@@ -21,6 +21,7 @@ Window Window_CreateLevelEditor()
 
 
     Window_UpdateButtonsPositions(&w);
+    w.active_button = &w.buttons[0];
 
     return w;
 }

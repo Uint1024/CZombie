@@ -23,6 +23,8 @@ typedef struct World
     //background
     Entity**      ground_map;
 
+    Vector         non_null_walls;//wtf am I doing
+
 } World;
 
 //load empty map at the beginning of the program

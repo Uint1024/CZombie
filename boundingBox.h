@@ -15,6 +15,10 @@ typedef struct Box
 	float top;
 	float right;
 	float bottom;
+
+	//for when the entity's sprite isn't aligned with its bbox
+	int offsetX;
+	int offsetY;
 } Box;
 
 Box* BoundingBox_CreateTemp(Entity* ent);
@@ -23,11 +27,11 @@ Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera);
 void BoundingBox_Update(Entity* ent);
 Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2);
 bool BoundingBox_CheckSimpleCollision(Box* box1, Box* box2);
-Box BoundingBox_CreateFromAllValues(int width, int height, float x, float y);
 bool BoundingBox_CheckPointCollision(int x, int y, Box* box2);
 void BoundingBox_CreateWindow(Window* ent, int width, int height);
 void BoundingBox_UpdateWindow(Box* box, int newX, int newY);
 Box BoundingBox_CreateBetter(int x, int y, int width, int height);
 void BoundingBox_UpdateNewSize(Box* box, int newW, int newH);
 SDL_Rect BoundingBox_GetSDLRect(Box* box);
+Box BoundingBox_CreateWithOffset(int x, int y, int width, int height, int offsetX, int offsetY);
 #endif

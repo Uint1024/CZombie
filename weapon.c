@@ -29,9 +29,10 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->name = "Handgun";
         w->magazine_max_bullets = 15;
         w->magazine_bullets = 15;
-        w->delay_between_shots = 600;
+        w->delay_between_shots = 200;
         w->reloading_time = 1200;
-        //w->corresponding_pickup = ;
+        w->bullet_width = 20;
+        w->bullet_height = 20;
     }
     else if(type == Weapon_Shotgun)
     {

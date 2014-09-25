@@ -235,25 +235,31 @@ void TextField_Backspace(TextField* tf)
     tf->caretX -= 10;
 }
 
-void TextField_Update(TextField* tf, Controls* controls)
+void TextField_Update(TextField* tf)
 {
+
     TextField_Caret_Update(tf);
     size_t len = strlen(tf->text);
+    bool* pressedKeys = Inputs_GetPressedKeys();
 
     for(int i = 0 ; i < 200 ; i ++)
-    {
-        if(controls->pressedKeys[i] == true && previousPressedKeys_g[i] == false &&
-           (char)controls->pressedKeys[i] != tf->text[len] &&
-           !controls->pressedKeys[SDLK_RETURN] &&
-           !controls->pressedKeys[SDLK_BACKSPACE] &&
-           !controls->pressedKeys[SDLK_RETURN2])
+{
+
+
+        if(pressedKeys[i] == true && previousPressedKeys_g[i] == false &&
+           (char)pressedKeys[i] != tf->text[len] &&
+           !pressedKeys[SDLK_RETURN] &&
+           !pressedKeys[SDLK_BACKSPACE] &&
+           !pressedKeys[SDLK_RETURN2])
         {
             TextField_Input(tf, (char)(i));
         }
     }
-    if(controls->pressedKeys[SDLK_BACKSPACE] &&
+
+    if(pressedKeys[SDLK_BACKSPACE] &&
             !previousPressedKeys_g[SDLK_BACKSPACE])
     {
+
         TextField_Backspace(tf);
     }
 }

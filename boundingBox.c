@@ -28,6 +28,23 @@ void BoundingBox_Create(Entity* ent, int width, int height)
 	ent->box.top = ent->y;
 	ent->box.right = ent->x + width;
 	ent->box.bottom = ent->y + height;
+	ent->box.offsetX = 0;
+	ent->box.offsetY = 0;
+}
+
+Box BoundingBox_CreateWithOffset(int x, int y, int width, int height, int offsetX, int offsetY)
+{
+    Box box;
+    box.offsetX = offsetX;
+    box.offsetY = offsetY;
+    box.width = width;
+	box.height = height;
+	box.left = x + offsetX;
+	box.top = y + offsetY;
+	box.right = box.left + width;
+	box.bottom = box.top + height;
+
+	return box;
 }
 
 SDL_Rect BoundingBox_GetSDLRect(Box* box)
@@ -50,7 +67,8 @@ Box BoundingBox_CreateBetter(int x, int y, int width, int height)
 	box.top = y;
 	box.right = x + width;
 	box.bottom = y + height;
-
+    box.offsetX = 0;
+	box.offsetY = 0;
 	return box;
 }
 void BoundingBox_CreateWindow(Window* ent, int width, int height)
@@ -86,8 +104,8 @@ Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)
 //add velocity to bounding box
 void BoundingBox_Update(Entity* ent)
 {
-	ent->box.left = ent->x;
-	ent->box.top = ent->y;
+	ent->box.left = ent->x + ent->box.offsetX;
+	ent->box.top = ent->y + ent->box.offsetY;
 	ent->box.right = ent->box.left + ent->box.width;
 	ent->box.bottom = ent->box.top + ent->box.height;
 }
@@ -179,18 +197,4 @@ bool BoundingBox_CheckPointCollision(int x, int y, Box* box2)
 	{
 		return true;
 	}
-}
-
-
-Box BoundingBox_CreateFromAllValues(int width, int height, float x, float y)
-{
-    Box box;
-    box.width = width;
-    box.height = height;
-    box.left = x;
-    box.right = x + width;
-    box.top = y;
-    box.bottom = y + height;
-
-    return box;
 }

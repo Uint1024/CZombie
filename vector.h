@@ -14,4 +14,5 @@ void Vector_Push(Vector *v, void *e);
 void* Vector_Get(Vector *v, int index);
 void Vector_Delete(Vector *v, int index);
 void Vector_Clear(Vector* v);
+void Vector_Nullify(Vector* v);
 #endif // VECTOR_H

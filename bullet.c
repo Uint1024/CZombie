@@ -35,15 +35,15 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
 	switch(type)
 	{
     case Weapon_Handgun:
-        bullet->penetration_chance = 100;
-        bullet->damage = 4;
+        bullet->penetration_chance = 400;
+        bullet->damage = 1;
         break;
     case Weapon_AutomaticRifle:
-        bullet->penetration_chance = 100;
+        bullet->penetration_chance = 500;
         bullet->damage = 2;
         break;
     case Weapon_Shotgun:
-        bullet->penetration_chance = 400;
+        bullet->penetration_chance = 600;
         bullet->damage = 5;
         break;
     case Weapon_Fireball:
@@ -55,7 +55,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
         bullet->damage = 1;
         break;
     case Weapon_TheBigGun:
-        bullet->penetration_chance = 600;
+        bullet->penetration_chance = 700;
         bullet->damage = 5;
         break;
     case No_Weapon:
@@ -99,7 +99,7 @@ void Bullet_Update(Entity* bullet, World* world)
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
                     Zombie_GetAttacked(mob, bullet->damage, world);
-                    int random = ((int)bullet/10000 * (int)bullet->x)% 1000;
+                    int random = rand() % 1000;
 
                     //modulo the address by 1000 to get a kinda random number
                     if(bullet->nb_penetrations < 3 &&
@@ -141,17 +141,18 @@ void Bullet_Update(Entity* bullet, World* world)
 
         for(int i = 0 ; i < world->map_size && bullet->alive; i++)
         {
-            if(world->map[i] != NULL && Entity_CheckNear(bullet, world->map[i]) &&
+            if(world->map[i] != NULL && world->map[i] != bullet->hit_wall &&
+               Entity_CheckNear(bullet, world->map[i]) &&
                world->map[i]->solid &&
                BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
             {
                 Structure_GetAttacked(world->map[i], bullet);
-                int random = ((int)bullet/10000 * (int)bullet->x)% 1000;
-
+                int random = rand() % 1000;
                 //modulo the address by 1000 to get a kinda random number
                 if(bullet->nb_penetrations < 3 &&
-                    random*2 < bullet->penetration_chance)
+                    random < bullet->penetration_chance)
                 {
+                    bullet->hit_wall = world->map[i];
                     bullet->nb_penetrations++;
                 }
                 else

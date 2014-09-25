@@ -13,6 +13,7 @@ World World_Initialize(int map_width, int map_height)
     world.explosions_vector =   Vector_Create();
     world.events_vector     =   Vector_Create();
     world.decals_vector     =   Vector_Create();
+    world.non_null_walls = Vector_Create();
     world.map_width         =   map_width;
     world.map_height        =   map_height;
     world.map_size          =   map_width * map_height;
@@ -20,7 +21,7 @@ World World_Initialize(int map_width, int map_height)
     world.ground_map        =   calloc(world.map_size, sizeof(Entity*));
     world.player            =   Player_Create(100,
                                               100,
-                                              20, 20);
+                                              10, 10);
 
 
     //calloc does that

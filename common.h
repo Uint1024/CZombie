@@ -112,6 +112,7 @@ typedef enum {
     Wall_Normal,
     Wall_Cool,
     Wall_Glass,
+    Wall_Reinforced,
     NB_OF_WALL_TYPES
 } Wall_Type
 ;
@@ -120,6 +121,7 @@ typedef enum {
 typedef enum {
     Door_Normal,
     Door_Dead,
+    Door_Reinforced,
     NB_OF_DOOR_TYPES
 } Door_Type;
 
@@ -238,6 +240,7 @@ extern Game_State       game_state_g;
 extern bool            display_menu_g;
 extern bool             unlimited_ammo_g;
 extern bool             reloading_g;
+extern bool             draw_grid_g;
 extern bool using_controller_g;
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 

@@ -68,7 +68,7 @@ void Game_StartMap(World* world)
         Entity* event = (Entity*)Vector_Get(&world->events_vector, i);
         if(event->sub_category == Event_Player_Start)
         {
-            world->player = Player_Create( event->x, event->y, 20, 20);
+            world->player = Player_Create( event->x, event->y, 10, 10);
             world->player.visible = true;
             world->player.solid = true;
             world->player.playerC->cameraX = -screen_width_g/2 + world->player.x;
@@ -81,6 +81,17 @@ void Game_StartMap(World* world)
 }
 void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 {
+
+    Vector_Nullify(&world->non_null_walls);
+
+    //oh god
+    for(int i = 0 ; i < world->map_size ; i++)
+    {
+        if(world->map[i] != NULL)
+        {
+            Vector_Push(&world->non_null_walls, world->map[i]);
+        }
+    }
     Player_Update(world);
 
     if(game_state_g != GameState_Editing_Map)

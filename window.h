@@ -26,6 +26,7 @@ typedef struct Window
     int         space_between_buttons;
     int         buttons_per_row;
     int         nb_of_buttons;
+    Button*     active_button;
 } Window;
 
 Window Window_CreateLevelEditor();

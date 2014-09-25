@@ -9,10 +9,63 @@
 #include "player.h"
 #include "gameManager.h"
 
+static int building_time = 0;
+
+void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y,
+                              int position_in_array, int mousePositionInWorldX,
+                              int mousePositionInWorldY, World* world, bool unlimited)
+{
+    if(category == Cat_Wall || category == Cat_Door)
+    {
+        free(world->map[position_in_array]);
+        world->map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
+    }
+
+    else if(category == Cat_Ground)
+    {
+        Entity_Destroy(world->ground_map[position_in_array]);
+        free(world->ground_map[position_in_array]);
+        world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
+    }
+
+    else if(category == Cat_Zombie &&
+       (SDL_GetTicks() - building_time > 150 || unlimited))
+    {
+        Vector_Push(&world->monsters_vector,
+                   Entity_Create(category, obj_type,
+                                 mousePositionInWorldX,
+                                 mousePositionInWorldY,
+                                 0));
+
+        building_time = SDL_GetTicks();
+    }
+    else if(category == Cat_Event &&
+            (SDL_GetTicks() - building_time > 150))
+    {
+        //there can be only 1 player start and end of level
+        for(int i = 0 ; i < Vector_Count(&world->events_vector) ; i++)
+        {
+            Entity* map_event = (Entity*)Vector_Get(&world->events_vector, i);
+            if((obj_type == Event_Player_Start || obj_type == Event_End_Level )&&
+               obj_type == map_event->sub_category)
+            {
+                Vector_Delete(&world->events_vector, i);
+            }
+        }
+        Vector_Push(&world->events_vector, Entity_Create(category, obj_type, x, y, 0));
+        building_time = SDL_GetTicks();
+    }
+    else if(category == Cat_Bonus && (SDL_GetTicks() - building_time > 150 ||
+                                       unlimited))
+    {
+        Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, x, y, 0));
+        building_time = SDL_GetTicks();
+    }
+
+}
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 {
 
-//    fwrite(&buffer->texture, sizeof(Texture_Type), 1, save_file);
     fwrite(&buffer->sub_category, sizeof(int), 1, save_file);
     fwrite(&buffer->damage, sizeof(float), 1, save_file);
     fwrite(&buffer->x, sizeof(float), 1, save_file);
@@ -120,7 +173,6 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
 void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 {
-//    fread(&buffer->texture, sizeof(Texture_Type), 1, save_file);
     fread(&buffer->sub_category, sizeof(int), 1, save_file);
     fread(&buffer->damage, sizeof(float), 1, save_file);
     fread(&buffer->x, sizeof(float), 1, save_file);
@@ -231,6 +283,7 @@ void Level_Save(char* file_name, World* w)
 
         //the NULL walls aren't written
         //we need to tell fread how much to read
+        printf("ftell nb_walls : %d\n", ftell(save_file));
         int nb_of_walls = 0;
 
         for(int i = 0 ; i < w->map_size ; i++)
@@ -241,6 +294,8 @@ void Level_Save(char* file_name, World* w)
             }
         }
 
+        printf("%d walls", nb_of_walls);
+
         fwrite(&nb_of_walls, sizeof(int), 1, save_file);
 
 
@@ -250,6 +305,7 @@ void Level_Save(char* file_name, World* w)
         }
 
         //there are no NULL ground
+        printf("ftell ground : %d\n", ftell(save_file));
         for(int i = 0 ; i < w->map_size ; i++)
         {
             fwrite(w->ground_map[i], sizeof(Entity), 1, save_file);
@@ -264,6 +320,8 @@ void Level_Save(char* file_name, World* w)
         }
 
         int num_of_zombies = Vector_Count(&w->monsters_vector);
+
+        printf("saving %d zombies", num_of_zombies);
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
 
         for(int i = 0 ; i < num_of_zombies ; i++)
@@ -376,8 +434,9 @@ void Level_Load(char* file_name, World* w)
     }
 
     int nb_of_walls = 0;
+    printf("ftell nb_walls : %d\n", ftell(save_file));
     fread(&nb_of_walls, sizeof(int), 1, save_file);
-
+    printf("%d walls\n", nb_of_walls);
     for(int i = 0 ; i < nb_of_walls ; i++)
     {
         Entity* buffer = (Entity*)malloc(sizeof(Entity)); //Entity_Spawn();
@@ -388,7 +447,7 @@ void Level_Load(char* file_name, World* w)
         w->map[position_in_array] = buffer;
     }
 
-
+printf("ftell ground : %d\n", ftell(save_file));
     for(int i = 0 ; i < w->map_size ; i++)
     {
         Entity* buffer = (Entity*)malloc(sizeof(Entity));//Entity_Spawn();
@@ -399,7 +458,10 @@ void Level_Load(char* file_name, World* w)
 
 
     int num_of_events = 0;
+
     fread(&num_of_events, sizeof(int), 1, save_file);
+
+
     for(int i = 0 ; i < num_of_events ; i++)
     {
         Entity* buffer = Entity_Spawn();
@@ -412,12 +474,23 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);
-    for(int i = 0 ; i < num_of_zombies ; i++)
+    printf("%d zombies\n", num_of_zombies);
+    //"temporary" fix: fread sometimes read 1 instead of 0. I don't know why?
+    //of course this will completely crash if there's really 1 zombie
+    /*if(num_of_zombies == 1)
     {
-        Entity* buffer = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
-        Vector_Push(&w->monsters_vector, buffer);
+        num_of_zombies = 0;
+   }*/
 
+    if(num_of_zombies != 0)
+    {
+        for(int i = 0 ; i < num_of_zombies ; i++)
+        {
+            Entity* buffer = Entity_Spawn();
+            LevelEditor_ReadEntity(save_file, buffer);
+            Vector_Push(&w->monsters_vector, buffer);
+
+        }
     }
 
     int num_of_bonus = 0;
@@ -429,6 +502,8 @@ void Level_Load(char* file_name, World* w)
         Vector_Push(&w->bonus_vector, buffer);
 
     }
+
+
 
 
     fclose(save_file);

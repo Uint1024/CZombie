@@ -10,13 +10,17 @@ Entity* Door_Create(Door_Type type, int x, int y)
 {
 	Entity* ent = Entity_Spawn();
 	ent->t = Cat_Door;
-	ent->sub_category = Door_Normal;
-//	ent->texture = all_textures_g[Cat_Door][type];
+	ent->sub_category = type;
 	ent->x = x;
 	ent->y = y;
 	ent->hp = 30;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
 
+    switch(type)
+    {
+    case Door_Reinforced:
+        ent->hp = 100000;
+    }
 	return ent;
 }
 

@@ -37,7 +37,7 @@ typedef struct Entity
 	bool                    is_ennemy;//zombies, bullets, explosions
     int                     damage;//zombies, bullets, explosions
 
-
+    Entity*                 hit_wall;//used to calculate bullets penetration
     //components
     MovementC*              movementC;//movement component
     PlayerC*                playerC;//player component
@@ -62,7 +62,7 @@ void Entity_LoseHealth(Entity* ent, int damage);
 bool Entity_CollisionWithStuff(Entity* ent, World* world);
 void Entity_CalculateVelocityFromAngle(Entity* ent);
 
-bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size);
+bool Entity_CollisionWithWalls(Entity* ent, World* world);
 bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
 
 bool Entity_CheckNear(Entity* ent1, Entity* ent2);

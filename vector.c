@@ -80,6 +80,17 @@ void Vector_Clear(Vector* v)
     v->count = 0;
     v->data = NULL;
 }
+
+void Vector_Nullify(Vector* v)
+{
+    for(int i = 0 ; i < v->count ; i++)
+    {
+            v->data[i] = NULL;
+    }
+
+    v->count = 0;
+}
+
 void Vector_Delete(Vector *v, int index)
 {
 	if (index >= v->count)

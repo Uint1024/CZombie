@@ -33,7 +33,6 @@ Entity* Entity_Spawn()
 	ent->box.right                  = 0;
 	ent->box.bottom                 = 0;
     ent->solid                      = true;
-//    ent->texture                    = No_texture;
     ent->visible                    = true;
     ent->penetration_chance = 0;
     ent->in_dark = true;
@@ -119,8 +118,8 @@ void Entity_CalculateVelocity(Entity* ent)
 
 void Entity_GetMiddleCoordinates(Entity* ent, float* middleX, float* middleY)
 {
-    *middleX = (float)(ent->x + ent->box.width / 2);
-    *middleY = (float)(ent->y + ent->box.height / 2);
+    *middleX = (float)(ent->x + ((ent->box.width + (ent->box.offsetX*2)) / 2));
+    *middleY = (float)(ent->y + ((ent->box.height + (ent->box.offsetY*2)) / 2));
 }
 
 float Entity_GetMiddleY(Entity* ent)
@@ -235,7 +234,7 @@ bool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
 bool Entity_CollisionWithStuff(Entity* ent, World* world)
 {
 
-    bool collision_with_walls = Entity_CollisionWithWalls(ent, world->map, world->map_size);
+    bool collision_with_walls = Entity_CollisionWithWalls(ent, world);
     bool collision_with_mobs = Entity_CollisionWithMonsters(ent, &world->monsters_vector);
 
     return (collision_with_walls || collision_with_mobs);
@@ -258,39 +257,40 @@ void Entity_CalculateVisibility(Entity* ent, World* world)
 	ent->in_dark = in_dark;
 }
 
-bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
+bool Entity_CollisionWithWalls(Entity* ent, World* world)
 {
     Box* temp = BoundingBox_CreateTemp(ent);
     Entity* collision_wall[5];
 	int walls_touched[5] = { 0 };
 
     bool collision = false;
-    for (int i = 0; i < map_size; i++)
+    for (int i = 0; i < Vector_Count(&world->non_null_walls); i++)
 	{
-		if (map[i] != NULL && map[i]->solid)
+	    Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+		if (wall->solid)
 		{
-		    if(Entity_CheckNear(ent, map[i]))
+		    if(Entity_CheckVeryClose(ent, wall))
             {
-                Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &map[i]->box);
+                Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &wall->box);
                 if (collision_direction != None)
                 {
                     collision = true;
-                    collision_wall[collision_direction] = map[i];
+                    collision_wall[collision_direction] = wall;
                     walls_touched[collision_direction]++;
                     ent->collision_direction = collision_direction;
 
                     if(ent->t == Cat_Zombie && ent->zombieC->aggressive &&
-                       map[i]->solid &&
-                       (map[i]->t == Cat_Door || map[i]->t == Cat_Wall) &&
+                      wall->solid &&
+                       (wall->t == Cat_Door || wall->t == Cat_Wall) &&
                        ent->zombieC->attack_timer >= ent->zombieC->attack_delay)
                     {
-                        Structure_GetAttacked(map[i], ent);
+                        Structure_GetAttacked(wall, ent);
                         ent->zombieC->attack_timer = 0;
                     }
 
-                    if(ent->t == Cat_Player && map[i]->t == Cat_Door)
+                    if(ent->t == Cat_Player && wall->t == Cat_Door)
                     {
-                        Door_Open(map[i]);
+                        Door_Open(wall);
                     }
                 }
             }
@@ -356,60 +356,60 @@ bool Entity_CollisionWithWalls(Entity* ent, Entity** map, int map_size)
         }
     }
 
+        bool flatBottomTop = false;
 
-    bool flatBottomTop = false;
 
+        if (walls_touched[Bottom] || walls_touched[Top])
+            flatBottomTop = true;
 
-	if (walls_touched[Bottom] || walls_touched[Top])
-		flatBottomTop = true;
+        if (walls_touched[Bottom] > 0 && walls_touched[Left] > 1)
+        {
+            ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
+            ent->movementC->dy = 0;
+        }
+        if (walls_touched[Bottom] > 0 && walls_touched[Right] > 1)
+        {
+            ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
+            ent->movementC->dy = 0;
+        }
+        if (walls_touched[Top] > 0 && walls_touched[Left] > 1)
+        {
+            ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
+            ent->movementC->dy = 0;
+        }
+        if (walls_touched[Top] > 0 && walls_touched[Right] > 1)
+        {
+            ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
+            ent->movementC->dy = 0;
+        }
 
-	if (walls_touched[Bottom] > 0 && walls_touched[Left] > 1)
-	{
-		ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
-		ent->movementC->dy = 0;
-	}
-	if (walls_touched[Bottom] > 0 && walls_touched[Right] > 1)
-	{
-		ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
-		ent->movementC->dy = 0;
-	}
-	if (walls_touched[Top] > 0 && walls_touched[Left] > 1)
-	{
-		ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
-		ent->movementC->dy = 0;
-	}
-	if (walls_touched[Top] > 0 && walls_touched[Right] > 1)
-	{
-		ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
-		ent->movementC->dy = 0;
-	}
+        if (walls_touched[Bottom] && ent->movementC->dy > 0)
+        {
+            ent->movementC->dy = collision_wall[Bottom]->box.top - ent->box.bottom;
+        }
 
-	if (walls_touched[Bottom] && ent->movementC->dy > 0)
-	{
-		ent->movementC->dy = collision_wall[Bottom]->box.top - ent->box.bottom;
-	}
+        if (walls_touched[Top] && ent->movementC->dy < 0)
+        {
 
-	if (walls_touched[Top] && ent->movementC->dy < 0)
-	{
-
-		ent->movementC->dy = collision_wall[Top]->box.bottom - ent->box.top;
-	}
-
+            ent->movementC->dy = collision_wall[Top]->box.bottom - ent->box.top;
+        }
 
 
 
-	if (!flatBottomTop)
-	{
-		if (walls_touched[Right] && ent->movementC->dx > 0)
-		{
-		    ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
-		}
 
-		if (walls_touched[Left] && ent->movementC->dx < 0)
-		{
-		    ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
-		}
-	}
+        if (!flatBottomTop)
+        {
+            if (walls_touched[Right] && ent->movementC->dx > 0)
+            {
+                ent->movementC->dx = collision_wall[Right]->box.left - ent->box.right;
+            }
+
+            if (walls_touched[Left] && ent->movementC->dx < 0)
+            {
+                ent->movementC->dx = collision_wall[Left]->box.right - ent->box.left;
+            }
+        }
+
 
 	free(temp);
 

@@ -72,6 +72,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Wall][Wall_Normal] = IMG_LoadTexture(g->renderer, "wall_normal.png");
     textures_g[Cat_Wall][Wall_Cool] = IMG_LoadTexture(g->renderer, "wall_cool.png");
     textures_g[Cat_Wall][Wall_Glass] = IMG_LoadTexture(g->renderer, "wall_glass.png");
+    textures_g[Cat_Wall][Wall_Reinforced] = IMG_LoadTexture(g->renderer, "wall_reinforced.png");
 
     textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(g->renderer, "explosion_normal.png");
 
@@ -89,6 +90,7 @@ Graphics* Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Ground][Ground_Yellow] = IMG_LoadTexture(g->renderer, "ground_yellow.png");
 
     textures_g[Cat_Door][Door_Normal] = IMG_LoadTexture(g->renderer, "door_normal.png");
+    textures_g[Cat_Door][Door_Reinforced] = IMG_LoadTexture(g->renderer, "door_reinforced.png");
 
     textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(g->renderer, "cursor_aim.png");
     textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(g->renderer, "cursor_resize_left_right.png");
@@ -273,10 +275,10 @@ void Graphics_RenderObject(Graphics* graphics, Entity* object, PlayerC* playerC)
         SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 50);
     }
 
-    const SDL_Rect rect = { object->box.left - cameraX,
-                            object->box.top - cameraY,
-                            object->box.width,
-                            object->box.height };
+    const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX,
+                            object->box.top - cameraY - object->box.offsetY,
+                            object->box.width + object->box.offsetX * 2 ,
+                            object->box.height + object->box.offsetY * 2};
 
 
     if(!object->in_dark || game_state_g == GameState_Editing_Map)
@@ -527,6 +529,26 @@ void Graphics_RenderMenu(Graphics* g, Menu* menu, Controls* controls)
 void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,
                                   Window* level_editor, GameManager* gm)
 {
+    int cameraX = world->player.playerC->cameraX;
+    int cameraY = world->player.playerC->cameraY;
+    if(draw_grid_g)
+    {
+        for(int x = 0 ; x < world->map_width ; x++)
+        {
+            SDL_RenderDrawLine(g->renderer, x * TILE_SIZE - cameraX - 1,
+                                   0,
+                                   x * TILE_SIZE - cameraX,
+                                   world->map_height * TILE_SIZE - cameraY);
+        }
+        for(int y = 0 ; y < world->map_height ; y++)
+        {
+            SDL_RenderDrawLine(g->renderer, 0,
+                                   y * TILE_SIZE - cameraY - 1,
+                                   world->map_width * TILE_SIZE - cameraX,
+                                   y * TILE_SIZE - cameraY - 1);
+        }
+    }
+
     //---render level editor window
     SDL_SetRenderDrawColor(g->renderer, 220, 220,220, 255);
     SDL_Rect editor_rect = { level_editor->x, level_editor->y, level_editor->box.width, level_editor->box.height};

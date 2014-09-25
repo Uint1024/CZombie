@@ -30,7 +30,7 @@ MenuButton* MenuButton_Create(Menu_Button_Name name,
     button->x            =   centered ? graphics->screen_width / 2 - textW / 2 : x;
     button->y            =   y;
 
-    button->box          =   BoundingBox_CreateFromAllValues(textW, textH, button->x, button->y);
+    button->box          =   BoundingBox_CreateBetter(button->x, button->y, textW, textH);
     SDL_Rect text_rect   =   { button->x , button->y, textW, textH };
     button->text_rect    =   text_rect;
     button->hover        =   false;
@@ -49,8 +49,8 @@ MenuButton* FileNameButton_Create(float y, char* text)
     button->x            =   100;
     button->y            =   y;
 
-    button->box          =   BoundingBox_CreateFromAllValues(500, 100, 100, button->y);
-    SDL_Rect text_rect   =   { 100 , button->y, 500, 100 };
+    button->box          =   BoundingBox_CreateBetter(100, button->y, 500, 50);
+    SDL_Rect text_rect   =   { 100 , button->y, 500, 50 };
     button->text_rect    =   text_rect;
     button->hover        =   false;
 
@@ -63,10 +63,10 @@ void MenuButton_UpdateBox(MenuButton* b, int x, int y)
 {
     b->x = x;
     b->y = y;
-    b->box = BoundingBox_CreateFromAllValues(b->box.width,
-                                    b->box.height,
+    b->box = BoundingBox_CreateBetter(
                                     b->x,
-                                    b->y);
+                                    b->y, b->box.width,
+                                    b->box.height);
     b->text_rect.w = b->box.width;
     b->text_rect.h = b->box.height;
     b->text_rect.x = b->x;

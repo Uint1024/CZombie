@@ -70,7 +70,7 @@ void MenuManager_Update(MenuManager* mm,
 {
     Menu* menu = mm->active_menu;
     mm->click_timer -= delta_g;
-
+    bool* pressedKeys = Inputs_GetPressedKeys();
     for(int i = 0 ; i < Vector_Count(&menu->textfields) ; i++)
     {
         TextField* tf = Vector_Get(&menu->textfields, i);
@@ -89,9 +89,9 @@ void MenuManager_Update(MenuManager* mm,
     if(menu->name == SaveMap_menu &&
        menu->active_textfield != NULL)
     {
-        TextField_Update( menu->active_textfield, controls);
+        TextField_Update(menu->active_textfield);
 
-        if(controls->pressedKeys[SDLK_RETURN])
+        if(pressedKeys[SDLK_RETURN])
         {
             char file_name[50];
             strcpy(file_name, "saves/");
@@ -148,6 +148,7 @@ void MenuManager_Update(MenuManager* mm,
                 //if we want to modify it, configure the game to level editor mode...
                 //problem : how do I know why the user wants to load it??
                 LevelEditor_LoadMapToEdit(complete_name, world);
+                mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
 
             }
         }

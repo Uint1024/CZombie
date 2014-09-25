@@ -22,7 +22,7 @@
 
     bool previousPressedKeys_g[200] = {false};
 static int switch_timer = 0;
-static int building_time = 0;
+
 static int deadzone = 9000;
 static SDL_Joystick* controller;
 bool using_controller_g = true;
@@ -33,19 +33,22 @@ static int controller_rightAxisY;
 static int controller_leftTrigger;
 static int controller_rightTrigger;
 
+static bool rectangle_selection_create  = false;
+static bool rectangle_selection_delete = false;
+static int rectangle_selection_startX;
+static int rectangle_selection_startY;
+static int rectangle_selection_endX;
+static int rectangle_selection_endY;
+
+static bool unlimited_creation = false;
+static bool pressedKeys[200] = {false};
+
 Controls* CreateControls()
 {
 
 
 	Controls* controls = (Controls*)malloc(sizeof(Controls));
-	for (int i = 0; i < 200; i++)
-	{
-		controls->pressedKeys[i] = false;
-	}
-		for (int i = 0; i < 20; i++)
-	{
-		controls->pressedMouseButtons[i] = false;
-	}
+
 
     controls->mouseWheelPos = 0;
     controls->active_window = NULL;
@@ -59,6 +62,12 @@ Controls* CreateControls()
     controls->last_ai_switch = 0;
     controls->temp_object_to_create = NULL;
     controller = SDL_JoystickOpen(0);
+
+
+		for (int i = 0; i < 20; i++)
+	{
+		controls->pressedMouseButtons[i] = false;
+	}
 	return controls;
 }
 
@@ -81,7 +90,13 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                             World* world, Window* level_editor,
                             GameManager* gm)
 {
-    if(controls->pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
+
+    if(pressedKeys[SDLK_F1] && SDL_GetTicks() - switch_timer > 200)
+    {
+        draw_grid_g = draw_grid_g? false : true;
+    }
+
+    if(pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
     {
         switch_timer = SDL_GetTicks();
         LevelEditor_QuickTry(world);
@@ -112,7 +127,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                                                    controls->mouseY,
                                                    &level_editor->buttons[i].box))
                 {
-                    controls->active_button = &level_editor->buttons[i];
+                    level_editor->active_button = &level_editor->buttons[i];
 
                     if(controls->temp_object_to_create != NULL)
                     {
@@ -120,8 +135,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                         free(controls->temp_object_to_create);
                     }
 
-                    controls->temp_object_to_create = Entity_Create(controls->active_button->main_category,
-                                                                    controls->active_button->button_type,
+                    controls->temp_object_to_create = Entity_Create(level_editor->active_button->main_category,
+                                                                    level_editor->active_button->button_type,
                                                                     controls->mouseX, controls->mouseY,
                                                                     0);
                 }
@@ -212,77 +227,134 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                      controls->mouseY - controls->previousMouseY);
     }
 
+    if(pressedKeys[SDLK_LCTRL])
+    {
+        unlimited_creation = true;
+    }
+    else
+    {
+        unlimited_creation = false;
+    }
+
+
     //if not hovering and not moving window
     //we can create/delete stuff on the map
     if(!controls->active_window && !controls->hovering_on_window)
     {
-        if (controls->active_button != NULL &&
-            controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == true)
+        if (level_editor->active_button != NULL)
         {
-            if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
-                controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
+            Main_Category category = level_editor->active_button->main_category;
+            int obj_type = level_editor->active_button->button_type;
+
+            if(!rectangle_selection_create &&
+               controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == true)
             {
-                //creating object
-                //TODO : merge all the X_Create into one big function that calls all the others
-                int obj_type = controls->active_button->button_type;
-                int x = controls->tileInPixelsX;
-                int y = controls->tileInPixelsY;
-                Main_Category category = controls->active_button->main_category;
-
-                if(category == Cat_Wall || category == Cat_Door)
+                if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
+                    controls->mouseTileY < world->map_height && controls->mouseTileY > 0)
                 {
-                    free(world->map[position_in_array]);
-                    world->map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
-                }
 
-                else if(category == Cat_Ground)
-                {
-                    Entity_Destroy(world->ground_map[position_in_array]);
-                    free(world->ground_map[position_in_array]);
-                    world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
-                }
-
-                else if(category == Cat_Zombie &&
-                   (SDL_GetTicks() - building_time > 150 || controls->pressedKeys[SDL_SCANCODE_LCTRL]))
-                {
-                    Vector_Push(monsters_vector,
-                               Entity_Create(category, obj_type,
-                                             controls->mousePositionInWorldX,
-                                             controls->mousePositionInWorldY,
-                                             0));
-
-                    building_time = SDL_GetTicks();
-
-                    printf("%d\n", Vector_Count(monsters_vector));
-                }
-                else if(category == Cat_Event &&
-                        SDL_GetTicks() - building_time > 150)
-                {
-                    //there can be only 1 player start and end of level
-                    for(int i = 0 ; i < Vector_Count(&world->events_vector) ; i++)
+                    //pressing shift activate the rectangle selection tool
+                    if((category == Cat_Wall || category == Cat_Ground) &&
+                       pressedKeys[SDLK_LSHIFT])
                     {
-                        Entity* map_event = (Entity*)Vector_Get(&world->events_vector, i);
-                        if((obj_type == Event_Player_Start || obj_type == Event_End_Level )&&
-                           obj_type == map_event->sub_category)
+
+                        rectangle_selection_startX = controls->mouseTileX;
+                        rectangle_selection_startY = controls->mouseTileY;
+                        rectangle_selection_create = true;
+                    }
+
+
+
+                        //creating single object
+                        //TODO : merge all the X_Create into one big function that calls all the others
+
+                        int x = controls->tileInPixelsX;
+                        int y = controls->tileInPixelsY;
+
+                        LevelEditor_CreateObject(category, obj_type, x, y,
+                                                 position_in_array, controls->mousePositionInWorldX,
+                                                 controls->mousePositionInWorldY, world, unlimited_creation);
+
+
+                }
+                else
+                    printf("out of bound!!!");
+            }
+
+            //remove wall (replace it with empty entity)
+            if(pressedKeys[SDLK_c])
+
+            {
+                if(pressedKeys[SDLK_LSHIFT] && !rectangle_selection_delete)
+                {
+                    rectangle_selection_startX = controls->mouseTileX;
+                    rectangle_selection_startY = controls->mouseTileY;
+                    rectangle_selection_delete = true;
+                }
+                if(!rectangle_selection_delete)
+                {
+                     free(world->map[position_in_array]);
+                    world->map[position_in_array] = NULL;
+                }
+
+            }
+
+
+
+            /*stopping pressing left shift stop the selection and creates the selection tile
+            in the selection (only if it's a tile and not a monster/object
+            */
+            if((rectangle_selection_create || rectangle_selection_delete) && !pressedKeys[SDLK_LSHIFT])
+            {
+                rectangle_selection_endX = controls->mouseTileX;
+                rectangle_selection_endY = controls->mouseTileY;
+
+                if(rectangle_selection_endY < rectangle_selection_startY)
+                {
+                    int tempY = rectangle_selection_startY;
+                    rectangle_selection_startY = rectangle_selection_endY;
+                    rectangle_selection_endY = tempY;
+                }
+                if(rectangle_selection_endX < rectangle_selection_startX)
+                {
+                    int tempX = rectangle_selection_startX;
+                    rectangle_selection_startX = rectangle_selection_endX;
+                    rectangle_selection_endX = tempX;
+                }
+
+
+
+                for(int y = rectangle_selection_startY ; y <= rectangle_selection_endY ; y++)
+                {
+                    for(int x = rectangle_selection_startX ; x <= rectangle_selection_endX ; x++)
+                    {
+                        position_in_array = y * world->map_width + x;
+                        if(rectangle_selection_create)
                         {
-                            Vector_Delete(&world->events_vector, i);
+                            int obj_type = level_editor->active_button->button_type;
+                            LevelEditor_CreateObject(category, obj_type, x * TILE_SIZE, y * TILE_SIZE,
+                                         position_in_array, controls->mousePositionInWorldX,
+                                         controls->mousePositionInWorldY, world, unlimited_creation);
+                        }
+                        else if(rectangle_selection_delete)
+                        {
+                            free(world->map[position_in_array]);
+                            world->map[position_in_array] = NULL;
+
                         }
                     }
-                    Vector_Push(&world->events_vector, Entity_Create(category, obj_type, x, y, 0));
-                    building_time = SDL_GetTicks();
                 }
-                else if(category == Cat_Bonus && SDL_GetTicks() - building_time > 150)
-                {
-                    Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, x, y, 0));
-                    building_time = SDL_GetTicks();
-                }
+
+                rectangle_selection_create = false;
+                rectangle_selection_delete = false;
             }
-            else
-                printf("out of bound!!!");
         }
 
+
+
+
         //deleting monster
-        if(controls->pressedKeys[SDLK_x])
+        if(pressedKeys[SDLK_x])
         {
             for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
             {
@@ -311,28 +383,23 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
         }
 
         //deleting every monster
-        if(controls->pressedKeys[SDLK_u])
+        if(pressedKeys[SDLK_u])
         {
            // Vector_Clear(&world->monsters_vector); leads to memory leak
         }
 
-        //remove wall (replace it with empty entity)
-        if(controls->pressedKeys[SDLK_c])
-        {
-            free(world->map[position_in_array]);
-            world->map[position_in_array] = NULL;//Wall_CreateEmpty();
-        }
+
 
         //cancel current selected object
-        if(controls->pressedKeys[SDLK_e])
+        if(pressedKeys[SDLK_e])
         {
-            controls->active_button = NULL;
+            level_editor->active_button = NULL;
         }
 
 
 
         //switch mobs AI
-        if(controls->pressedKeys[SDLK_a] &&
+        if(pressedKeys[SDLK_a] &&
            SDL_GetTicks() - controls->last_ai_switch > 150)
         {
             if(gm->ai_on)
@@ -378,13 +445,14 @@ bool Inputs_PoolInputs(Controls* controls, PlayerC* playerC)
 
 		if (controls->e.type == SDL_KEYDOWN)
 		{
-			controls->pressedKeys[controls->e.key.keysym.sym] = true;
+			pressedKeys[controls->e.key.keysym.sym] = true;
+
 			controls->pressedMods[controls->e.key.keysym.mod] = true;
 		}
 
 		if (controls->e.type == SDL_KEYUP)
 		{
-			controls->pressedKeys[controls->e.key.keysym.sym] = false;
+			pressedKeys[controls->e.key.keysym.sym] = false;
 			controls->pressedMods[controls->e.key.keysym.mod] = false;
 		}
 
@@ -424,6 +492,7 @@ void Inputs_ApplyInputs( Controls* controls,
                             World* world, Window* level_editor,
                             GameManager* gm)
 {
+
     Entity* player = &world->player;
     Vector* bullets_vector = &world->bullets_vector;
     //Vector* bonus_vector = &world->bonus_vector;
@@ -434,7 +503,7 @@ void Inputs_ApplyInputs( Controls* controls,
 
 
     //press ESC to show menu
-    if(controls->timer_menu <= 0 && (controls->pressedKeys[SDLK_ESCAPE] == true ||
+    if(controls->timer_menu <= 0 && (pressedKeys[SDLK_ESCAPE] == true ||
        SDL_JoystickGetButton(controller, BUTTON_START)))
     {
         if(display_menu_g)
@@ -465,31 +534,31 @@ void Inputs_ApplyInputs( Controls* controls,
         {
             //determine if running
             if(!world->player.playerC->running &&
-                   controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+                   pressedKeys[SDL_SCANCODE_LSHIFT])
             {
                 Player_StartRunning(&world->player);
             }
             else if(world->player.playerC->running &&
-                   !controls->pressedKeys[SDL_SCANCODE_LSHIFT])
+                   !pressedKeys[SDL_SCANCODE_LSHIFT])
             {
                 Player_StopRunning(&world->player);
             }
         }
 
         //apply keyboard controls to player movement
-        if (controls->pressedKeys[SDLK_z] == true)
+        if (pressedKeys[SDLK_z] == true)
         {
             player->movementC->dy = -1 * player->movementC->speed * delta_g;
         }
-        if (controls->pressedKeys[SDLK_s] == true)
+        if (pressedKeys[SDLK_s] == true)
         {
             player->movementC->dy = 1 * player->movementC->speed * delta_g;
         }
-        if (controls->pressedKeys[SDLK_d] == true)
+        if (pressedKeys[SDLK_d] == true)
         {
             player->movementC->dx = 1 * player->movementC->speed * delta_g;
         }
-        if (controls->pressedKeys[SDLK_q] == true)
+        if (pressedKeys[SDLK_q] == true)
         {
             player->movementC->dx = -1 * player->movementC->speed * delta_g;
         }
@@ -572,7 +641,7 @@ void Inputs_ApplyInputs( Controls* controls,
             //reloading
             if(reloading_g)
             {
-                if(controls->pressedKeys[SDLK_r])
+                if(pressedKeys[SDLK_r])
                 {
                     WeaponsComponent_Reload(player->weaponsC);
                 }
@@ -602,7 +671,7 @@ void Inputs_ApplyInputs( Controls* controls,
 
 
             //opening/closing doors
-            if(controls->pressedKeys[SDLK_SPACE])
+            if(pressedKeys[SDLK_SPACE])
             {
                 if(world->map[position_in_array]->t == Cat_Door &&
                    Entity_CheckDistance(player, world->map[position_in_array], 60))
@@ -638,7 +707,7 @@ void Inputs_ApplyInputs( Controls* controls,
             Inputs_ApplyInputsLevelEditor(controls, world, level_editor, gm);
         }
 
-        if(controls->pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
+        if(pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
         {
             if(game_state_g == GameState_Map_Editor_Testing_Level)
             {
@@ -648,4 +717,17 @@ void Inputs_ApplyInputs( Controls* controls,
             }
         }
     }
+}
+
+void Inputs_SavePressedKeys()
+{
+    for(int i = 0 ; i < 200 ; i++)
+    {
+        previousPressedKeys_g[i] = pressedKeys[i];
+    }
+}
+
+bool* Inputs_GetPressedKeys()
+{
+    return pressedKeys;
 }

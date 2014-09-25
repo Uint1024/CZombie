@@ -19,16 +19,20 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 {
 	Entity* ent = Entity_Spawn();
 	ent->t = Cat_Wall;
-//	ent->texture = all_textures_g[Cat_Wall][type];
+	ent->sub_category = type;
 	ent->x = x_;
 	ent->y = y_;
 
 	ent->hp = 50;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
-    //ent->solid = false;
-    if(type == Wall_Glass)
+    switch(type)
     {
+    case Wall_Glass:
         ent->transparent = true;
+        break;
+    case Wall_Reinforced:
+            ent->hp = 100000;
+            break;
     }
 	return ent;
 }
@@ -50,8 +54,6 @@ Entity* Ground_Create(Ground_Type type, float x, float y)
     Entity* ent = Entity_Spawn();
     ent->t = Cat_Ground;
     ent->sub_category = type;
-//    ent->texture = all_textures_g[Cat_Ground][type];
-
 	ent->x = x;
 	ent->y = y;
 
@@ -71,12 +73,8 @@ void Structure_GetAttacked(Entity* d, Entity* attacker)
 
 void Structure_Die(Entity* d)
 {
-    //d->texture = door_textures_g[Door_Dead];
     Sound_PlayWallDestroyed();
     d->alive = false;
-    //d->solid = false;
-    //d->visible = false;
-    printf("%d\n", d->solid);
 
 }
 

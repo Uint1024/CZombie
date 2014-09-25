@@ -35,8 +35,7 @@ Entity* Decal_Create(Entity* parent, Decal_Type type)
     }
 
 
-    decals->box = BoundingBox_CreateFromAllValues(width, height,
-                                                parent->x, parent->y);
+    decals->box = BoundingBox_CreateBetter(parent->x, parent->y, width, height);
     decals->x = parent->x;
     decals->y = parent->y;
 

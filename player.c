@@ -43,8 +43,9 @@ void Player_FieldOfView(Entity* p, World* world)
 
     //Player_ScanVisionPoints(p, world);
     int fov = 10;
-    playerTileX = p->x / TILE_SIZE;
-    playerTileY = p->y / TILE_SIZE;
+
+    playerTileX = playerMiddleX / TILE_SIZE;
+    playerTileY = playerMiddleY / TILE_SIZE;
 
     world->ground_map[playerTileY * world->map_width + playerTileX]->in_dark = false;
     for(int i = 1 ; i < 9 ; i++)
@@ -570,8 +571,8 @@ Entity Player_Create(float x, float y, int w, int h)
     p.weaponsC                      =   WeaponsComponent_Create();
     p.weaponsC->bullets[Weapon_Handgun] = 50;
     //p.weaponsC->bullets[Weapon_GrenadeLauncher] = 100;
-    BoundingBox_Create(&p, w, h);
-
+    //BoundingBox_Create(&p, w, h);
+    p.box = BoundingBox_CreateWithOffset(x, y, 16, 16, 2, 2);
 
     WeaponsComponent_AddWeaponToInventory(p.weaponsC,
                                           Weapon_Create(Weapon_Handgun));

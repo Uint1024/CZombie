@@ -44,7 +44,6 @@ ZombieC* ZombieC_Create()
 
 void Zombie_Update(Entity* z, World* world)
 {
-    printf("%d\n", z->t);
     Entity_CalculateVisibility(z, world);
     Entity_CalculateVelocity(z);
 
@@ -73,6 +72,7 @@ void Zombie_Update(Entity* z, World* world)
         if(zc->aggressive &&
            z->weaponsC != NULL)
         {
+
             Zombie_Shoot(z, world);
         }
 
@@ -158,6 +158,8 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->weaponsC = WeaponsComponent_Create(true);
         WeaponsComponent_AddWeaponToInventory(z->weaponsC,
                                               Weapon_Create(weapon));
+        WeaponsComponent_AddAmmo(z->weaponsC, weapon, 500);
+        WeaponsComponent_ChangeWeapon(z->weaponsC, weapon);
     }
 
 
@@ -173,7 +175,7 @@ void Zombie_Ai(Entity* z, World* world)
     ZombieC* zc = z->zombieC;
     Entity* player = &world->player;
 
-    if(z->zombieC->ai_timer > 45)
+    if(z->zombieC->ai_timer > 500)
     {
         z->zombieC->dodging_timer += z->zombieC->ai_timer;
         zc->paths_calculated = 0;
@@ -262,13 +264,15 @@ void Zombie_Ai(Entity* z, World* world)
 
         }
 
+        if(!zc->aggressive)
+        {
+            Zombie_CalculateRandomPath(z);
+        }
+
     }
 
 
-    if(!zc->aggressive)
-    {
-        Zombie_CalculateRandomPath(z);
-    }
+
 
 }
 
@@ -329,9 +333,9 @@ void Zombie_BecomeAggressive(Entity* z, World* world)
 
 void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
 {
-    int random = rand() % 10;
+    int random = rand() % 100;
 
-    if(random <= 2)
+    if(random <= 10)
     {
         Bonus_GenerateRandom(bonus_vector, zombie);
     }
