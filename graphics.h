@@ -14,47 +14,50 @@ typedef struct Window    Window;
 typedef struct GameManager GameManager;
 typedef struct PlayerC PlayerC;
 
-typedef struct Graphics
+/*typedef struct Graphics
 {
     //char*                   textures_names[NB_OF_TEXTURES];
     //SDL_Texture*            textures[NB_OF_TEXTURES];
-    TTF_Font*               fonts[10];
-    SDL_Window*             window;
-    SDL_Renderer*           renderer;
-    int                     screen_width;
-    int                     screen_height;
-    SDL_Surface*            text_surface;
-    SDL_Texture*            text_texture;
+
+
 } Graphics;
+*/
 
+static TTF_Font*               fonts[10];
+static SDL_Window*             window;
+static SDL_Renderer*           renderer;
+static int                     screen_width;
+static int                     screen_height;
+static SDL_Surface*            text_surface;
+static SDL_Texture*            text_texture;
 
+void Graphics_Create(  int screen_width, int screen_height);
 
-Graphics* Graphics_Create(  int screen_width, int screen_height);
+void Graphics_Flip();
 
-void Graphics_Flip(         Graphics* graphics);
+void Graphics_RenderWorld(World* world);
 
-void Graphics_RenderWorld(  Graphics* graphics, World* world);
+void Graphics_RenderObject(Entity* object, PlayerC* playerC);
 
-void Graphics_RenderObject( Graphics* graphics, Entity* object, PlayerC* playerC);
-
-void Graphics_RenderText(Graphics* graphics, char* text, Font_Size size,
+void Graphics_RenderText(char* text, Font_Size size,
                          int x, int y, bool shaded,Font_Color color);
 
-void Graphics_RenderMenu(   Graphics* g, Menu* menu, Controls* controls);
+void Graphics_RenderMenu(Menu* menu, Controls* controls);
 
-void Graphics_RenderUI(Graphics* g, World* world, Controls* controls, float fps, Window* level_editor, GameManager* gm);
+void Graphics_RenderUI(World* world, Controls* controls, float fps, Window* level_editor, GameManager* gm);
 
-void Graphics_RenderGame(Graphics* g, World* world,
+//void Graphics_DrawUI(G)
+void Graphics_RenderGame(World* world,
                          Controls* controls, float fps, Window* level_editor, GameManager* gm);
 
-void Graphics_RenderGameUI(Graphics* g, World* world);
+void Graphics_RenderGameUI(World* world);
 
-void Graphics_RenderLevelEditorUI(Graphics* g, World* world, Controls* controls,Window* level_editor, GameManager* gm);
+void Graphics_RenderLevelEditorUI(World* world, Controls* controls,Window* level_editor, GameManager* gm);
 
-//void Graphics_SetTextureAlpha(Graphics* graphics, Texture_Type texture, int alpha);
+//void Graphics_SetTextureAlpha(, Texture_Type texture, int alpha);
 
-void Graphics_RenderFillTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
+void Graphics_RenderFillTriangle(Vec2 v1, Vec2 v2, Vec2 v3);
 
-void Graphics_RenderFillBottomFlatTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
-void Graphics_RenderFillTopFlatTriangle(Graphics* g, Vec2 v1, Vec2 v2, Vec2 v3);
+void Graphics_RenderFillBottomFlatTriangle(Vec2 v1, Vec2 v2, Vec2 v3);
+void Graphics_RenderFillTopFlatTriangle(Vec2 v1, Vec2 v2, Vec2 v3);
 #endif // GRAPHICS_H

@@ -19,8 +19,8 @@ typedef struct MenuButton
 
 MenuButton* MenuButton_Create(Menu_Button_Name name,
                               float x, float y,
-                              char* text, bool centered,
-                              Graphics* graphics);
+                              char* text, bool centered
+                              );
 MenuButton* FileNameButton_Create(float y, char* text);
 void MenuButton_UpdateBox(MenuButton* b, int x, int y);
 #endif // MAIN_MENU_H

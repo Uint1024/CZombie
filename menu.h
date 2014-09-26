@@ -42,10 +42,10 @@ typedef struct Menu
 
 
 
-Menu* OptionMenu_Create(Graphics* graphics);
+Menu* OptionMenu_Create();
 Menu* MainMenu_Create(MenuManager* menu_manager);
-Menu* SaveLevelMenu_Create(Graphics* graphics);
-Menu* LoadLevelMenu_Create(Graphics* graphics);
+Menu* SaveLevelMenu_Create();
+Menu* LoadLevelMenu_Create();
 Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager);
 Menu*  LevelEditorEditing_Create(MenuManager* menu_manager);
 

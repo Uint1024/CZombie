@@ -53,7 +53,6 @@ void Door_Open(Entity* d)
 {
     if(d->solid)
     {
-        //printf("lol");
        Sound_PlayOpenDoor();
         d->solid = false;
     }

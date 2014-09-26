@@ -43,6 +43,9 @@ static int rectangle_selection_endY;
 static bool unlimited_creation = false;
 static bool pressedKeys[200] = {false};
 
+static int aimPosX = 0;
+static int aimPosY = 0;
+
 Controls* CreateControls()
 {
 
@@ -483,6 +486,7 @@ bool Inputs_PoolInputs(Controls* controls, PlayerC* playerC)
     controls->tileInPixelsX = controls->mouseTileX * TILE_SIZE;
     controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;
 
+    //Graphics_DrawUI();
 
 	return true;
 }
@@ -606,11 +610,20 @@ void Inputs_ApplyInputs( Controls* controls,
                 player->movementC->dy = ((float)controller_leftAxisY / axis_divide) * delta_g;
             }
 
+
             if(controller_rightAxisX > deadzone * 2 || controller_rightAxisX < -deadzone * 2 ||
                controller_rightAxisY > deadzone * 2 || controller_rightAxisY < -deadzone * 2)
             {
+                if(!bullet_time_g)
+                {
+                    player->movementC->angle = atan2(controller_rightAxisY, controller_rightAxisX);
+                }
+                else
+                {
+                    aimPosX += ((float)controller_rightAxisX / axis_divide) * delta_g;
+                    aimPosY += ((float)controller_rightAxisY / axis_divide) * delta_g;
+                }
 
-                player->movementC->angle = atan2(controller_rightAxisY, controller_rightAxisX);
             }
 
             if(SDL_JoystickGetButton(controller, BUTTON_A))
@@ -629,9 +642,18 @@ void Inputs_ApplyInputs( Controls* controls,
             {
                 WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_GrenadeLauncher);
             }
-            if(SDL_JoystickGetButton(controller, BUTTON_LEFT_SHOULDER))
+            if(SDL_JoystickGetButton(controller, BUTTON_LEFT))
             {
                 WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_TheBigGun);
+            }
+            if(SDL_JoystickGetButton(controller, BUTTON_LEFT_SHOULDER))
+            {
+                bullet_time_g = true;
+            }
+            else
+            {
+                bullet_time_g = false;
+
             }
 
         }
@@ -695,8 +717,8 @@ void Inputs_ApplyInputs( Controls* controls,
                                               muzzleY,
                                               player->movementC->angle,
                                               bullets_vector,
-                                              controls->mousePositionInWorldX,
-                                              controls->mousePositionInWorldY);
+                                              aimPosX,
+                                              aimPosY);
             }
         }
 

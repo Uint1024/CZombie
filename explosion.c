@@ -9,7 +9,7 @@ Entity* Explosion_Create(int x, int y)
     exp->t = Cat_Explosion;
     exp->sub_category = Explosion_Normal;
     exp->alive = true;
-    exp->damage = 50;
+    exp->damage =30;
     exp->x = x;
     exp->y = y;
     exp->alive_timer = 500;
@@ -24,6 +24,7 @@ void Explosion_Update(Entity* exp, World* world)
 {
     exp->alive_timer -= delta_g;
 
+
     for(int i = 0 ; i < world->map_size ; i++)
     {
         if(world->map[i] != NULL && BoundingBox_CheckSimpleCollision(&exp->box, &world->map[i]->box))
@@ -32,6 +33,7 @@ void Explosion_Update(Entity* exp, World* world)
         }
 
     }
+    exp->damage = 0;
 
     if(exp->alive_timer <= 0)
         exp->alive = false;

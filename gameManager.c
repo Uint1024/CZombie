@@ -18,7 +18,7 @@ GameManager GameManager_Create()
     gm.wave_id = 0;
     gm.game_mode = Survival_mode;
     gm.wave_timer = 40000;
-    gm.waves[0] = Wave_Create(5, 0, 0, 0, 0);
+/*    gm.waves[0] = Wave_Create(5, 0, 0, 0, 0);
     gm.waves[1] = Wave_Create(30, 0, 2, 0, 0);
     gm.waves[2] = Wave_Create(40, 5, 4, 0, 1);
     gm.waves[3] = Wave_Create(70, 10, 8, 0, 2);
@@ -33,28 +33,26 @@ GameManager GameManager_Create()
     gm.waves[12] = Wave_Create(5, 0, 0, 0, 0);
     gm.waves[13] = Wave_Create(5, 0, 0, 0, 0);
 
-
+*/
 
 
     return gm;
 
 }
 
-Wave Wave_Create(int normal_zombies, int fast_zombies,
-                 int heavy_zombies, int huge_zombies,
-                 int trooper_zombies)
+/*Wave Wave_Create(
 {
     Wave wave;
 
     wave.zombies[Normal_Zombie] = normal_zombies;
-    wave.zombies[Fast_Zombie] = fast_zombies;
-    wave.zombies[Heavy_Zombie] = heavy_zombies;
-    wave.zombies[Huge_Zombie] = huge_zombies;
-    wave.zombies[Trooper_Zombie] = trooper_zombies;
+    wave.zombies[Zombie_Fast] = Zombie_Fasts;
+    wave.zombies[Zombie_Heavy] = Zombie_Heavys;
+    wave.zombies[Zombie_Huge] = Zombie_Huges;
+    wave.zombies[Zombie_Trooper] = Zombie_Troopers;
 
     return wave;
 }
-
+*/
 void Game_StartMap(World* world)
 {
 
@@ -82,22 +80,25 @@ void Game_StartMap(World* world)
 void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 {
 
-    Vector_Nullify(&world->non_null_walls);
-
-    //oh god
-    for(int i = 0 ; i < world->map_size ; i++)
+    if(!bullet_time_g)
     {
-        if(world->map[i] != NULL && world->map[i]->alive)
+        Vector_Nullify(&world->non_null_walls);
+
+        //oh god
+        for(int i = 0 ; i < world->map_size ; i++)
         {
-            Vector_Push(&world->non_null_walls, world->map[i]);
+            if(world->map[i] != NULL && world->map[i]->alive)
+            {
+                Vector_Push(&world->non_null_walls, world->map[i]);
+            }
         }
-    }
 
-    Player_Update(world);
+        Player_Update(world);
 
-    if(game_state_g != GameState_Editing_Map)
-    {
-        GameManage_UpdateWorldEntities(gm, world);
+        if(game_state_g != GameState_Editing_Map)
+        {
+            GameManage_UpdateWorldEntities(gm, world);
+        }
     }
 
     //GameManager_UpdateEnnemyWaves(gm, world, delta);
@@ -168,8 +169,10 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         }
     }
 
+
     for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
     {
+
         if(Vector_Get(bonus_vector, i) != NULL)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
@@ -189,6 +192,10 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
     for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
     {
+        if(Vector_Count(decals_vector) > 100)
+        {
+            Vector_Delete(decals_vector, 0);
+        }
         Entity* decal = (Entity*)Vector_Get(decals_vector, i);
         Entity_CalculateVisibility(decal, world);
     }
@@ -201,7 +208,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
             {
                 Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 
-                if(Entity_CheckDistance(mob, &world->player, 1500))
+                if(mob->zombieC->aggressive || Entity_CheckDistance(mob, &world->player, 800))
                 {
                     Zombie_Update(mob, world);
 

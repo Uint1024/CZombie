@@ -45,13 +45,13 @@ ZombieC* ZombieC_Create()
 void Zombie_Update(Entity* z, World* world)
 {
     Entity_CalculateVisibility(z, world);
-    //Entity_CalculateVelocity(z);
+    Entity_CalculateVelocity(z);
 
     z->zombieC->ai_timer += delta_g;
     z->zombieC->rand_move_timer += delta_g;
     z->zombieC->attack_timer += delta_g;
         z->zombieC->dodging_timer += z->zombieC->ai_timer;
-    //Zombie_Ai(z, world);
+    Zombie_Ai(z, world);
 
 
 
@@ -67,9 +67,9 @@ void Zombie_Update(Entity* z, World* world)
             zc->paths_calculated++;
             Zombie_NewTrajectory(z);
         }
-        Entity_CollisionWithExplosions(z, &world->explosions_vector);
+        Entity_CollisionWithExplosions(z, &world->explosions_vector, world);
 
-        moveEntity(z, z->movementC->dx * delta_g, z->movementC->dy * delta_g);
+        moveEntity(z, z->movementC->dx, z->movementC->dy);
     }
 
 
@@ -87,6 +87,8 @@ void Zombie_GetAttacked(Entity* z, int damage, World* world)
     {
         Zombie_BecomeAggressive(z, world);
     }
+
+
 
     Entity_LoseHealth(z, damage);
 }
@@ -125,29 +127,29 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     Weapon_Type weapon = No_Weapon;
     switch(type)
     {
-    case Normal_Zombie:
+    case Zombie_Normal:
         z->hp = 5;
         z->damage = 3;
         break;
-    case Heavy_Zombie:
+    case Zombie_Heavy:
         width = 40;
         height = 40;
         z->hp = 30;
         z->damage = 2;
         weapon = Weapon_Fireball;
         break;
-    case Fast_Zombie:
+    case Zombie_Fast:
         z->hp = 2;
         z->damage = 3;
         break;
-    case Trooper_Zombie:
+    case Zombie_Trooper:
         width = 45;
         height = 45;
-        z->hp = 20;
+        z->hp = 40;
         z->damage = 5;
         weapon = Weapon_TripleFireball;
        break;
-    case Huge_Zombie:
+    case Zombie_Huge:
         width = 120;
         height = 120;
         z->hp = 200;
@@ -230,7 +232,7 @@ void Zombie_Ai(Entity* z, World* world)
                 Zombie_BecomeCalm(z);
             }
 
-            if(!zc->dodging && SDL_GetTicks() - zc->dodging_time > 1000)
+            if(!zc->dodging && SDL_GetTicks() - zc->dodging_time > 1500)
             {
                 int dodge_chance = rand() % 100;
 
@@ -265,7 +267,6 @@ void Zombie_Ai(Entity* z, World* world)
 
                 z->movementC->angle = C_AngleBetween2Points(z->x, z->y,
                                                             world->player.x, world->player.y);
-                Entity_CalculateVelocity(z);
 
             }
 
@@ -309,7 +310,6 @@ void Zombie_CalculateRandomPath(Entity* z)
         if(!z->zombieC->idling)
         {
             z->movementC->angle = C_GenerateRandomAngle();
-            Entity_CalculateVelocity(z);
         }
     }
 }
@@ -323,20 +323,26 @@ void Zombie_BecomeAggressive(Entity* z, World* world)
     z->movementC->speed = angry_speed_g[zc->zombie_type];
     Vector* monsters = &world->monsters_vector;
 
+    unsigned char zombies_told = 0;
+
     //the zombie tells the closest zombies that he's spotted the player
-    for(int i = 0 ; i < Vector_Count(monsters) ; i++)
+    for(int i = 0 ; i < Vector_Count(monsters) && zombies_told < 3 ; i++)
     {
         Entity* mob = (Entity*)Vector_Get(monsters, i);
-        if(Entity_CheckDistance(z, mob, 600) && !mob->zombieC->aggressive)
+        if(Entity_CheckDistance(z, mob, 300) && !mob->zombieC->aggressive)
         {
             //zombie will become aggressive only if he can be seen by z
             if(Entity_CheckCanSeeEntity(z, mob, world))
             {
+
                 Zombie_BecomeAggressive(mob, world);
+                zombies_told++;
             }
 
         }
     }
+
+
 }
 
 
@@ -353,19 +359,19 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
 
     switch(zombie->sub_category)
     {
-    case Normal_Zombie:
+    case Zombie_Normal:
         corpse_type = Decal_Corpse_Normal;
         break;
-    case Fast_Zombie:
+    case Zombie_Fast:
         corpse_type = Decal_Corpse_Fast;
         break;
-    case Heavy_Zombie:
+    case Zombie_Heavy:
         corpse_type = Decal_Corpse_Heavy;
         break;
-    case Trooper_Zombie:
+    case Zombie_Trooper:
         corpse_type = Decal_Corpse_Trooper;
         break;
-    case Huge_Zombie:
+    case Zombie_Huge:
         corpse_type = Decal_Corpse_Huge;
         break;
     }

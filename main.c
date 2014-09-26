@@ -32,6 +32,7 @@ bool           debug_mode = false;
 bool           display_menu_g = true;
 Game_State      game_state_g = GameState_Main_Menu;
 bool             unlimited_ammo_g = false;
+bool bullet_time_g = false;
 bool draw_grid_g = true;
 bool reloading_g = false;
 int screen_width_g = 1080;
@@ -49,7 +50,8 @@ int main(int argc, char* args[])
 	int screen_width = 1080;
 	int screen_height = 768;
 
-    Graphics* graphics = Graphics_Create(screen_width, screen_height);
+    Graphics_Create(screen_width, screen_height);
+
 	bool running = true;
 
     GameManager game_manager = GameManager_Create();
@@ -72,7 +74,7 @@ int main(int argc, char* args[])
 
     Window level_editor = Window_CreateLevelEditor();
 
-    MenuManager menu_manager = MenuManager_Create(graphics);
+    MenuManager menu_manager = MenuManager_Create();
     int ms_delay_between_frame = 1000 / 60;
     int ms_delay_between_render= 1000 / 60;
     int time_last_render = 0;
@@ -100,12 +102,12 @@ int main(int argc, char* args[])
             {
 
                 GameManager_Update(&game_manager, &world, &level_editor);
-                Graphics_RenderGame(graphics,&world, controls, fps, &level_editor, &game_manager);
+                Graphics_RenderGame(&world, controls, fps, &level_editor, &game_manager);
             }
             else
             {
                 MenuManager_Update(&menu_manager, controls, &running, &world);
-                Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
+                Graphics_RenderMenu(menu_manager.active_menu, controls);
             }
             time_last_frame = time_now;
             Inputs_SavePressedKeys();
@@ -138,9 +140,9 @@ int main(int argc, char* args[])
         time_last_frame_real = time_now;
 	}
 
-
-	SDL_DestroyRenderer(graphics->renderer);
-	SDL_DestroyWindow(graphics->window);
+    //todo : add all the proper cleanup
+	//SDL_DestroyRenderer(renderer);
+	//SDL_DestroyWindow(window);
 
 	SDL_Quit();
 	return 0;

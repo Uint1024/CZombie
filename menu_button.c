@@ -5,29 +5,67 @@
 
 MenuButton* MenuButton_Create(Menu_Button_Name name,
                               float x, float y,
-                              char* text, bool centered,
-                              Graphics* graphics)
+                              char* text, bool centered
+                              )
 {
-    int textH = 0;
-    int textW = 0;
-    SDL_Color text_color = { 40, 40, 40, 255 };
-    SDL_Surface* text_surface = TTF_RenderText_Solid(graphics->fonts[Menu_font],
+    int textH = 100;
+    int textW = 400;
+  //  SDL_Color text_color = { 40, 40, 40, 255 };
+/*    SDL_Surface* text_surface = TTF_RenderText_Solid(graphics->fonts[Menu_font],
                                                      text, text_color);
-
+*/
 
     MenuButton* button = (MenuButton*)malloc(sizeof(MenuButton));
 
-    button->text_texture =  SDL_CreateTextureFromSurface(graphics->renderer,
+    /*button->text_texture =  SDL_CreateTextureFromSurface(graphics->renderer,
                                                          text_surface);
 
     SDL_QueryTexture(button->text_texture, NULL, NULL, &textW, &textH);
-    SDL_FreeSurface(text_surface);
+    SDL_FreeSurface(text_surface);*/
+
+
+    switch(name)
+    {
+    case Play_button:
+        textW = 400;
+        break;
+    case LevelEditor_button:
+        textW = 400;
+        break;
+    case NewMap_button:
+        textW = 400;
+        break;
+    case LoadMap_button:
+        textW = 400;
+        break;
+    case SaveGame_button:
+        textW = 400;
+        break;
+    case LoadGame_button:
+        textW = 400;
+        break;
+    case SaveMap_button:
+        textW = 400;
+        break;
+    case Options_button:
+        textW = 400;
+        break;
+    case Quit_button:
+        textW = 400;
+        break;
+    case Back_button:
+        textW = 400;
+        break;
+    case Exit_Level_Editor_button:
+        textW = 400;
+        break;
+    }
 
 
     button->name         =   name;
     button->text         =   text;
 
-    button->x            =   centered ? graphics->screen_width / 2 - textW / 2 : x;
+    button->x            =   centered ? screen_width_g / 2 - textW / 2 : x;
     button->y            =   y;
 
     button->box          =   BoundingBox_CreateBetter(button->x, button->y, textW, textH);

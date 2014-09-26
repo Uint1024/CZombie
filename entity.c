@@ -111,8 +111,8 @@ bool Entity_CheckVeryClose(Entity* ent1, Entity* ent2)
 
 void Entity_CalculateVelocity(Entity* ent)
 {
-    ent->movementC->dx = cos(ent->movementC->angle ) * ent->movementC->speed;
-    ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed;
+    ent->movementC->dx = cos(ent->movementC->angle ) * ent->movementC->speed * delta_g;
+    ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed * delta_g;
 }
 
 
@@ -213,7 +213,6 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
             if(Wall_IsWall(wall) && BoundingBox_CheckPointCollision(pointX, pointY, &wall->box))
             {
                 collision = true;
-                printf("%d\n", i);
             }
         }
     }
@@ -465,18 +464,21 @@ bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
     return collision;
 }
 
-void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions)
+void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions, World* world)
 {
-    bool collision = false;
+    /*bool collision = false;
     for(int i = 0 ; i < Vector_Count(explosions) ; i++)
     {
         Entity* exp = (Entity*)Vector_Get(explosions, i);
         collision = BoundingBox_CheckSimpleCollision(&ent->box, &exp->box);
         if(collision)
         {
-            Entity_LoseHealth(ent, exp->damage);
+
+                //Zombie_GetAttacked(ent, exp->damage, world);
+
+            //Entity_LoseHealth(ent, exp->damage);
         }
-    }
+    }*/
 }
 
 void Entity_LoseHealth(Entity* ent, int damage)

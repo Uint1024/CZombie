@@ -21,10 +21,10 @@ typedef struct MenuManager
 
 
 
-MenuManager MenuManager_Create(Graphics* graphics);
+MenuManager MenuManager_Create();
 void MenuManager_Update(MenuManager* mm,
                         Controls* controls,
                         bool* running,
                         World* world);
-void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager);
+void MenuManager_LoadAllButtons(MenuManager* menu_manager);
 #endif // MENU_MANAGER_H

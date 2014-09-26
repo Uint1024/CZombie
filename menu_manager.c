@@ -9,18 +9,18 @@
 #include "dirent.h"
 
 
-MenuManager MenuManager_Create(Graphics* graphics)
+MenuManager MenuManager_Create()
 {
     MenuManager mm;
 
     mm.all_buttons = Vector_Create();
-    MenuManager_LoadAllButtons(graphics, &mm);
+    MenuManager_LoadAllButtons(&mm);
 
     mm.sub_menus[MainMenu_menu]    =   MainMenu_Create(&mm);
         mm.sub_menus[LevelEditorEditing_menu]   =   LevelEditorEditing_Create(&mm);
     //mm.sub_menus[Options_menu]      =   OptionMenu_Create(graphics);
-    mm.sub_menus[SaveMap_menu]      =   SaveLevelMenu_Create(graphics);
-    mm.sub_menus[LoadMap_menu]      =   LoadLevelMenu_Create(graphics);
+    mm.sub_menus[SaveMap_menu]      =   SaveLevelMenu_Create();
+    mm.sub_menus[LoadMap_menu]      =   LoadLevelMenu_Create();
     mm.sub_menus[LevelEditor_menu]   =   LevelEditorMainMenu_Create(&mm);
 
 
@@ -31,7 +31,7 @@ MenuManager MenuManager_Create(Graphics* graphics)
     return mm;
 }
 
-void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager)
+void MenuManager_LoadAllButtons(MenuManager* menu_manager)
 {
     Menu_Button_Name Menu_Button_Name[11] = {Play_button,
                                             LevelEditor_button,
@@ -53,8 +53,8 @@ void MenuManager_LoadAllButtons(Graphics* graphics, MenuManager* menu_manager)
     {
         MenuButton* button = MenuButton_Create(Menu_Button_Name[i],
                                       100.0f, 100.0f,
-                                      text[i], true,
-                                      graphics);
+                                      text[i], true
+                                    );
 
         Vector_Push(&menu_manager->all_buttons,
                     button
@@ -159,8 +159,8 @@ void MenuManager_Update(MenuManager* mm,
         mm->click_timer = 100;
         for(int i = 0 ; i < Vector_Count(&menu->buttons) ; i++)
         {
-            MenuButton* button = Vector_Get(&menu->buttons, i);
 
+            MenuButton* button = Vector_Get(&menu->buttons, i);
             button->hover = false;
             bool hover_on_button =
                         BoundingBox_CheckPointCollision(controls->mouseX,

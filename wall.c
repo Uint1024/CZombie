@@ -23,7 +23,7 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
 	ent->x = x_;
 	ent->y = y_;
 
-	ent->hp = 50;
+	ent->hp = 25;
 	BoundingBox_Create(ent, TILE_SIZE, TILE_SIZE);
     switch(type)
     {

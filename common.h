@@ -142,13 +142,17 @@ typedef enum {
 
 //Zombie_Type
 typedef enum {
-    Normal_Zombie,
-    Heavy_Zombie,
-    Fast_Zombie,
-    Huge_Zombie,
-    Trooper_Zombie,
+    Zombie_Normal,
+    Zombie_Heavy,
+    Zombie_Fast,
+    Zombie_Huge,
+    Zombie_Trooper,
     NB_ZOMBIE_TYPES,
-    Not_a_zombie
+    Not_a_zombie,
+    Slow_Zombie,//
+    Raptor_Zombie,
+    Kamikaze_Zombie,
+
 } Zombie_Type;
 
 typedef enum
@@ -243,6 +247,7 @@ extern bool             unlimited_ammo_g;
 extern bool             reloading_g;
 extern bool             draw_grid_g;
 extern bool using_controller_g;
+extern bool bullet_time_g;
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
 #define BASE_PLAYER_SPEED 0.2

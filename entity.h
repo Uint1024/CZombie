@@ -57,7 +57,7 @@ void moveEntity(Entity* ent, float x, float y);
 //void CalculateVelocity(Entity* p, Entity* map, int map_size);
 Entity* Entity_Spawn();
 //Entity Entity_SpawnOnStack();
-void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions);
+void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions, World* world);
 void Entity_LoseHealth(Entity* ent, int damage);
 bool Entity_CollisionWithStuff(Entity* ent, World* world);
 void Entity_CalculateVelocityFromAngle(Entity* ent);
@@ -75,6 +75,7 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world);
 
 float Entity_GetMiddleY(Entity* ent);
 float Entity_GetMiddleX(Entity* ent);
+
 
 void Entity_Destroy(Entity* ent);
 void Entity_MoveToPosition(Entity* ent, float x, float y);

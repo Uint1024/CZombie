@@ -91,7 +91,7 @@ Menu*  LevelEditorEditing_Create(MenuManager* menu_manager)
     return levelEditorEditingMenu;
 }
 
-Menu* OptionMenu_Create(Graphics* graphics)
+Menu* OptionMenu_Create()
 {
     Menu* optionsMenu = (Menu*)malloc(sizeof(Menu));
 
@@ -104,7 +104,7 @@ Menu* OptionMenu_Create(Graphics* graphics)
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 400,
                                                       "Back",
-                                                      true, graphics);
+                                                      true);
     Vector_Push(&optionsMenu->buttons, back_button);
     optionsMenu->active_textfield = NULL;
     return optionsMenu;
@@ -148,7 +148,7 @@ Menu* LevelEditorMainMenu_Create(MenuManager* menu_manager)
     return levelEditorMenu;
 }
 
-Menu* SaveLevelMenu_Create(Graphics* graphics)
+Menu* SaveLevelMenu_Create()
 {
     Menu* saveMenu = (Menu*)malloc(sizeof(Menu));
 
@@ -163,7 +163,7 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 400,
                                                       "Back",
-                                                      true, graphics);
+                                                      true);
 
 
     Vector_Push(&saveMenu->buttons, back_button);
@@ -171,7 +171,7 @@ Menu* SaveLevelMenu_Create(Graphics* graphics)
     return saveMenu;
 }
 
-Menu* LoadLevelMenu_Create(Graphics* graphics)
+Menu* LoadLevelMenu_Create()
 {
     Menu* optionsMenu = (Menu*)malloc(sizeof(Menu));
 
@@ -185,7 +185,7 @@ Menu* LoadLevelMenu_Create(Graphics* graphics)
     MenuButton* back_button     =   MenuButton_Create(Back_button,
                                                       100, 500,
                                                       "Back",
-                                                      true, graphics);
+                                                      true);
 
     Vector_Push(&optionsMenu->buttons, back_button);
     optionsMenu->active_textfield = NULL;

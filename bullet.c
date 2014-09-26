@@ -47,7 +47,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
         break;
     case Weapon_Shotgun:
         bullet->penetration_chance = 600;
-        bullet->damage = 3;
+        bullet->damage = 1;
         break;
     case Weapon_Fireball:
         bullet->penetration_chance = 0;
@@ -100,8 +100,11 @@ void Bullet_Update(Entity* bullet, World* world)
                 Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
+
+
                     Zombie_GetAttacked(mob, bullet->damage, world);
                     int random = rand() % 1000;
+
 
                     //modulo the address by 1000 to get a kinda random number
                     if(bullet->nb_penetrations < 3 &&
