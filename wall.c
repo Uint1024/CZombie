@@ -29,6 +29,7 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_)
     {
     case Wall_Glass:
         ent->transparent = true;
+        ent->hp = 10;
         break;
     case Wall_Reinforced:
             ent->hp = 100000;

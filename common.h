@@ -218,6 +218,7 @@ float C_GetSlopeBetween2Points(float xa, float ya, float xb, float yb, bool reve
 float C_DistanceSquaredBetween2Points(int xa, int ya, int xb, int yb);
 void C_Sort3Vectors(Vec2* v1, Vec2* v2, Vec2* v3);
 float C_GetSlopeBetween2Vec(Vec2 v1, Vec2 v2, bool reverse_slope);
+float C_AngleAndDistanceBetween2EntitiesSquared(Entity* a, Entity* b, float *angle, float *distance);
 void Game_InitData();
 
 

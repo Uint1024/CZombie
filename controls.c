@@ -96,7 +96,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
         draw_grid_g = draw_grid_g? false : true;
     }
 
-    if(pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
+    if(pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 2000)
     {
         switch_timer = SDL_GetTicks();
         LevelEditor_QuickTry(world);
@@ -707,10 +707,11 @@ void Inputs_ApplyInputs( Controls* controls,
             Inputs_ApplyInputsLevelEditor(controls, world, level_editor, gm);
         }
 
-        if(pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 200)
+        if(pressedKeys[SDLK_F7] && SDL_GetTicks() - switch_timer > 5000)
         {
             if(game_state_g == GameState_Map_Editor_Testing_Level)
             {
+
                 switch_timer = SDL_GetTicks();
 
                 LevelEditor_BackToEditing(world);

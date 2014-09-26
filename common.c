@@ -115,6 +115,16 @@ float C_DistanceSquaredBetween2Points(int xa, int ya, int xb, int yb)
     return distance;
 }
 
+float C_AngleAndDistanceBetween2EntitiesSquared(Entity* a, Entity* b, float *angle, float *distance)
+{
+    float aMiddleX, aMiddleY, bMiddleX, bMiddleY;
+
+    Entity_GetMiddleCoordinates(a, &aMiddleX, &aMiddleY);
+    Entity_GetMiddleCoordinates(b, &bMiddleX, &bMiddleY);
+
+    *angle = C_AngleBetween2Points(aMiddleX, aMiddleY, bMiddleX, bMiddleY);
+    *distance = C_DistanceBetween2Points(aMiddleX, aMiddleY, bMiddleX, bMiddleY);
+}
 
 float C_GetSlopeBetween2Points(float xa, float ya, float xb, float yb, bool reverse_slope)
 {
@@ -200,3 +210,4 @@ float C_AngleBetween2Entities(Entity* a, Entity* b)
 
 	return C_AngleBetween2Points(xa, ya, xb, yb);
 }
+

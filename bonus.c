@@ -45,6 +45,6 @@ void Bonus_Update(Entity* bonus, Entity* player)
         bonus->movementC->speed = -0.003f * abs(bonus->x - player->x) + 0.5;
 
         Entity_CalculateVelocity(bonus);
-        moveEntity(bonus, bonus->movementC->dx, bonus->movementC->dy);
+        moveEntity(bonus, bonus->movementC->dx * delta_g, bonus->movementC->dy * delta_g);
     }
 }

@@ -49,7 +49,6 @@ void Grenade_Update(Entity* g, World* world)
 
     if(g->explosiveC->explosion_timer <= 0)
     {
-        printf("bop");
         Sound_PlayExplosion();
         g->alive = false;
     }

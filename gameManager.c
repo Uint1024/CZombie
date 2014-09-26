@@ -87,11 +87,12 @@ void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
     //oh god
     for(int i = 0 ; i < world->map_size ; i++)
     {
-        if(world->map[i] != NULL)
+        if(world->map[i] != NULL && world->map[i]->alive)
         {
             Vector_Push(&world->non_null_walls, world->map[i]);
         }
     }
+
     Player_Update(world);
 
     if(game_state_g != GameState_Editing_Map)
@@ -106,7 +107,6 @@ void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 
 void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 {
-    //because I don't want to type world-> 50 times
     Vector* bullets_vector = &world->bullets_vector;
     Vector* bonus_vector = &world->bonus_vector;
     Vector* monsters_vector = &world->monsters_vector;
@@ -130,6 +130,9 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
             }
         }
     }
+
+
+
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
@@ -198,6 +201,8 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
             {
                 Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
 
+                if(Entity_CheckDistance(mob, &world->player, 1500))
+                {
                     Zombie_Update(mob, world);
 
                     if (mob->alive == false)
@@ -207,6 +212,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
                         Vector_Delete(monsters_vector, i);
 
                     }
+                }
             }
             else
             {

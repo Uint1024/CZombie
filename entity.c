@@ -111,8 +111,8 @@ bool Entity_CheckVeryClose(Entity* ent1, Entity* ent2)
 
 void Entity_CalculateVelocity(Entity* ent)
 {
-    ent->movementC->dx = cos(ent->movementC->angle ) * ent->movementC->speed * delta_g;
-    ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed * delta_g;
+    ent->movementC->dx = cos(ent->movementC->angle ) * ent->movementC->speed;
+    ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed;
 }
 
 
@@ -139,8 +139,6 @@ void moveEntity(Entity* ent, float x, float y)
 	ent->y += y;
 
 	BoundingBox_Update(ent);
-
-
 }
 
 void Entity_MoveToPosition(Entity* ent, float x, float y)
@@ -173,62 +171,59 @@ float Entity_DistanceBetweenTwoEntities(Entity* ent1, Entity* ent2)
 
 bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
 {
-    //middle of ent1, does not change
     float ent1MiddleX = 0;
     float ent1MiddleY = 0;
     Entity_GetMiddleCoordinates(ent1, &ent1MiddleX, &ent1MiddleY);
 
-    //the next position of the end of the line
-    //will change until we reach a wall or the target
-    float pointX = ent1MiddleX;
-    float pointY = ent1MiddleY;
+    float ent2MiddleX = 0;
+    float ent2MiddleY = 0;
+    Entity_GetMiddleCoordinates(ent2, &ent2MiddleX, &ent2MiddleY);
 
-    //distance calculated from ent1 to the end of the line at each loop
-    float line_distance = 0;
-
-    //will not change
-    float distance_to_ent2 = Entity_DistanceBetweenTwoEntities(ent1, ent2);
-
-    //become false if we hit a wall
-    bool can_see = true;
-
-    float angle_to_ent2 = C_AngleBetween2Entities(ent1, ent2);
-
-    while(line_distance <= distance_to_ent2 &&
-          can_see == true)
+    if(ent2MiddleX < ent1MiddleX)
     {
-        pointX += cos(angle_to_ent2) * 28;//magic number yay!!
-        pointY += sin(angle_to_ent2) * 28;//max of cos(x) and sin(x) is 1 so it
-        line_distance = C_DistanceBetween2Points(ent1MiddleX, ent1MiddleY,
-                                                 pointX, pointY);
+        float tempX = ent1MiddleX;
+        float tempY = ent1MiddleY;
 
-        //looping every walls close to the zombie
-        for(int i = 0 ; i < world->map_size ; i++)
+        ent1MiddleX = ent2MiddleX;
+        ent1MiddleY = ent2MiddleY;
+
+        ent2MiddleX = tempX;
+        ent2MiddleY = tempY;
+    }
+
+    float angle = C_AngleBetween2Points(ent1MiddleX, ent1MiddleY, ent2MiddleX, ent2MiddleY);
+
+    float dx = cos(angle) * 20;
+    float dy = sin(angle) * 20;
+
+    int pointX = ent1MiddleX;
+    int pointY = ent1MiddleY;
+
+    bool collision = false;
+
+
+    while(pointX < ent2MiddleX && !collision)
+    {
+        pointX += dx;
+        pointY += dy;
+
+        for(int i = 0 ; i < Vector_Count(&world->non_null_walls) && !collision ; i++)
         {
-            if(world->map[i] != NULL && Entity_CheckNear(ent1, world->map[i]) &&
-                Wall_IsWall(world->map[i]))
+            Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+            if(Wall_IsWall(wall) && BoundingBox_CheckPointCollision(pointX, pointY, &wall->box))
             {
-                //if the end of the line hits a wall, the zombie can't see the player
-                if(BoundingBox_CheckPointCollision(pointX, pointY, &world->map[i]->box))
-                {
-                    can_see = false;
-                }
+                collision = true;
+                printf("%d\n", i);
             }
         }
     }
 
-    return can_see;
+    return !collision;
 }
 
 bool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance)
 {
-
-    float pythDistance = Entity_DistanceBetweenTwoEntities(ent1, ent2);
-
-    if(pythDistance < distance)
-        return true;
-    else
-        return false;
+    return ((abs(ent1->x - ent2->x) < distance) && (abs(ent1->y - ent2->y) < distance));
 }
 
 bool Entity_CollisionWithStuff(Entity* ent, World* world)

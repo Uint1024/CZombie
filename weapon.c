@@ -42,6 +42,8 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->delay_between_shots = 1000;
         w->reloading_time = 2000;
         w->corresponding_pickup = Bonus_Shotgun;
+        w->bullet_height = 8;
+        w->bullet_width = 8;
     }
     else if(type == Weapon_GrenadeLauncher)
     {

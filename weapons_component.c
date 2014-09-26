@@ -124,7 +124,7 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
     if(wc->bullets[weapon->type] > 0 && weapon->magazine_bullets > 0 &&
         SDL_GetTicks() - weapon->last_shot > weapon->delay_between_shots)
     {
-        printf("wtf");
+
         if(weapon->type == Weapon_AutomaticRifle || weapon->type == Weapon_Handgun)
         {
             Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 1, wc->is_monster, weapon));
@@ -135,11 +135,15 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
         }
         else if(weapon->type == Weapon_Shotgun)
         {
-            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 1, wc->is_monster, weapon));
-            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.05, 1, wc->is_monster, weapon));
-            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.1, 1, wc->is_monster, weapon));
-            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.1, 1, wc->is_monster, weapon));
-            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.05, 1, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.03, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.06, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.09, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle+0.11, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.11, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.09, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.06, 0.8, wc->is_monster, weapon));
+            Vector_Push(bullets_vector, Bullet_Create(weapon->type, originX,  originY, angle-0.03, 0.8, wc->is_monster, weapon));
 
         }
         else if(weapon->type == Weapon_GrenadeLauncher)

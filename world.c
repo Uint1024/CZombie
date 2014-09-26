@@ -23,14 +23,6 @@ World World_Initialize(int map_width, int map_height)
                                               100,
                                               10, 10);
 
-
-    //calloc does that
-    /*for(int i = 0 ; i < world.map_size ; i++)
-    {
-        world.map[i] = NULL;//Wall_CreateEmpty();
-
-    }*/
-
     for(int i = 0 ; i < world.map_size ; i++)
     {
         world.ground_map[i] = Ground_Create(Ground_Grass,

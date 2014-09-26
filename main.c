@@ -73,7 +73,7 @@ int main(int argc, char* args[])
     Window level_editor = Window_CreateLevelEditor();
 
     MenuManager menu_manager = MenuManager_Create(graphics);
-    int ms_delay_between_frame = 1000 / 30;
+    int ms_delay_between_frame = 1000 / 60;
     int ms_delay_between_render= 1000 / 60;
     int time_last_render = 0;
     int delta_render = 0;
@@ -87,10 +87,10 @@ int main(int argc, char* args[])
         {
 
             delta_g = time_now - time_last_frame;
-            /*if(delta_g > 0)
+            if(delta_g > 0)
             {
                 fps = 1000 / delta_g;
-            }*/
+            }
 
             chrono_update = 0;
 
@@ -100,19 +100,19 @@ int main(int argc, char* args[])
             {
 
                 GameManager_Update(&game_manager, &world, &level_editor);
-                //Graphics_RenderGame(graphics,&world, controls, fps, &level_editor, &game_manager);
+                Graphics_RenderGame(graphics,&world, controls, fps, &level_editor, &game_manager);
             }
             else
             {
                 MenuManager_Update(&menu_manager, controls, &running, &world);
-                //Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
+                Graphics_RenderMenu(graphics, menu_manager.active_menu, controls);
             }
             time_last_frame = time_now;
             Inputs_SavePressedKeys();
 
         }
 
-        if(chrono_render > ms_delay_between_render)
+       /* if(chrono_render > ms_delay_between_render)
         {
             delta_render = time_now - time_last_render;
             if(delta_g > 0)
@@ -133,7 +133,7 @@ int main(int argc, char* args[])
             time_last_render = time_now;
 
 
-        }
+        }*/
 
         time_last_frame_real = time_now;
 	}

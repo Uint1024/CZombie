@@ -162,13 +162,14 @@ void Graphics_RenderWorld(Graphics* graphics, World* world)
         }
     }
 
-    for (int i = 0; i < world->map_size; i++)
+    for(int i = 0 ; i < Vector_Count(&world->non_null_walls); i++)
     {
-        if (world->map[i] != NULL && world->map[i]->visible)
+        Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+        if (wall != NULL && wall->visible)
         {
-            if(Entity_CheckNear(&world->player, world->map[i]))
+            if(Entity_CheckNear(&world->player, wall))
             {
-                Graphics_RenderObject(graphics, world->map[i], world->player.playerC);
+                Graphics_RenderObject(graphics, wall, world->player.playerC);
 
             }
         }

@@ -25,9 +25,12 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
 	bullet->movementC = MovementC_Create();
 	bullet->movementC->angle = angle;
 	bullet->movementC->speed = speed;
+    bullet->movementC->dx = cos(angle) * speed;
+    bullet->movementC->dy = sin(angle) * speed;
 	bullet->is_ennemy = is_ennemy_bullet;
-	bullet->alive_timer = 2000; //die in 2 seconds
+	bullet->alive_timer = 4000; //die in 4 seconds
 	bullet->damage = 1;
+
 
     bullet->box.height = parent->bullet_height;
     bullet->box.width = parent->bullet_width;
@@ -36,7 +39,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
 	{
     case Weapon_Handgun:
         bullet->penetration_chance = 400;
-        bullet->damage = 1;
+        bullet->damage = 2;
         break;
     case Weapon_AutomaticRifle:
         bullet->penetration_chance = 500;
@@ -44,7 +47,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
         break;
     case Weapon_Shotgun:
         bullet->penetration_chance = 600;
-        bullet->damage = 5;
+        bullet->damage = 3;
         break;
     case Weapon_Fireball:
         bullet->penetration_chance = 0;
@@ -85,10 +88,9 @@ void Bullet_Update(Entity* bullet, World* world)
 
     if(bullet->alive)
     {
-        bullet->movementC->dx = cos(bullet->movementC->angle) * bullet->movementC->speed * delta_g;
-        bullet->movementC->dy = sin(bullet->movementC->angle) * bullet->movementC->speed  * delta_g;
 
-        moveEntity(bullet, bullet->movementC->dx, bullet->movementC->dy);
+
+        moveEntity(bullet, bullet->movementC->dx * delta_g, bullet->movementC->dy * delta_g);
 
 
        if(!bullet->is_ennemy)
@@ -139,26 +141,18 @@ void Bullet_Update(Entity* bullet, World* world)
 
 
 
-        for(int i = 0 ; i < world->map_size && bullet->alive; i++)
+        for(int i = 0 ; i < Vector_Count(&world->non_null_walls) && bullet->alive; i++)
         {
-            if(world->map[i] != NULL && world->map[i] != bullet->hit_wall &&
-               Entity_CheckNear(bullet, world->map[i]) &&
-               world->map[i]->solid &&
-               BoundingBox_CheckSimpleCollision(&bullet->box, &world->map[i]->box))
+            Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+
+            if(wall != bullet->hit_wall &&
+               Entity_CheckNear(bullet, wall) &&
+               wall->solid &&
+               BoundingBox_CheckSimpleCollision(&bullet->box, &wall->box))
             {
-                Structure_GetAttacked(world->map[i], bullet);
-                int random = rand() % 1000;
-                //modulo the address by 1000 to get a kinda random number
-                if(bullet->nb_penetrations < 3 &&
-                    random < bullet->penetration_chance)
-                {
-                    bullet->hit_wall = world->map[i];
-                    bullet->nb_penetrations++;
-                }
-                else
-                {
-                    bullet->alive = false;
-                }
+                Structure_GetAttacked(wall, bullet);
+
+                bullet->alive = false;
             }
 
         }

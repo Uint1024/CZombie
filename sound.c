@@ -30,7 +30,15 @@ void Sound_Init()
     sound_shot_handgun1 = Mix_LoadWAV("sounds/shoot_handgun.wav");
     sound_pickupCoin = Mix_LoadWAV("sounds/coin_pickup.wav");
     sound_openDoor = Mix_LoadWAV("sounds/open_door.wav");
+
+
     Mix_AllocateChannels(100);
+
+    for(int i = 0 ; i < 100 ; i++)
+    {
+        Mix_Volume(i, 10);
+    }
+
 
 }
 
