@@ -113,6 +113,8 @@ typedef enum {
     Wall_Cool,
     Wall_Glass,
     Wall_Reinforced,
+    Wall_Good_Corner,
+    Wall_Good_Center,
     NB_OF_WALL_TYPES
 } Wall_Type
 ;
@@ -147,10 +149,11 @@ typedef enum {
     Zombie_Fast,
     Zombie_Huge,
     Zombie_Trooper,
+    Zombie_Slow,
+    Zombie_Raptor,
     NB_ZOMBIE_TYPES,
     Not_a_zombie,
-    Slow_Zombie,//
-    Raptor_Zombie,
+
     Kamikaze_Zombie,
 
 } Zombie_Type;
@@ -173,6 +176,7 @@ typedef enum {
     Weapon_AutomaticRifle,
     Weapon_Shotgun,
     Weapon_TripleFireball,
+    Weapon_FireballMachineGun,
     Weapon_GrenadeLauncher,
     Weapon_Fireball,
     Weapon_TheBigGun,
@@ -234,11 +238,6 @@ void Game_InitData();
 
 extern SDL_Color        font_color_g[NBCOLORS];
 
-
-/*zombies definition*/
-extern float            calm_speed_g[NB_ZOMBIE_TYPES];
-extern float            angry_speed_g[NB_ZOMBIE_TYPES];
-
 extern int              bonus_width_g[NB_OF_BONUS_TYPES];
 extern int              bonus_height_g[NB_OF_BONUS_TYPES];
 extern Game_State       game_state_g;
@@ -248,14 +247,16 @@ extern bool             reloading_g;
 extern bool             draw_grid_g;
 extern bool using_controller_g;
 extern bool bullet_time_g;
+extern Uint32 bullet_time_timer;
+
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
 #define BASE_PLAYER_SPEED 0.2
 #define LEVEL_EDITOR_SPEED 0.6
 
 #define MAP_SIZE 100
-#define PI 3.14159265359
-#define HALF_PI 1.5707963267
+#define PI 3.141592
+#define HALF_PI 1.570796
 
 enum {
     BUTTON_UP,

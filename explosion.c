@@ -25,14 +25,28 @@ void Explosion_Update(Entity* exp, World* world)
     exp->alive_timer -= delta_g;
 
 
-    for(int i = 0 ; i < world->map_size ; i++)
+    for(int i = 0 ; i < Vector_Count(&world->non_null_walls) ; i++)
     {
-        if(world->map[i] != NULL && BoundingBox_CheckSimpleCollision(&exp->box, &world->map[i]->box))
+        Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+
+        if(BoundingBox_CheckSimpleCollision(&exp->box, &wall->box))
         {
-            Structure_GetAttacked(world->map[i], exp);
+            Structure_GetAttacked(wall, exp);
         }
 
     }
+
+    for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
+    {
+        Entity* mob = (Entity*)Vector_Get(&world->monsters_vector, i);
+
+        if(BoundingBox_CheckSimpleCollision(&exp->box, &mob->box))
+        {
+            Zombie_GetAttacked(mob, exp->damage, world);
+        }
+
+    }
+
     exp->damage = 0;
 
     if(exp->alive_timer <= 0)

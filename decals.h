@@ -12,7 +12,7 @@ Entity* Decal_Create(Entity* parent, Decal_Type type)
     decals->sub_category = type;
     //alright so angle shouldn't be in movementC... FUCK
     decals->movementC = MovementC_Create();
-    decals->movementC->angle = parent->movementC->angle;
+    decals->angle = parent->angle;
 
     int width = 40;
     int height = 40;

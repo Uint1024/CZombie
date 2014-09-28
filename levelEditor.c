@@ -13,19 +13,20 @@ static int building_time = 0;
 
 void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y,
                               int position_in_array, int mousePositionInWorldX,
-                              int mousePositionInWorldY, World* world, bool unlimited)
+                              int mousePositionInWorldY, World* world, bool unlimited,
+                              float angle)
 {
     if(category == Cat_Wall || category == Cat_Door)
     {
         free(world->map[position_in_array]);
-        world->map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
+        world->map[position_in_array] = Entity_Create(category, obj_type, x, y, angle);
     }
 
     else if(category == Cat_Ground)
     {
         Entity_Destroy(world->ground_map[position_in_array]);
         free(world->ground_map[position_in_array]);
-        world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, 0);
+        world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, angle);
     }
 
     else if(category == Cat_Zombie &&
@@ -70,6 +71,7 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
     fwrite(&buffer->damage, sizeof(float), 1, save_file);
     fwrite(&buffer->x, sizeof(float), 1, save_file);
     fwrite(&buffer->y, sizeof(float), 1, save_file);
+    fwrite(&buffer->angle, sizeof(float), 1, save_file);
     fwrite(&buffer->t, sizeof(Main_Category), 1, save_file);
     fwrite(&buffer->box, sizeof(Box), 1, save_file);
     fwrite(&buffer->alive, sizeof(bool), 1, save_file);
@@ -84,10 +86,11 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
         bool has_movementC = true;
         fwrite(&has_movementC, sizeof(bool), 1, save_file);
         MovementC* mc = buffer->movementC;
-        fwrite(&mc->angle, sizeof(float), 1, save_file);
         fwrite(&mc->speed, sizeof(float), 1, save_file);
         fwrite(&mc->dx, sizeof(float), 1, save_file);
         fwrite(&mc->dy, sizeof(float), 1, save_file);
+        fwrite(&mc->normal_speed, sizeof(float), 1, save_file);
+        fwrite(&mc->running_speed, sizeof(float), 1, save_file);
     }
     else
     {
@@ -177,6 +180,7 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
     fread(&buffer->damage, sizeof(float), 1, save_file);
     fread(&buffer->x, sizeof(float), 1, save_file);
     fread(&buffer->y, sizeof(float), 1, save_file);
+    fread(&buffer->angle, sizeof(float), 1, save_file);
     fread(&buffer->t, sizeof(Main_Category), 1, save_file);
     fread(&buffer->box, sizeof(Box), 1, save_file);
     fread(&buffer->alive, sizeof(bool), 1, save_file);
@@ -192,10 +196,11 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
     if(has_movementC != false)
     {
         MovementC* mc = MovementC_Create();
-        fread(&mc->angle, sizeof(float), 1, save_file);
         fread(&mc->speed, sizeof(float), 1, save_file);
         fread(&mc->dx, sizeof(float), 1, save_file);
         fread(&mc->dy, sizeof(float), 1, save_file);
+        fread(&mc->normal_speed, sizeof(float), 1, save_file);
+        fread(&mc->running_speed, sizeof(float), 1, save_file);
         buffer->movementC = mc;
     }
 

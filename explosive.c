@@ -35,11 +35,22 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
 	grenade->box.height = 15;
 	grenade->box.width = 15;
 	grenade->movementC = MovementC_Create();
-	grenade->movementC->angle = angle;
+	/*if(destinationX != 0 && destinationY != 0)
+    {
+
+        grenade->movementC->angle = C_AngleBetween2Points(x, y, destinationX, destinationY);
+    }
+    else
+    {*/
+       grenade->angle = angle;
+    //}
+
 	grenade->movementC->speed = speed;
     grenade->explosiveC = ExplosiveComponent_Create(x, y, angle, speed, destinationX, destinationY);
-    grenade->movementC->dx = cos(angle) * speed;
-    grenade->movementC->dy = sin(angle) * speed;
+    grenade->movementC->dx = cos(grenade->angle ) * speed;
+    grenade->movementC->dy = sin(grenade->angle ) * speed;
+
+
     return grenade;
 }
 
@@ -82,5 +93,12 @@ void Grenade_Update(Entity* g, World* world)
 
     free(temp);
 
-    moveEntity(g, g->movementC->dx * delta_g, g->movementC->dy * delta_g);
+    float middleX, middleY;
+    Entity_GetMiddleCoordinates(g, &middleX, &middleY);
+    /*if((g->movementC->dx < 0 && middleX > g->explosiveC->destinationX) ||
+       (g->movementC->dx > 0 && middleX < g->explosiveC->destinationX))
+    {*/
+        moveEntity(g, g->movementC->dx * delta_g, g->movementC->dy * delta_g);
+    //}
+
 }

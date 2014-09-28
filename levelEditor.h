@@ -19,5 +19,5 @@ void Level_Clear(World* world);
 void LevelEditor_CreateObject(Main_Category category, int obj_type,
                               int x, int y, int position_in_array,int mousePositionInWorldX,
                               int mousePositionInWorldY,
-                              World* world, bool unlimited);
+                              World* world, bool unlimited, float angle);
 #endif // LEVELEDITOR_H

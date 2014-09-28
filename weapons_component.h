@@ -16,6 +16,7 @@ typedef struct WeaponsC
     //monsters have infinite bullets
     //their bullets can't harm other mobs
     bool is_monster;
+
 } WeaponsC;
 
 WeaponsC* WeaponsComponent_Create();

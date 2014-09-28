@@ -60,4 +60,6 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 bool* Inputs_GetPressedKeys();
 
 void Inputs_SavePressedKeys();
+
+void Inputs_GetCursor(int* x, int* y, Cursor_Type* type);
 #endif

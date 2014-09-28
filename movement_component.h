@@ -7,7 +7,9 @@ typedef struct MovementC
 	float                   dx;
 	float                   dy;
 	float                   speed;
-	float                   angle;
+	//float                   angle;
+	float                   normal_speed;
+	float                   running_speed;
 }MovementC;
 
 MovementC* MovementC_Create();

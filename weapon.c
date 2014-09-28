@@ -23,6 +23,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->delay_between_shots = 65;
         w->reloading_time = 3000;
         w->corresponding_pickup = Bonus_Rifle;
+        w->bullet_speed = 1;
     }
     else if(type == Weapon_Handgun)
     {
@@ -33,6 +34,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 1200;
         w->bullet_width = 20;
         w->bullet_height = 20;
+        w->bullet_speed = 1;
     }
     else if(type == Weapon_Shotgun)
     {
@@ -44,6 +46,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->corresponding_pickup = Bonus_Shotgun;
         w->bullet_height = 8;
         w->bullet_width = 8;
+        w->bullet_speed = 1;
     }
     else if(type == Weapon_GrenadeLauncher)
     {
@@ -53,6 +56,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->delay_between_shots = 500;
         w->reloading_time = 6000;
         w->corresponding_pickup = Bonus_GrenadeLauncher;
+        w->bullet_speed = 1;
     }
     else if(type == Weapon_TheBigGun)
     {
@@ -64,6 +68,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->corresponding_pickup = Bonus_TheBigGun;
         w->bullet_width = 28;
         w->bullet_height = 28;
+        w->bullet_speed = 1;
     }
     else if(type == Weapon_Fireball)
     {
@@ -74,7 +79,19 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 0;
         w->bullet_width = 15;
         w->bullet_height = 15;
+        w->bullet_speed = 0.5;
         //w->corresponding_pickup = Bonus_GrenadeLauncher;
+    }
+    else if(type == Weapon_FireballMachineGun)
+    {
+        w->name = "Fireball Machinegun";
+        w->magazine_max_bullets = 1;
+        w->magazine_bullets = 1;
+        w->delay_between_shots = 65;
+        w->reloading_time = 0;
+        w->bullet_width = 30;
+        w->bullet_height = 30;
+        w->bullet_speed = 0.2;
     }
     else if(type == Weapon_TripleFireball)
     {
@@ -85,6 +102,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 0;
         w->bullet_width = 15;
         w->bullet_height = 15;
+        w->bullet_speed = 0.5;
         //w->corresponding_pickup = Bonus_GrenadeLauncher;
     }
 

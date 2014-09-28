@@ -20,6 +20,8 @@ typedef struct PlayerC
     float                   cameraY;
     float vision_timer;
     Vec2                    vision_points[200];
+    float                   time_stop;
+    float                   max_time_stop;
 }PlayerC;
 
 PlayerC* PlayerC_Create();

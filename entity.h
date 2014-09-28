@@ -36,6 +36,7 @@ typedef struct Entity
     bool                    in_dark;
 	bool                    is_ennemy;//zombies, bullets, explosions
     int                     damage;//zombies, bullets, explosions
+    float                   angle;
 
     Entity*                 hit_wall;//used to calculate bullets penetration
     //components

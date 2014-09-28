@@ -20,6 +20,8 @@
 #include "levelEditor.h"
 #include "movement_component.h"
 
+Uint32 bullet_time_timer = 0;
+
     bool previousPressedKeys_g[200] = {false};
 static int switch_timer = 0;
 
@@ -43,8 +45,13 @@ static int rectangle_selection_endY;
 static bool unlimited_creation = false;
 static bool pressedKeys[200] = {false};
 
+//put that in a UI file
 static int aimPosX = 0;
 static int aimPosY = 0;
+static Cursor_Type cursor_type;
+
+static Uint32 rotate_timer = 0;
+static float rotation_angle = 0;
 
 Controls* CreateControls()
 {
@@ -93,6 +100,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                             World* world, Window* level_editor,
                             GameManager* gm)
 {
+    rotate_timer += delta_g;
 
     if(pressedKeys[SDLK_F1] && SDL_GetTicks() - switch_timer > 200)
     {
@@ -110,10 +118,53 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
     if(controls->temp_object_to_create != NULL)
     {
+        if(controls->mouseWheelPos < 0 && rotate_timer > 50)
+        {
+            if(controls->temp_object_to_create->angle == 0)
+            {
+                controls->temp_object_to_create->angle = HALF_PI;
+            }
+            else if(controls->temp_object_to_create->angle <= HALF_PI + 0.1f)
+            {
+                controls->temp_object_to_create->angle = HALF_PI * 2;
+            }
+            else if(controls->temp_object_to_create->angle <= HALF_PI * 2 + 0.1f)
+            {
+                controls->temp_object_to_create->angle = HALF_PI * 3;
+            }
+            else if(controls->temp_object_to_create->angle <= HALF_PI * 3 + 0.1f)
+            {
+                controls->temp_object_to_create->angle = 0;
+            }
+
+            rotate_timer = 0;
+        }
+        if(controls->mouseWheelPos > 0 && rotate_timer > 50)
+        {
+            if(controls->temp_object_to_create->angle == 0)
+            {
+                controls->temp_object_to_create->angle = HALF_PI * 3;
+            }
+            else if(controls->temp_object_to_create->angle >= HALF_PI * 3 - 0.1f)
+            {
+                controls->temp_object_to_create->angle = HALF_PI * 2;
+            }
+            else if(controls->temp_object_to_create->angle >= HALF_PI * 2 - 0.1f)
+            {
+                controls->temp_object_to_create->angle = HALF_PI;
+            }
+            else if(controls->temp_object_to_create->angle >= HALF_PI - 0.2f)
+            {
+                controls->temp_object_to_create->angle = 0;
+            }
+            rotate_timer = 0;
+        }
 
         controls->temp_object_to_create->x = controls->mouseX;
         controls->temp_object_to_create->y = controls->mouseY;
         BoundingBox_Update(controls->temp_object_to_create);
+
+
     }
 
     Vector* monsters_vector = &world->monsters_vector;
@@ -138,10 +189,12 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                         free(controls->temp_object_to_create);
                     }
 
+
                     controls->temp_object_to_create = Entity_Create(level_editor->active_button->main_category,
                                                                     level_editor->active_button->button_type,
                                                                     controls->mouseX, controls->mouseY,
                                                                     0);
+
                 }
             }
         }
@@ -276,7 +329,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
                         LevelEditor_CreateObject(category, obj_type, x, y,
                                                  position_in_array, controls->mousePositionInWorldX,
-                                                 controls->mousePositionInWorldY, world, unlimited_creation);
+                                                 controls->mousePositionInWorldY, world, unlimited_creation,
+                                                 controls->temp_object_to_create->angle);
 
 
                 }
@@ -337,7 +391,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                             int obj_type = level_editor->active_button->button_type;
                             LevelEditor_CreateObject(category, obj_type, x * TILE_SIZE, y * TILE_SIZE,
                                          position_in_array, controls->mousePositionInWorldX,
-                                         controls->mousePositionInWorldY, world, unlimited_creation);
+                                         controls->mousePositionInWorldY, world, unlimited_creation,
+                                         controls->temp_object_to_create->angle);
                         }
                         else if(rectangle_selection_delete)
                         {
@@ -394,10 +449,10 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
 
         //cancel current selected object
-        if(pressedKeys[SDLK_e])
+        /*if(pressedKeys[SDLK_e])
         {
             level_editor->active_button = NULL;
-        }
+        }*/
 
 
 
@@ -614,17 +669,18 @@ void Inputs_ApplyInputs( Controls* controls,
             if(controller_rightAxisX > deadzone * 2 || controller_rightAxisX < -deadzone * 2 ||
                controller_rightAxisY > deadzone * 2 || controller_rightAxisY < -deadzone * 2)
             {
-                if(!bullet_time_g)
-                {
-                    player->movementC->angle = atan2(controller_rightAxisY, controller_rightAxisX);
-                }
-                else
-                {
-                    aimPosX += ((float)controller_rightAxisX / axis_divide) * delta_g;
-                    aimPosY += ((float)controller_rightAxisY / axis_divide) * delta_g;
-                }
+
+                    player->angle = atan2(controller_rightAxisY, controller_rightAxisX);
 
             }
+
+            /*if(controller_rightAxisX > deadzone || controller_rightAxisX < -deadzone  ||
+               controller_rightAxisY > deadzone  || controller_rightAxisY < -deadzone  &&
+               bullet_time_g)
+            {
+                 aimPosX += ((float)controller_rightAxisX / axis_divide) * 2 * delta_g;
+                aimPosY += ((float)controller_rightAxisY / axis_divide) * 2 * delta_g;
+            }*/
 
             if(SDL_JoystickGetButton(controller, BUTTON_A))
             {
@@ -646,11 +702,14 @@ void Inputs_ApplyInputs( Controls* controls,
             {
                 WeaponsComponent_ChangeWeapon(player->weaponsC, Weapon_TheBigGun);
             }
-            if(SDL_JoystickGetButton(controller, BUTTON_LEFT_SHOULDER))
+            if(SDL_JoystickGetButton(controller, BUTTON_LEFT_SHOULDER) && !bullet_time_g &&
+               player->playerC->time_stop > 0)
             {
+                aimPosX = player->x;
+                aimPosY = player->y;
                 bullet_time_g = true;
             }
-            else
+            else if(!SDL_JoystickGetButton(controller, BUTTON_LEFT_SHOULDER) && bullet_time_g)
             {
                 bullet_time_g = false;
 
@@ -684,7 +743,7 @@ void Inputs_ApplyInputs( Controls* controls,
                                                 muzzleY,
                                                 controls->mousePositionInWorldX,
                                                 controls->mousePositionInWorldY  );
-                player->movementC->angle = mouse_angle;
+                player->angle = mouse_angle;
             }
 
 
@@ -708,6 +767,12 @@ void Inputs_ApplyInputs( Controls* controls,
                 WeaponsComponent_ScrollWeapons(player->weaponsC, controls->mouseWheelPos );
             }
 
+            if(!bullet_time_g)
+            {
+                aimPosX = 0;
+                aimPosY = 0;
+            }
+
             //shooting
             if(controls->pressedMouseButtons[SDL_BUTTON_LEFT] ||
                controller_rightTrigger > 0)
@@ -715,11 +780,13 @@ void Inputs_ApplyInputs( Controls* controls,
                 WeaponsComponent_TryToShoot(player->weaponsC,
                                               muzzleX,
                                               muzzleY,
-                                              player->movementC->angle,
+                                              player->angle,
                                               bullets_vector,
                                               aimPosX,
                                               aimPosY);
+                //bullet_time_g = false;
             }
+
         }
 
 
@@ -753,4 +820,11 @@ void Inputs_SavePressedKeys()
 bool* Inputs_GetPressedKeys()
 {
     return pressedKeys;
+}
+
+void Inputs_GetCursor(int* x, int* y, Cursor_Type* type)
+{
+    *x = aimPosX;
+    *y = aimPosY;
+    *type = cursor_type;
 }

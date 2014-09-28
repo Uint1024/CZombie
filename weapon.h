@@ -17,6 +17,7 @@ typedef struct Weapon
     int                 reloading_time;
     int                 bullet_height;
     int                 bullet_width;
+    float bullet_speed;
 } Weapon;
 
 Weapon* Weapon_Create(Weapon_Type type);

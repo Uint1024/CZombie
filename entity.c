@@ -33,6 +33,7 @@ Entity* Entity_Spawn()
 	ent->box.right                  = 0;
 	ent->box.bottom                 = 0;
     ent->solid                      = true;
+    ent->angle = 0;
     ent->visible                    = true;
     ent->penetration_chance = 0;
     ent->in_dark = true;
@@ -95,6 +96,11 @@ Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle
         break;
     }
 
+    if(angle != 0)
+    {
+        entity->angle = angle;
+    }
+
     return entity;
 }
 
@@ -111,8 +117,8 @@ bool Entity_CheckVeryClose(Entity* ent1, Entity* ent2)
 
 void Entity_CalculateVelocity(Entity* ent)
 {
-    ent->movementC->dx = cos(ent->movementC->angle ) * ent->movementC->speed * delta_g;
-    ent->movementC->dy = sin(ent->movementC->angle ) * ent->movementC->speed * delta_g;
+    ent->movementC->dx = cos(ent->angle ) * ent->movementC->speed * delta_g;
+    ent->movementC->dy = sin(ent->angle ) * ent->movementC->speed * delta_g;
 }
 
 
@@ -196,26 +202,28 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
     float dx = cos(angle) * 20;
     float dy = sin(angle) * 20;
 
-    int pointX = ent1MiddleX;
-    int pointY = ent1MiddleY;
+    float pointX = ent1MiddleX;
+    float pointY = ent1MiddleY;
 
     bool collision = false;
 
-
-    while(pointX < ent2MiddleX && !collision)
-    {
-        pointX += dx;
-        pointY += dy;
-
-        for(int i = 0 ; i < Vector_Count(&world->non_null_walls) && !collision ; i++)
+    //sooo that doesn't work if the 2 entities have the same x. that's stupid
+        while(!collision && (pointX - ent1MiddleX < ent2MiddleX - ent1MiddleX &&
+                             pointY - ent1MiddleY < ent2MiddleY - ent1MiddleY))
         {
-            Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
-            if(Wall_IsWall(wall) && BoundingBox_CheckPointCollision(pointX, pointY, &wall->box))
+            pointX += dx;
+            pointY += dy;
+
+            for(int i = 0 ; i < Vector_Count(&world->non_null_walls) && !collision ; i++)
             {
-                collision = true;
+                Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+                if(Wall_IsWall(wall) && BoundingBox_CheckPointCollision(pointX, pointY, &wall->box))
+                {
+                    collision = true;
+                }
             }
         }
-    }
+
 
     return !collision;
 }

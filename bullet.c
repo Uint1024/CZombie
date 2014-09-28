@@ -23,7 +23,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
 	bullet->x = x;
 	bullet->y = y;
 	bullet->movementC = MovementC_Create();
-	bullet->movementC->angle = angle;
+	bullet->angle = angle;
 	bullet->movementC->speed = speed;
     bullet->movementC->dx = cos(angle) * speed;
     bullet->movementC->dy = sin(angle) * speed;

@@ -20,6 +20,21 @@
 
 static SDL_Texture* textures_g[NB_OF_CAT][100];
 
+static int cursor_size = 21;
+static float cameraX = 0;
+static float cameraY = 0;
+
+void Graphics_SetCamera(float x, float y)
+{
+    cameraX = x;
+    cameraY = y;
+}
+
+void Graphics_MoveCamera(float dx, float dy)
+{
+    cameraX += dx;
+    cameraY += dy;
+}
 void Graphics_Create(int screen_width, int screen_height)
 {
     SDL_ShowCursor(0);
@@ -49,6 +64,8 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Zombie][Zombie_Heavy] = IMG_LoadTexture(renderer, "zombie_heavy.png");
     textures_g[Cat_Zombie][Zombie_Trooper] = IMG_LoadTexture(renderer, "zombie_trooper.png");
     textures_g[Cat_Zombie][Zombie_Huge] = IMG_LoadTexture(renderer, "zombie_huge.png");
+    textures_g[Cat_Zombie][Zombie_Raptor] = IMG_LoadTexture(renderer, "zombie_raptor.png");
+    textures_g[Cat_Zombie][Zombie_Slow] = IMG_LoadTexture(renderer, "zombie_slow.png");
 
     textures_g[Cat_Bonus][Bonus_Rifle] = IMG_LoadTexture(renderer, "bonus_automaticRifle.png");
     textures_g[Cat_Bonus][Bonus_GrenadeLauncher] = IMG_LoadTexture(renderer, "bonus_grenadeLauncher.png");
@@ -61,6 +78,7 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Bullet][Weapon_TheBigGun] = IMG_LoadTexture(renderer, "bullet_normal.png");
     textures_g[Cat_Bullet][Weapon_Shotgun] = IMG_LoadTexture(renderer, "bullet_normal.png");
     textures_g[Cat_Bullet][Weapon_TripleFireball] = IMG_LoadTexture(renderer, "bullet_fireball.png");
+    textures_g[Cat_Bullet][Weapon_FireballMachineGun] = IMG_LoadTexture(renderer, "bullet_fireball.png");
     textures_g[Cat_Bullet][Weapon_Fireball] = IMG_LoadTexture(renderer, "bullet_fireball.png");
 
     textures_g[Cat_Grenade][Grenade_Normal] = IMG_LoadTexture(renderer, "bullet_normal.png");
@@ -69,6 +87,8 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Wall][Wall_Cool] = IMG_LoadTexture(renderer, "wall_cool.png");
     textures_g[Cat_Wall][Wall_Glass] = IMG_LoadTexture(renderer, "wall_glass.png");
     textures_g[Cat_Wall][Wall_Reinforced] = IMG_LoadTexture(renderer, "wall_reinforced.png");
+    textures_g[Cat_Wall][Wall_Good_Center] = IMG_LoadTexture(renderer, "wall_good_center.png");
+    textures_g[Cat_Wall][Wall_Good_Corner] = IMG_LoadTexture(renderer, "wall_good_corner.png");
 
     textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(renderer, "explosion_normal.png");
 
@@ -269,25 +289,47 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
         SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 50);
     }
 
-    const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX,
-                            object->box.top - cameraY - object->box.offsetY,
+    /*because of some rounding of the position
+      in SDL, I have to correct the object position*/
+    int errorX = 0;
+    int errorY = 0;
+
+    if(object->angle < HALF_PI)
+    {
+        //errorX and errorY = 0
+    }
+    else if(object->angle < PI)
+    {
+        errorX = 1;
+    }
+    else if(object->angle < PI + HALF_PI)
+    {
+        errorX = 1;
+        errorY = 1;
+    }
+    else if(object->angle < 2 * PI)
+    {
+        errorY = 1;
+    }
+    const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX - errorX,
+                            object->box.top - cameraY - object->box.offsetY - errorY,
                             object->box.width + object->box.offsetX * 2 ,
                             object->box.height + object->box.offsetY * 2};
 
 
     if(!object->in_dark || game_state_g == GameState_Editing_Map)
     {
-        if(object->movementC != NULL && object->visible)
+        if(object->angle != 0 && object->visible)
         {
             SDL_RenderCopyEx(renderer,
                              textures_g[object->t][object->sub_category],
                              NULL,
                              &rect,
-                             object->movementC->angle * 57.32f,//convert radian to degree
+                             object->angle * 57.2957795f,//convert radian to degree
                              NULL,
                              SDL_FLIP_NONE);
         }
-        else if(object->movementC == NULL && object->visible)
+        else if(object->angle == 0 && object->visible)
         {
             SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
                            NULL, &rect);
@@ -327,6 +369,13 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
 
     SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
     SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 255);
+}
+
+void Graphics_RenderCursor(int x, int y, Cursor_Type type)
+{
+   /* SDL_Rect cursor_rect = {x - cameraX, y - cameraY, cursor_size, cursor_size};
+    SDL_RenderCopy(renderer, textures_g[Cat_Cursor][type],
+                           NULL, &cursor_rect);*/
 }
 
 void Graphics_RenderText(char* text, Font_Size size,
@@ -560,20 +609,22 @@ void Graphics_RenderLevelEditorUI(World* world, Controls* controls,
                        NULL, &button_rect);
     }
 
-    if(controls->active_button)
+    /*if(level_editor->active_button != NULL)
     {
      //-------render rectangle around selected icon
         SDL_SetRenderDrawColor(renderer, 255, 0,0, 255);
         SDL_Rect rect = BoundingBox_GetSDLRect(&controls->active_button->box);
         SDL_RenderDrawRect(renderer, &rect);
-    }
+    }*/
 
 
-    if(controls->active_button != NULL)
+    if(controls->temp_object_to_create != NULL)
     {
+
         if(!controls->hovering_on_window)
         {
             Graphics_RenderObject(controls->temp_object_to_create, &world->player);
+
         }
     }
 
@@ -598,8 +649,8 @@ void Graphics_RenderGameUI(World* world)
     float cameraY = world->player.playerC->cameraY;
 
 
-    int aimPointX = world->player.x + cos(world->player.movementC->angle) * 600;
-    int aimPointY = world->player.y + sin(world->player.movementC->angle) * 600;
+    int aimPointX = world->player.x + cos(world->player.angle) * 600;
+    int aimPointY = world->player.y + sin(world->player.angle) * 600;
 
     float playerMiddleX = 0;
     float playerMiddleY = 0;
@@ -608,6 +659,17 @@ void Graphics_RenderGameUI(World* world)
                        playerMiddleY - cameraY,
                        aimPointX - cameraX + 10,
                        aimPointY - cameraY + 10);
+
+
+    if(using_controller_g && bullet_time_g)
+    {
+        int cursorX, cursorY;
+        Cursor_Type type;
+        Inputs_GetCursor(&cursorX, &cursorY, &type);
+
+        Graphics_RenderCursor(cursorX, cursorY, type);
+    }
+
     //stamina
     char stamina[] = "Stamina";
     Graphics_RenderText(stamina, Medium, 50, 700, true, White);
@@ -620,6 +682,20 @@ void Graphics_RenderGameUI(World* world)
 
     SDL_SetRenderDrawColor(renderer, 0, 255, 50, 255);
     SDL_RenderFillRect(renderer, &stamina_rect_front);
+
+
+    //time_stop
+    char time_stop[] = "Time Stop";
+    Graphics_RenderText(time_stop, Medium, screen_width_g  - 260, 700, true, White);
+
+    SDL_Rect time_stop_rect_back = {screen_width_g  - 150,700,100,20};
+    SDL_Rect time_stop_rect_front = {screen_width_g  - 150,700,world->player.playerC->time_stop,20};
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &time_stop_rect_back);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    SDL_RenderFillRect(renderer, &time_stop_rect_front);
 
     //hp
     char hp[8];

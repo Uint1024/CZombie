@@ -8,6 +8,7 @@
 #include "weapons_component.h"
 #include "world.h"
 #include "movement_component.h"
+#include "graphics.h"
 
 static int playerTileX = 0;
 static int playerTileY = 0;
@@ -23,6 +24,8 @@ PlayerC* PlayerC_Create()
     pc->max_stamina             = 100;
     pc->running                 = false;
     pc->vision_timer            =  0;
+    pc->time_stop = 100;
+    pc->max_time_stop = 100;
     return pc;
 }
 
@@ -479,6 +482,18 @@ void Player_ScanOctant(int depth, int octant, float start_slope,
 void Player_Update(World* world)
 {
     Entity* p = &world->player;
+
+
+    if(bullet_time_g)
+    {
+        p->playerC->time_stop -= 0.01 * delta_g;
+
+        if(p->playerC->time_stop <= 0)
+        {
+            bullet_time_g = false;
+        }
+    }
+
     if(p->playerC->running)
     {
         Player_Run(p);
@@ -529,6 +544,8 @@ void Player_Move(Entity* p, float dx, float dy)
     moveEntity(p, dx, dy);
     p->playerC->cameraX += dx;
     p->playerC->cameraY += dy;
+
+    Graphics_MoveCamera(dx, dy);
 }
 
 void Player_Reset(Entity* player)
@@ -568,6 +585,8 @@ Entity Player_Create(float x, float y, int w, int h)
     p.playerC                       =   PlayerC_Create();
     p.playerC->cameraX = -screen_width_g/2 + p.x;
     p.playerC->cameraY = -screen_height_g/2 + p.y;
+    Graphics_SetCamera((float)(-screen_width_g/2 + p.x), (float)(-screen_height_g/2 + p.y));
+    printf("in character camera x = %f, camera y = %f", (-screen_width_g/2 + p.x), (-screen_height_g/2 + p.y));
     p.weaponsC                      =   WeaponsComponent_Create();
     p.weaponsC->bullets[Weapon_Handgun] = 50;
     //p.weaponsC->bullets[Weapon_GrenadeLauncher] = 100;

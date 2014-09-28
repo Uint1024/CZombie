@@ -6,6 +6,6 @@ MovementC* MovementC_Create()
     mc->dx          = 0;
     mc->dy          = 0;
     mc->speed       = 0;
-    mc->angle       = 0;
+    //mc->angle       = 0;
     return mc;
 }

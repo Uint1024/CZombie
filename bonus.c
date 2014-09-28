@@ -8,7 +8,7 @@ void Bonus_GenerateRandom(Vector* bonus_vector, Entity* source)
     //Bonus_type type = rand() % NB_OF_BONUS_TYPES;
     //temporarily we replace random loot with just handgun ammo
 
-    Vector_Push(bonus_vector, Bonus_Create(Bonus_Handgun, source->x, source->y, source->movementC->angle));
+    Vector_Push(bonus_vector, Bonus_Create(Bonus_Handgun, source->x, source->y, source->angle));
 
 }
 
@@ -21,7 +21,7 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     bonus->t = Cat_Bonus;
     bonus->sub_category = bonus_type;
     bonus->movementC = MovementC_Create();
-    bonus->movementC->angle = angle;
+    bonus->angle = angle;
 
 //    bonus->texture = all_textures_g[Cat_Bonus][bonus_type];
     if(bonus_type == Bonus_TheBigGun)
@@ -39,7 +39,7 @@ void Bonus_Update(Entity* bonus, Entity* player)
 {
     if(Entity_CheckDistance(player, bonus, 150))
     {
-        bonus->movementC->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);
+        bonus->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);
 
         //min speed is 0 when distance is 150, max speed is 0.05f when distance is 0
         bonus->movementC->speed = -0.003f * abs(bonus->x - player->x) + 0.5;

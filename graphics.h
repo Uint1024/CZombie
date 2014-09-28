@@ -60,4 +60,10 @@ void Graphics_RenderFillTriangle(Vec2 v1, Vec2 v2, Vec2 v3);
 
 void Graphics_RenderFillBottomFlatTriangle(Vec2 v1, Vec2 v2, Vec2 v3);
 void Graphics_RenderFillTopFlatTriangle(Vec2 v1, Vec2 v2, Vec2 v3);
+
+void Graphics_RenderCursor(int x, int y, Cursor_Type type);
+
+void Graphics_MoveCamera(float dx, float dy);
+void Graphics_SetCamera(float x, float y);
+
 #endif // GRAPHICS_H

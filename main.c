@@ -84,7 +84,7 @@ int main(int argc, char* args[])
         time_now = SDL_GetTicks();
         chrono_update += time_now - time_last_frame_real;
         chrono_render += time_now - time_last_frame_real;
-
+        bullet_time_timer += time_now - time_last_frame_real;
         if(chrono_update > ms_delay_between_frame)
         {
 

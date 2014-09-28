@@ -23,8 +23,15 @@ typedef struct ZombieC
     //else it lags too much...
     int                     ai_timer;
     int                     paths_calculated;
-    int attack_timer;
+    int attack_timer;//close combat
     int attack_delay;
+    int shoot_delay;
+    Uint32 last_shoot;
+    float shooting_angle;
+    int pattern_duration;
+    int pattern_timer;
+    int shoots_fired_in_pattern;
+    bool pattern_direction_right;
 
     //there's a delay between the time the zombie sees the player
     //and when it starts chasing him
