@@ -133,15 +133,17 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     }
 
 
-    if(!bullet_time_g)
-    {
-        for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
-        {
-            if(Vector_Get(bullets_vector, i) != NULL)
-            {
 
-                Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
-                Entity_CalculateVisibility(projectile, world);
+    for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
+    {
+        if(Vector_Get(bullets_vector, i) != NULL)
+        {
+
+            Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
+            Entity_CalculateVisibility(projectile, world);
+
+            if(!bullet_time_g)
+            {
                 if(projectile->t == Cat_Bullet)
                 {
 
@@ -163,12 +165,13 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
                     Vector_Delete(bullets_vector, i);
                 }
             }
-            else
-            {
-                printf("Error during update of bullets vector : bullet = NULL");
-            }
+        }
+        else
+        {
+            printf("Error during update of bullets vector : bullet = NULL");
         }
     }
+
 
 
     if(gm->ai_on)
@@ -208,7 +211,13 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         if(Vector_Get(bonus_vector, i) != NULL)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
-            Bonus_Update(bonus, &world->player);
+
+            if(!bullet_time_g)
+            {
+                Bonus_Update(bonus, &world->player);
+            }
+
+
             Entity_CalculateVisibility(bonus, world);
             if (bonus->alive == false)
             {
@@ -238,7 +247,11 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     for(int i = 0 ; i < Vector_Count(explosions_vector) ; i++)
     {
         Entity* exp = (Entity*)Vector_Get(explosions_vector, i);
-        Explosion_Update(exp, world);
+        if(!bullet_time_g)
+        {
+            Explosion_Update(exp, world);
+        }
+
         Entity_CalculateVisibility(exp, world);
         if (!exp->alive)
         {

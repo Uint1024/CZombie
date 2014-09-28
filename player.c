@@ -663,29 +663,31 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
     WeaponsC* wc = player->weaponsC;
 
     int type = bonus->sub_category;
-    Weapon_Type weapon_type = 999;
+    //Weapon_Type weapon_type = 999;
 
-    switch(type)
-    {
-    case Bonus_GrenadeLauncher:
-        weapon_type = Weapon_GrenadeLauncher;
-        break;
-    case Bonus_Rifle:
-        weapon_type = Weapon_AutomaticRifle;
-        break;
-    case Bonus_Shotgun:
-        weapon_type = Weapon_Shotgun;
-        break;
-    case Bonus_Handgun:
-        weapon_type = Weapon_Handgun;
-        break;
-    case Bonus_TheBigGun:
-        weapon_type = Weapon_TheBigGun;
-        break;
-    }
 
-    if(weapon_type != 999)
+    if(type <= Bonus_TheBigGun)
     {
+        Weapon_Type weapon_type = 0;
+        switch(type)
+        {
+        case Bonus_GrenadeLauncher:
+            weapon_type = Weapon_GrenadeLauncher;
+            break;
+        case Bonus_Rifle:
+            weapon_type = Weapon_AutomaticRifle;
+            break;
+        case Bonus_Shotgun:
+            weapon_type = Weapon_Shotgun;
+            break;
+        case Bonus_Handgun:
+            weapon_type = Weapon_Handgun;
+            break;
+        case Bonus_TheBigGun:
+            weapon_type = Weapon_TheBigGun;
+            break;
+        }
+
         if(wc->weapons_inventory[weapon_type] != NULL)
         {
             WeaponsComponent_AddAmmo(wc,
@@ -701,9 +703,23 @@ void Player_PickUpBonus(Entity* player, Entity* bonus)
                 wc->bullets[weapon_type] += wc->weapons_inventory[weapon_type]->magazine_max_bullets;
             }
         }
+        bonus->alive = false;
+    }
+    else if(type == Bonus_Time_Stop)
+    {
+        if(player->playerC->time_stop < player->playerC->max_time_stop)
+        {
+            player->playerC->time_stop += 10;
+            if(player->playerC->time_stop > player->playerC->max_time_stop)
+            {
+                player->playerC->time_stop = player->playerC->max_time_stop;
+            }
+
+            bonus->alive = false;
+        }
+
     }
 
-    bonus->alive = false;
 }
 
 //attacker is an array 5 pointers

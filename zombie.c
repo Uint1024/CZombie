@@ -21,7 +21,7 @@ ZombieC* ZombieC_Create()
     zc->vision_width = 1.2;
     zc->ai_timer = rand() % 500;
     zc->dodging = false;
-    zc->dodging_time = 0;
+    zc->dodging_timer = 0;
     //if the zombies calculates more than 2 paths between each AI update, he stops looking
     zc->paths_calculated = 0;
     zc->attack_delay = 500; //can attack every 500ms
@@ -92,6 +92,7 @@ void  Zombie_Shoot(Entity* z, World* world)
     float originX = z->x + z->box.width/2;
     float originY = z->y + z->box.height/2;
 
+    z->zombieC->shoot_timer += delta_g;
     ZombieC* zc = z->zombieC;
 
     if(z->sub_category != Zombie_Raptor)
@@ -104,8 +105,10 @@ void  Zombie_Shoot(Entity* z, World* world)
     else
     {
 
-        if(SDL_GetTicks() - zc->last_shoot > zc->shoot_delay)
+        if(zc->shoot_timer > zc->shoot_delay)
         {
+
+
             zc->pattern_timer += delta_g;
 
             if(zc->pattern_timer > zc->pattern_duration)
@@ -116,30 +119,28 @@ void  Zombie_Shoot(Entity* z, World* world)
 
             if(zc->pattern_timer  == 0)
             {
-                zc->shooting_angle = C_AngleBetween2Entities(z, &world->player);
+
                 zc->pattern_direction_right = rand() % 2;
+                float start_angle_difference = zc->pattern_direction_right? -1 : +1;
+                zc->shooting_angle = C_AngleBetween2Entities(z, &world->player) - start_angle_difference;
+                printf("%d\n", zc->pattern_direction_right);
             }
             else
             {
-                zc->shooting_angle+= zc->pattern_direction_right? 0.2 : -0.2;
+                zc->shooting_angle+= zc->pattern_direction_right? -0.2 : +0.2;
             }
 
             if(zc->shoots_fired_in_pattern < 16)
             {
                 WeaponsComponent_TryToShoot(z->weaponsC, originX, originY,
                 zc->shooting_angle, &world->bullets_vector, 0, 0);
-                zc->last_shoot = SDL_GetTicks();
                 zc->shoots_fired_in_pattern++;
+                zc->shoot_timer = 0;
             }
 
         }
 
     }
-
-
-
-
-
 }
 
 Entity* CreateZombie(Zombie_Type type, float x, float y)
@@ -158,7 +159,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     z->zombieC->can_dodge_every = 1000;
     z->movementC                = MovementC_Create();
     z->angle         = C_GenerateRandomAngle();
-    z->zombieC->last_shoot = 0;
+    z->zombieC->shoot_timer = 0;
     z->zombieC->shoots_fired_in_pattern = 0;
     z->zombieC->pattern_direction_right = false;
 
@@ -201,6 +202,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->zombieC->shooting_angle = 0;
         z->zombieC->shoot_delay = 120;
 
+
         break;
     case Zombie_Fast:
         z->hp = 2;
@@ -240,6 +242,8 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
 
 
     BoundingBox_Create(z, width, height);
+
+
 
 	return z;
 }
@@ -288,7 +292,7 @@ void Zombie_Ai(Entity* z, World* world)
         zc->ai_timer = 0;
 
 
-        if(zc->dodging && SDL_GetTicks() - zc->dodging_time > 500)
+        if(zc->dodging && SDL_GetTicks() - zc->dodging_timer > 500)
         {
             zc->dodging = false;
         }
@@ -304,7 +308,7 @@ void Zombie_Ai(Entity* z, World* world)
                 Zombie_BecomeCalm(z);
             }
 
-            if(!zc->dodging && SDL_GetTicks() - zc->dodging_time > 1500)
+            if(!zc->dodging && SDL_GetTicks() - zc->dodging_timer > 1500)
             {
                 int dodge_chance = rand() % 100;
 
@@ -328,7 +332,7 @@ void Zombie_Ai(Entity* z, World* world)
 
                     z->angle = temp_angle;
                     //zombie will run in this direction for a little while
-                    zc->dodging_time = SDL_GetTicks();
+                    zc->dodging_timer = SDL_GetTicks();
                     zc->dodging = true;
                 }
 
@@ -448,6 +452,12 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
         break;
     case Zombie_Huge:
         corpse_type = Decal_Corpse_Huge;
+        break;
+    case Zombie_Slow:
+        corpse_type = Decal_Corpse_Slow;
+        break;
+    case Zombie_Raptor:
+        corpse_type = Decal_Corpse_Raptor;
         break;
     }
     Vector_Push(decals_vector, Decal_Create(zombie, corpse_type));

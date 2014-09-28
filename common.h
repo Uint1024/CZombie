@@ -133,7 +133,8 @@ typedef enum {
     Bonus_Shotgun,
     Bonus_GrenadeLauncher,
     Bonus_Handgun,
-    Bonus_TheBigGun,
+    Bonus_TheBigGun,//this should always be the last weapon bonus!!!!
+    Bonus_Time_Stop,
     NB_OF_BONUS_TYPES
 } Bonus_type;
 
@@ -165,6 +166,8 @@ typedef enum
     Decal_Corpse_Fast,
     Decal_Corpse_Huge,
     Decal_Corpse_Trooper,
+    Decal_Corpse_Slow,
+    Decal_Corpse_Raptor,
     NB_OF_DECALS_TYPES
 }   Decal_Type;
 

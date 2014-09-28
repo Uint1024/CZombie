@@ -28,7 +28,7 @@ Entity* Bullet_Create(Weapon_Type type, float x, float y,
     bullet->movementC->dx = cos(angle) * speed;
     bullet->movementC->dy = sin(angle) * speed;
 	bullet->is_ennemy = is_ennemy_bullet;
-	bullet->alive_timer = 4000; //die in 4 seconds
+	bullet->alive_timer = (1/speed) * 1500; //die in 10 seconds
 	bullet->damage = 1;
 
 
@@ -88,8 +88,6 @@ void Bullet_Update(Entity* bullet, World* world)
 
     if(bullet->alive)
     {
-
-
         moveEntity(bullet, bullet->movementC->dx * delta_g, bullet->movementC->dy * delta_g);
 
 
@@ -100,8 +98,6 @@ void Bullet_Update(Entity* bullet, World* world)
                 Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
                 if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
                 {
-
-
                     Zombie_GetAttacked(mob, bullet->damage, world);
                     int random = rand() % 1000;
 

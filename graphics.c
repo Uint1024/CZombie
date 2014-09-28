@@ -72,6 +72,7 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Bonus][Bonus_Shotgun] = IMG_LoadTexture(renderer, "bonus_shotgun.png");
     textures_g[Cat_Bonus][Bonus_TheBigGun] = IMG_LoadTexture(renderer, "bonus_biggun.png");
     textures_g[Cat_Bonus][Bonus_Handgun] = IMG_LoadTexture(renderer, "bonus_handgun.png");
+    textures_g[Cat_Bonus][Bonus_Time_Stop] = IMG_LoadTexture(renderer, "bonus_timeStop.png");
 
     textures_g[Cat_Bullet][Weapon_Handgun] = IMG_LoadTexture(renderer, "bullet_normal.png");
     textures_g[Cat_Bullet][Weapon_AutomaticRifle] = IMG_LoadTexture(renderer, "bullet_normal.png");
@@ -117,6 +118,8 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Decal][Decal_Corpse_Heavy] = IMG_LoadTexture(renderer, "decal_corpse_heavy.png");
     textures_g[Cat_Decal][Decal_Corpse_Trooper] = IMG_LoadTexture(renderer, "decal_corpse_trooper.png");
     textures_g[Cat_Decal][Decal_Corpse_Huge] = IMG_LoadTexture(renderer, "decal_corpse_huge.png");
+    textures_g[Cat_Decal][Decal_Corpse_Slow] = IMG_LoadTexture(renderer, "decal_corpse_slow.png");
+    textures_g[Cat_Decal][Decal_Corpse_Raptor] = IMG_LoadTexture(renderer, "decal_corpse_raptor.png");
 
 
     fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);

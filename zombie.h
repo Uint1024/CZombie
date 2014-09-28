@@ -11,12 +11,11 @@ typedef struct ZombieC
     Zombie_Type             zombie_type;
     int                     vision_distance;
     float                   vision_width;
-    bool                   aggressive;
+    bool                    aggressive;
     int                     rand_move_timer;
     int                     rand_move_every;
-    bool                   idling;
-    bool                   dodging;
-    int                   dodging_time;
+    bool                    idling;
+    bool                    dodging;
     int                     can_dodge_every; //can dodge every x ms
     int                     dodging_timer;
     //the zombies ai activates every every 700 ms,
@@ -26,7 +25,7 @@ typedef struct ZombieC
     int attack_timer;//close combat
     int attack_delay;
     int shoot_delay;
-    Uint32 last_shoot;
+    int shoot_timer;
     float shooting_angle;
     int pattern_duration;
     int pattern_timer;

@@ -8,8 +8,11 @@
 #include "movement_component.h"
 #include "player.h"
 #include "gameManager.h"
+#include "entity.h"
+
 
 static int building_time = 0;
+static int test = 0;
 
 void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y,
                               int position_in_array, int mousePositionInWorldX,
@@ -66,18 +69,19 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
 }
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 {
-
+    fwrite(&buffer->t, sizeof(Main_Category), 1, save_file);
     fwrite(&buffer->sub_category, sizeof(int), 1, save_file);
-    fwrite(&buffer->damage, sizeof(float), 1, save_file);
     fwrite(&buffer->x, sizeof(float), 1, save_file);
     fwrite(&buffer->y, sizeof(float), 1, save_file);
+    //printf("writing entity at %f %f")
+
     fwrite(&buffer->angle, sizeof(float), 1, save_file);
-    fwrite(&buffer->t, sizeof(Main_Category), 1, save_file);
+
+
     fwrite(&buffer->box, sizeof(Box), 1, save_file);
     fwrite(&buffer->alive, sizeof(bool), 1, save_file);
     fwrite(&buffer->alive_timer, sizeof(bool), 1, save_file);
     fwrite(&buffer->is_ennemy, sizeof(bool), 1, save_file);
-    fwrite(&buffer->hp, sizeof(int), 1, save_file);
     fwrite(&buffer->solid, sizeof(bool), 1, save_file);
     fwrite(&buffer->collision_direction, sizeof(Direction), 1, save_file);
 
@@ -106,11 +110,16 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
         ZombieC* zc = buffer->zombieC;
         fwrite(&zc->aggressive, sizeof(bool), 1, save_file);
         fwrite(&zc->idling, sizeof(bool), 1, save_file);
-        fwrite(&zc->rand_move_every, sizeof(int), 1, save_file);
         fwrite(&zc->rand_move_timer, sizeof(int), 1, save_file);
-        fwrite(&zc->vision_distance, sizeof(int), 1, save_file);
-        fwrite(&zc->vision_width, sizeof(float), 1, save_file);
         fwrite(&zc->zombie_type, sizeof(Zombie_Type), 1, save_file);
+        fwrite(&zc->dodging_timer, sizeof(int), 1, save_file);
+        fwrite(&zc->ai_timer, sizeof(int), 1, save_file);
+        fwrite(&zc->attack_timer, sizeof(int), 1, save_file);
+        fwrite(&zc->shoot_timer, sizeof(int), 1, save_file);
+        fwrite(&zc->pattern_timer, sizeof(int), 1, save_file);
+        fwrite(&zc->shoots_fired_in_pattern, sizeof(int), 1, save_file);
+        fwrite(&zc->pattern_direction_right, sizeof(bool), 1, save_file);
+        fwrite(&zc->spot_timer, sizeof(bool), 1, save_file);
     }
     else
     {
@@ -133,13 +142,13 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
         fwrite(&wc->reloading, sizeof(bool), 1, save_file);
         fwrite(&wc->reload_timer, sizeof(int), 1, save_file);
 
-        //we write only the weapon type, then in the loading function
-        //we'll find the weapon in the inventory and set the pointer to it
+        /*we write only the weapon type, then in the loading function
+        we'll find the weapon in the inventory and set the pointer to it*/
         fwrite(&wc->current_weapon->type, sizeof(Weapon_Type), 1, save_file);
 
-        //to fwrite the weapon inventory, we have to loop through the inventory array
-        //and write every individual weapon... but first we have to count them and fwrite
-        //the number of weapons or else we won't know how much to fread
+        /*to fwrite the weapon inventory, we have to loop through the inventory array
+        and write every individual weapon... but first we have to count them and fwrite
+        the number of weapons or else we won't know how much to fread*/
         int nb_of_weapons = 0;
 
         for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
@@ -176,23 +185,40 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 
 void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 {
-    fread(&buffer->sub_category, sizeof(int), 1, save_file);
-    fread(&buffer->damage, sizeof(float), 1, save_file);
-    fread(&buffer->x, sizeof(float), 1, save_file);
-    fread(&buffer->y, sizeof(float), 1, save_file);
-    fread(&buffer->angle, sizeof(float), 1, save_file);
-    fread(&buffer->t, sizeof(Main_Category), 1, save_file);
+    Main_Category main_cat;
+    int sub_category;
+    float angle, x, y;
+//printf("111111111111");
+    fread(&main_cat, sizeof(Main_Category), 1, save_file);
+    fread(&sub_category, sizeof(int), 1, save_file);
+    fread(&x, sizeof(float), 1, save_file);
+    fread(&y, sizeof(float), 1, save_file);
+    fread(&angle, sizeof(float), 1, save_file);
+    //printf("main cat = %d sub_cat = %d\n", main_cat, sub_category);
+
+    /*we create an entity an immediately free their movement, weapon and zombieC component
+    because we'll fread them*/
+
+   // printf("1111115555555547871512158745");
+    free(buffer);
+    buffer = Entity_Create(main_cat, sub_category, x, y, angle);
+    if(main_cat == Cat_Zombie)
+        printf("creating %d %d\n", buffer->sub_category, buffer->zombieC->shoot_delay);
+    //Entity_Destroy(buffer);
+
+
+
     fread(&buffer->box, sizeof(Box), 1, save_file);
     fread(&buffer->alive, sizeof(bool), 1, save_file);
     fread(&buffer->alive_timer, sizeof(bool), 1, save_file);
     fread(&buffer->is_ennemy, sizeof(bool), 1, save_file);
-    fread(&buffer->hp, sizeof(int), 1, save_file);
     fread(&buffer->solid, sizeof(bool), 1, save_file);
     fread(&buffer->collision_direction, sizeof(Direction), 1, save_file);
 
+
     bool has_movementC = false;
     fread(&has_movementC, sizeof(bool), 1, save_file);
-
+//printf("333333333333");
     if(has_movementC != false)
     {
         MovementC* mc = MovementC_Create();
@@ -202,33 +228,43 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&mc->normal_speed, sizeof(float), 1, save_file);
         fread(&mc->running_speed, sizeof(float), 1, save_file);
         buffer->movementC = mc;
+
+
     }
 
 
     bool is_zombie = false;
     fread(&is_zombie, sizeof(bool), 1, save_file);
-
+//printf("44444444444");
     if(is_zombie != false)
     {
-        ZombieC* zc = ZombieC_Create();
+        ZombieC* zc = buffer->zombieC;
 
         fread(&zc->aggressive, sizeof(bool), 1, save_file);
         fread(&zc->idling, sizeof(bool), 1, save_file);
-
-        fread(&zc->rand_move_every, sizeof(int), 1, save_file);
         fread(&zc->rand_move_timer, sizeof(int), 1, save_file);
-        fread(&zc->vision_distance, sizeof(int), 1, save_file);
-        fread(&zc->vision_width, sizeof(float), 1, save_file);
         fread(&zc->zombie_type, sizeof(Zombie_Type), 1, save_file);
-        buffer->zombieC = zc;
+        fread(&zc->dodging_timer, sizeof(int), 1, save_file);
+        fread(&zc->ai_timer, sizeof(int), 1, save_file);
+        fread(&zc->attack_timer, sizeof(int), 1, save_file);
+        fread(&zc->shoot_timer, sizeof(int), 1, save_file);
+        fread(&zc->pattern_timer, sizeof(int), 1, save_file);
+        fread(&zc->shoots_fired_in_pattern, sizeof(int), 1, save_file);
+        fread(&zc->pattern_direction_right, sizeof(bool), 1, save_file);
+        fread(&zc->spot_timer, sizeof(bool), 1, save_file);
+
+
+       //buffer->zombieC = zc;
+
 
     }
-
+//printf("555555555555");
     bool has_weaponC = true;
     fread(&has_weaponC, sizeof(bool), 1, save_file);
     if(has_weaponC)
     {
-        WeaponsC* wc = WeaponsComponent_Create();
+        //WeaponsC* wc = WeaponsComponent_Create();
+        WeaponsC* wc = buffer->weaponsC;
         for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
         {
             fread(&wc->bullets[i], sizeof(int), 1, save_file);
@@ -266,12 +302,13 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 
             weapon->parent = wc;
 
-            //adding the weapon to the inventory
             WeaponsComponent_AddWeaponToInventory(wc, weapon);
         }
 
-        buffer->weaponsC = wc;
+        //buffer->weaponsC = wc;
     }
+
+
 }
 
 void Level_Save(char* file_name, World* w)
@@ -303,14 +340,12 @@ void Level_Save(char* file_name, World* w)
 
         fwrite(&nb_of_walls, sizeof(int), 1, save_file);
 
-
         for(int i = 0 ; i < w->map_size ; i++)
         {
             fwrite(w->map[i], sizeof(Entity), 1, save_file);
         }
 
-        //there are no NULL ground
-        printf("ftell ground : %d\n", ftell(save_file));
+
         for(int i = 0 ; i < w->map_size ; i++)
         {
             fwrite(w->ground_map[i], sizeof(Entity), 1, save_file);
@@ -326,7 +361,6 @@ void Level_Save(char* file_name, World* w)
 
         int num_of_zombies = Vector_Count(&w->monsters_vector);
 
-        printf("saving %d zombies", num_of_zombies);
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
 
         for(int i = 0 ; i < num_of_zombies ; i++)
@@ -346,6 +380,91 @@ void Level_Save(char* file_name, World* w)
 
         fclose(save_file);
 }
+
+void Level_Load(char* file_name, World* w)
+{
+    Level_Clear(w);
+
+
+    FILE *save_file;
+
+    save_file = fopen(file_name, "rb");
+    if(!save_file)
+    {
+        printf("Can't open file");
+
+    }
+
+    int nb_of_walls = 0;
+    fread(&nb_of_walls, sizeof(int), 1, save_file);
+
+    for(int i = 0 ; i < nb_of_walls ; i++)
+    {
+        Entity* buffer = (Entity*)malloc(sizeof(Entity)); //Entity_Spawn();
+        fread(buffer, sizeof(Entity), 1, save_file);
+        int position_in_array = buffer->x / TILE_SIZE + ((buffer->y/ TILE_SIZE) * w->map_width);
+
+        w->map[position_in_array] = buffer;
+
+    }
+
+
+    for(int i = 0 ; i < w->map_size ; i++)
+    {
+        Entity* buffer = (Entity*)malloc(sizeof(Entity)); //Entity_Spawn();
+        fread(buffer, sizeof(Entity), 1, save_file);
+        int position_in_array = buffer->x / TILE_SIZE + ((buffer->y/ TILE_SIZE) * w->map_width);
+
+        w->ground_map[position_in_array] = buffer;
+    }
+
+
+    int num_of_events = 0;
+
+    fread(&num_of_events, sizeof(int), 1, save_file);
+
+
+    for(int i = 0 ; i < num_of_events ; i++)
+    {
+        Entity* buffer  = Entity_Spawn();
+        LevelEditor_ReadEntity(save_file, buffer);
+
+        Vector_Push(&w->events_vector, buffer);
+
+    }
+
+
+    int num_of_zombies = 0;
+    fread(&num_of_zombies, sizeof(int), 1, save_file);
+    printf("%d zombies\n", num_of_zombies);
+
+    if(num_of_zombies != 0)
+    {
+        for(int i = 0 ; i < num_of_zombies ; i++)
+        {
+            Entity* buffer  = Entity_Spawn();
+            LevelEditor_ReadEntity(save_file, buffer);
+            Vector_Push(&w->monsters_vector, buffer);
+
+        }
+    }
+
+    int num_of_bonus = 0;
+    fread(&num_of_bonus, sizeof(int), 1, save_file);
+    for(int i = 0 ; i < num_of_bonus ; i++)
+    {
+        Entity* buffer = Entity_Spawn();
+        LevelEditor_ReadEntity(save_file, buffer);
+        Vector_Push(&w->bonus_vector, buffer);
+
+    }
+
+
+
+    fclose(save_file);
+}
+
+
 
 //pressing F7 to quickly try a level inside the level editor
 void LevelEditor_QuickTry(World* world)
@@ -421,95 +540,4 @@ void Level_Clear(World* w)
         free(w->ground_map[i]);
     }
 
-    //Player_Reset(&w->player);
-
-}
-void Level_Load(char* file_name, World* w)
-{
-    Level_Clear(w);
-
-    printf("LOADING\n");
-    FILE *save_file;
-
-    save_file = fopen(file_name, "rb");
-    if(!save_file)
-    {
-        printf("Can't open file");
-
-    }
-
-    int nb_of_walls = 0;
-    printf("ftell nb_walls : %d\n", ftell(save_file));
-    fread(&nb_of_walls, sizeof(int), 1, save_file);
-    printf("%d walls\n", nb_of_walls);
-    for(int i = 0 ; i < nb_of_walls ; i++)
-    {
-        Entity* buffer = (Entity*)malloc(sizeof(Entity)); //Entity_Spawn();
-        fread(buffer, sizeof(Entity), 1, save_file);
-
-        //always relative to the x and y coordinate
-        int position_in_array = buffer->x / TILE_SIZE + ((buffer->y/ TILE_SIZE) * w->map_width);
-        w->map[position_in_array] = buffer;
-    }
-
-printf("ftell ground : %d\n", ftell(save_file));
-    for(int i = 0 ; i < w->map_size ; i++)
-    {
-        Entity* buffer = (Entity*)malloc(sizeof(Entity));//Entity_Spawn();
-        fread(buffer, sizeof(Entity), 1, save_file);
-
-        w->ground_map[i] = buffer;
-    }
-
-
-    int num_of_events = 0;
-
-    fread(&num_of_events, sizeof(int), 1, save_file);
-
-
-    for(int i = 0 ; i < num_of_events ; i++)
-    {
-        Entity* buffer = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
-
-        Vector_Push(&w->events_vector, buffer);
-
-    }
-
-
-    int num_of_zombies = 0;
-    fread(&num_of_zombies, sizeof(int), 1, save_file);
-    printf("%d zombies\n", num_of_zombies);
-    //"temporary" fix: fread sometimes read 1 instead of 0. I don't know why?
-    //of course this will completely crash if there's really 1 zombie
-    /*if(num_of_zombies == 1)
-    {
-        num_of_zombies = 0;
-   }*/
-
-    if(num_of_zombies != 0)
-    {
-        for(int i = 0 ; i < num_of_zombies ; i++)
-        {
-            Entity* buffer = Entity_Spawn();
-            LevelEditor_ReadEntity(save_file, buffer);
-            Vector_Push(&w->monsters_vector, buffer);
-
-        }
-    }
-
-    int num_of_bonus = 0;
-    fread(&num_of_bonus, sizeof(int), 1, save_file);
-    for(int i = 0 ; i < num_of_bonus ; i++)
-    {
-        Entity* buffer = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
-        Vector_Push(&w->bonus_vector, buffer);
-
-    }
-
-
-
-
-    fclose(save_file);
 }

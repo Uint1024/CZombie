@@ -73,7 +73,6 @@ void Entity_Destroy(Entity* ent)
 Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle)
 {
     Entity* entity;
-
     switch(cat)
     {
     case Cat_Wall:

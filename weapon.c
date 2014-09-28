@@ -89,9 +89,9 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->magazine_bullets = 1;
         w->delay_between_shots = 65;
         w->reloading_time = 0;
-        w->bullet_width = 30;
-        w->bullet_height = 30;
-        w->bullet_speed = 0.2;
+        w->bullet_width = 25;
+        w->bullet_height = 25;
+        w->bullet_speed = 0.4;
     }
     else if(type == Weapon_TripleFireball)
     {
