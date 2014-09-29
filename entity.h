@@ -38,6 +38,10 @@ typedef struct Entity
     int                     damage;//zombies, bullets, explosions
     float                   angle;
 
+
+    int width;
+    int height;
+
     Entity*                 last_zombie_hit;//used to calculate bullets penetration
     //components
     MovementC*              movementC;//movement component
@@ -65,6 +69,7 @@ void Entity_CalculateVelocityFromAngle(Entity* ent);
 
 bool Entity_CollisionWithWalls(Entity* ent, World* world);
 bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector);
+bool Entity_CollisionWithProps(Entity* ent, Vector* props_vector);
 
 bool Entity_CheckNear(Entity* ent1, Entity* ent2);
 bool Entity_CheckDistance(Entity* ent1, Entity* ent2, int distance);

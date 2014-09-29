@@ -16,6 +16,7 @@
 #include "mapEvent.h"
 #include "bonus.h"
 #include "prop.h"
+#include "decals.h"
 
 
 
@@ -40,8 +41,8 @@ Entity* Entity_Spawn()
     ent->penetration_chance = 0;
     ent->in_dark = true;
 	ent->alive                      = true;
-ent->nb_penetrations = 0;
-ent->transparent = false;
+    ent->nb_penetrations = 0;
+    ent->transparent = false;
     ent->damage                     = 0;
 
 	//components
@@ -94,6 +95,9 @@ Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle
         break;
     case Cat_Bonus:
         entity = Bonus_Create(type, x, y, angle);
+        break;
+    case Cat_Decal:
+        entity = Decal_Create(type, x, y, angle);
         break;
     case Cat_Prop:
         entity = Prop_Create(type, x, y, angle);
@@ -242,8 +246,8 @@ bool Entity_CollisionWithStuff(Entity* ent, World* world)
 
     bool collision_with_walls = Entity_CollisionWithWalls(ent, world);
     bool collision_with_mobs = Entity_CollisionWithMonsters(ent, &world->monsters_vector);
-
-    return (collision_with_walls || collision_with_mobs);
+    bool collision_with_props = Entity_CollisionWithProps(ent, &world->props_vector);
+    return (collision_with_walls || collision_with_mobs || collision_with_props);
 }
 
 void Entity_CalculateVisibility(Entity* ent, World* world)
@@ -423,6 +427,53 @@ bool Entity_CollisionWithWalls(Entity* ent, World* world)
 }
 
 
+bool Entity_CollisionWithProps(Entity* ent, Vector* props_vector)
+{
+    bool collision = false;
+    Box* temp = BoundingBox_CreateTemp(ent);
+
+    Entity* collision_sides[5] = {false};
+    for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
+    {
+        Entity* prop = (struct Entity*)Vector_Get(props_vector, i);
+        if(Entity_CheckNear(ent, prop))
+        {
+            Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &prop->box);
+            if (collision_direction != None)
+            {
+                if(ent->t == Cat_Zombie)
+                {
+                    Structure_GetAttacked(prop, ent);
+                }
+                collision = true;
+                collision_sides[collision_direction] = prop;
+                ent->collision_direction = collision_direction;
+            }
+        }
+    }
+
+    if ((collision_sides[Bottom] && ent->movementC->dy > 0))
+    {
+        ent->movementC->dy = collision_sides[Bottom]->box.top - ent->box.bottom;
+    }
+    if ((collision_sides[Top] && ent->movementC->dy < 0))
+    {
+        ent->movementC->dy = collision_sides[Top]->box.bottom - ent->box.top;
+    }
+    if ((collision_sides[Right] && ent->movementC->dx > 0))
+    {
+        ent->movementC->dx = collision_sides[Right]->box.left - ent->box.right;
+    }
+    if ((collision_sides[Left] && ent->movementC->dx < 0))
+    {
+        ent->movementC->dx = collision_sides[Left]->box.right - ent->box.left;
+    }
+
+    free(temp);
+
+    return collision;
+}
+
 
 bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
 {
@@ -474,23 +525,6 @@ bool Entity_CollisionWithMonsters(Entity* ent, Vector* monsters_vector)
     free(temp);
 
     return collision;
-}
-
-void Entity_CollisionWithExplosions(Entity* ent, Vector* explosions, World* world)
-{
-    /*bool collision = false;
-    for(int i = 0 ; i < Vector_Count(explosions) ; i++)
-    {
-        Entity* exp = (Entity*)Vector_Get(explosions, i);
-        collision = BoundingBox_CheckSimpleCollision(&ent->box, &exp->box);
-        if(collision)
-        {
-
-                //Zombie_GetAttacked(ent, exp->damage, world);
-
-            //Entity_LoseHealth(ent, exp->damage);
-        }
-    }*/
 }
 
 void Entity_LoseHealth(Entity* ent, int damage)

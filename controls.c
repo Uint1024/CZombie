@@ -314,8 +314,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                        pressedKeys[SDLK_LSHIFT])
                     {
 
-                        rectangle_selection_startX = controls->mouseTileX;
-                        rectangle_selection_startY = controls->mouseTileY;
+                        rectangle_selection_startX = controls->mousePositionInWorldX;
+                        rectangle_selection_startY = controls->mousePositionInWorldY;
                         rectangle_selection_create = true;
                     }
 
@@ -342,10 +342,17 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
             if(pressedKeys[SDLK_c])
 
             {
+
+
+            }
+
+            //deleting monster
+            if(pressedKeys[SDLK_x])
+            {
                 if(pressedKeys[SDLK_LSHIFT] && !rectangle_selection_delete)
                 {
-                    rectangle_selection_startX = controls->mouseTileX;
-                    rectangle_selection_startY = controls->mouseTileY;
+                    rectangle_selection_startX = controls->mousePositionInWorldX;
+                    rectangle_selection_startY = controls->mousePositionInWorldY;
                     rectangle_selection_delete = true;
                 }
                 if(!rectangle_selection_delete)
@@ -354,6 +361,54 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                     world->map[position_in_array] = NULL;
                 }
 
+                for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
+                {
+                    Entity* mob = (Entity*)Vector_Get(&world->monsters_vector, i);
+                    if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
+                                                       controls->mousePositionInWorldY,
+                                                       &mob->box))
+                    {
+                        Entity_Destroy(mob);
+                        Vector_Delete(&world->monsters_vector, i);
+
+                    }
+                }
+                for(int i = 0 ; i < Vector_Count(&world->bonus_vector) ; i++)
+                {
+                    Entity* bonus = (Entity*)Vector_Get(&world->bonus_vector, i);
+                    if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
+                                                       controls->mousePositionInWorldY,
+                                                       &bonus->box))
+                    {
+                        Entity_Destroy(bonus);
+                        Vector_Delete(&world->bonus_vector, i);
+
+                    }
+                }
+                for(int i = 0 ; i < Vector_Count(&world->props_vector) ; i++)
+                {
+                    Entity* obj = (Entity*)Vector_Get(&world->props_vector, i);
+                    if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
+                                                       controls->mousePositionInWorldY,
+                                                       &obj->box))
+                    {
+                        Entity_Destroy(obj);
+                        Vector_Delete(&world->props_vector, i);
+
+                    }
+                }
+                for(int i = 0 ; i < Vector_Count(&world->decals_vector) ; i++)
+                {
+                    Entity* obj = (Entity*)Vector_Get(&world->decals_vector, i);
+                    if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
+                                                       controls->mousePositionInWorldY,
+                                                       &obj->box))
+                    {
+                        Entity_Destroy(obj);
+                        Vector_Delete(&world->decals_vector, i);
+
+                    }
+                }
             }
 
 
@@ -363,8 +418,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
             */
             if((rectangle_selection_create || rectangle_selection_delete) && pressedKeys[SDLK_LSHIFT])
             {
-                rectangle_selection_endX = controls->mouseTileX;
-                rectangle_selection_endY = controls->mouseTileY;
+                rectangle_selection_endX = controls->mousePositionInWorldX;
+                rectangle_selection_endY =controls->mousePositionInWorldY;
 
                 int startX = rectangle_selection_startX;
                 int endX = rectangle_selection_endX;
@@ -382,9 +437,15 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                     endX = rectangle_selection_startX;
                 }
 
-                for(int y = startY ; y <= endY ; y++)
+
+                int tileStartX = startX / TILE_SIZE;
+                int tileStartY = startY / TILE_SIZE;
+                int tileEndX = endX / TILE_SIZE;
+                int tileEndY = endY / TILE_SIZE;
+
+                for(int y = tileStartY ; y <= tileEndY ; y++)
                 {
-                    for(int x = startX ; x <= endX ; x++)
+                    for(int x = tileStartX ; x <= tileEndX ; x++)
                     {
                         position_in_array = y * world->map_width + x;
                         if(rectangle_selection_create)
@@ -403,6 +464,61 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                         }
                     }
                 }
+
+                if(rectangle_selection_delete)
+                {
+                    for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
+                    {
+                        Entity* obj = (Entity*)Vector_Get(&world->monsters_vector, i);
+                        if(obj->box.right > startX &&
+                           obj->box.left < endX &&
+                           obj->box.bottom > startY &&
+                           obj->box.top < endY)
+                        {
+                            Entity_Destroy(obj);
+                            Vector_Delete(&world->monsters_vector, i);
+                        }
+                    }
+                    for(int i = 0 ; i < Vector_Count(&world->bonus_vector) ; i++)
+                    {
+                        Entity* obj = (Entity*)Vector_Get(&world->bonus_vector, i);
+                        if(obj->box.right > startX &&
+                           obj->box.left < endX &&
+                           obj->box.bottom > startY &&
+                           obj->box.top < endY)
+                        {
+                            Entity_Destroy(obj);
+                            Vector_Delete(&world->bonus_vector, i);
+
+                        }
+                    }
+                    for(int i = 0 ; i < Vector_Count(&world->props_vector) ; i++)
+                    {
+                        Entity* obj = (Entity*)Vector_Get(&world->props_vector, i);
+                        if(obj->box.right > startX &&
+                           obj->box.left < endX &&
+                           obj->box.bottom > startY &&
+                           obj->box.top < endY)
+                        {
+                            Entity_Destroy(obj);
+                            Vector_Delete(&world->props_vector, i);
+
+                        }
+                    }
+                    for(int i = 0 ; i < Vector_Count(&world->decals_vector) ; i++)
+                    {
+                        Entity* obj = (Entity*)Vector_Get(&world->decals_vector, i);
+                        if(obj->box.right > startX &&
+                           obj->box.left < endX &&
+                           obj->box.bottom > startY &&
+                           obj->box.top < endY)
+                        {
+                            Entity_Destroy(obj);
+                            Vector_Delete(&world->decals_vector, i);
+
+                        }
+                    }
+                }
             }
 
             if((rectangle_selection_create || rectangle_selection_delete) && !pressedKeys[SDLK_LSHIFT])
@@ -417,34 +533,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
 
 
-        //deleting monster
-        if(pressedKeys[SDLK_x])
-        {
-            for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
-            {
-                Entity* mob = (Entity*)Vector_Get(&world->monsters_vector, i);
-                if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
-                                                   controls->mousePositionInWorldY,
-                                                   &mob->box))
-                {
-                    Entity_Destroy(mob);
-                    Vector_Delete(&world->monsters_vector, i);
 
-                }
-            }
-            for(int i = 0 ; i < Vector_Count(&world->bonus_vector) ; i++)
-            {
-                Entity* bonus = (Entity*)Vector_Get(&world->bonus_vector, i);
-                if(BoundingBox_CheckPointCollision(controls->mousePositionInWorldX,
-                                                   controls->mousePositionInWorldY,
-                                                   &bonus->box))
-                {
-                    Entity_Destroy(bonus);
-                    Vector_Delete(&world->bonus_vector, i);
-
-                }
-            }
-        }
 
         //deleting every monster
         if(pressedKeys[SDLK_u])

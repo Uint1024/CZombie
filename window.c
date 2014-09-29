@@ -10,8 +10,8 @@ Window Window_CreateLevelEditor()
     w.x = 20;
     w.y = 20;
     w.buttons_size = 20;
-    int w_width = 200;
-    int w_height = 200;
+    int w_width = 300;
+    int w_height = 300;
     w.space_between_buttons = 5;
     w.margin = 10;
 
@@ -119,6 +119,13 @@ void Window_UpdateButtonsPositions(Window* w)
 
     }
 
+    for(int i = 0 ; i < NB_OF_DECAL_TYPES ; i++)
+    {
+        Button_Create(Cat_Decal, i, buttons_nb, w);
+        buttons_nb++;
+
+    }
+
     w->nb_of_buttons = buttons_nb;
 
 }
@@ -133,8 +140,6 @@ void Button_Create(Main_Category cat, int type, int buttons_nb, Window* w)
     Button button;
     button.main_category = cat;
     button.button_type = type;
-//    button.texture = 0;
-  //  button.texture = all_textures_g[cat][type];
 
     button.x = x + w->x;
     button.y = y + w->y;

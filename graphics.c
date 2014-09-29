@@ -125,6 +125,7 @@ void Graphics_Create(int screen_width, int screen_height)
 
     textures_g[Cat_Prop][Prop_Bed] = IMG_LoadTexture(renderer, "img/prop/bed.png");
     textures_g[Cat_Prop][Prop_Desk] = IMG_LoadTexture(renderer, "img/prop/desk.png");
+    textures_g[Cat_Prop][Prop_Chair] = IMG_LoadTexture(renderer, "img/prop/chair.png");
 
     textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(renderer, "cursor_aim.png");
     textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(renderer, "cursor_resize_left_right.png");
@@ -138,6 +139,8 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Decal][Decal_Corpse_Slow] = IMG_LoadTexture(renderer, "decal_corpse_slow.png");
     textures_g[Cat_Decal][Decal_Corpse_Raptor] = IMG_LoadTexture(renderer, "decal_corpse_raptor.png");
     textures_g[Cat_Decal][Decal_Corpse_Destroyer] = IMG_LoadTexture(renderer, "decal_corpse_destroyer.png");
+
+    textures_g[Cat_Decal][Decal_Rug_Ancient] = IMG_LoadTexture(renderer, "img/decal/rug_ancient.png");
 
 
     fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
@@ -341,28 +344,54 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
     {
         errorY = 1;
     }
-    const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX - errorX,
-                            object->box.top - cameraY - object->box.offsetY - errorY,
-                            object->box.width + object->box.offsetX * 2 ,
-                            object->box.height + object->box.offsetY * 2};
 
-
-    if(!object->in_dark || game_state_g == GameState_Editing_Map)
+    if(object->t != Cat_Prop)
     {
-        if(object->angle != 0 && object->visible)
+        const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX - errorX,
+                                object->box.top - cameraY - object->box.offsetY - errorY,
+                                object->box.width + object->box.offsetX * 2 ,
+                                object->box.height + object->box.offsetY * 2};
+
+
+        if(!object->in_dark || game_state_g == GameState_Editing_Map)
         {
-            SDL_RenderCopyEx(renderer,
-                             textures_g[object->t][object->sub_category],
-                             NULL,
-                             &rect,
-                             object->angle * 57.2957795f,//convert radian to degree
-                             NULL,
-                             SDL_FLIP_NONE);
+            if(object->angle != 0 && object->visible)
+            {
+                SDL_RenderCopyEx(renderer,
+                                 textures_g[object->t][object->sub_category],
+                                 NULL,
+                                 &rect,
+                                 object->angle * 57.2957795f,//convert radian to degree
+                                 NULL,
+                                 SDL_FLIP_NONE);
+            }
+            else if(object->angle == 0 && object->visible)
+            {
+                SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
+                               NULL, &rect);
+            }
         }
-        else if(object->angle == 0 && object->visible)
+    }
+    else
+    {
+        SDL_Rect rect = { object->x- cameraX, object->y- cameraY, object->width, object->height};
+        if(!object->in_dark || game_state_g == GameState_Editing_Map)
         {
-            SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
-                           NULL, &rect);
+            if(object->angle != 0 && object->visible)
+            {
+                SDL_RenderCopyEx(renderer,
+                                 textures_g[object->t][object->sub_category],
+                                 NULL,
+                                 &rect,
+                                 object->angle * 57.2957795f,//convert radian to degree
+                                 NULL,
+                                 SDL_FLIP_NONE);
+            }
+            else if(object->angle == 0 && object->visible)
+            {
+                SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
+                               NULL, &rect);
+            }
         }
     }
 

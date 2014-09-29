@@ -234,12 +234,15 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
     for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
     {
-        if(Vector_Count(decals_vector) > 100)
-        {
-            Vector_Delete(decals_vector, 0);
-        }
         Entity* decal = (Entity*)Vector_Get(decals_vector, i);
         Entity_CalculateVisibility(decal, world);
+        if(Vector_Count(decals_vector) > 200)
+        {
+            if(decal->is_ennemy)
+            {
+                Vector_Delete(decals_vector, 0);
+            }
+        }
     }
 
     for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
@@ -250,6 +253,12 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         }
         Entity* prop = (Entity*)Vector_Get(props_vector, i);
         Entity_CalculateVisibility(prop, world);
+
+        if (!prop->alive)
+        {
+            Entity_Destroy(prop);
+            Vector_Delete(explosions_vector, i);
+        }
     }
 
 

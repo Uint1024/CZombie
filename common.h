@@ -113,6 +113,7 @@ typedef enum {
 typedef enum {
     Prop_Desk,
     Prop_Bed,
+    Prop_Chair,
     NB_OF_PROP_TYPES
 } Prop_Type;
 
@@ -185,7 +186,8 @@ typedef enum
     Decal_Corpse_Slow,
     Decal_Corpse_Raptor,
     Decal_Corpse_Destroyer,
-    NB_OF_DECALS_TYPES
+    Decal_Rug_Ancient,
+    NB_OF_DECAL_TYPES
 }   Decal_Type;
 
 

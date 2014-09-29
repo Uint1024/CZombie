@@ -19,7 +19,7 @@ typedef struct Window
 {
     int         x;
     int         y;
-    Button      buttons[50];
+    Button      buttons[150];
     Box         box;
     int         buttons_size;
     int         margin;

@@ -58,7 +58,6 @@ void Zombie_Update(Entity* z, World* world)
                 zc->paths_calculated++;
                 Zombie_NewTrajectory(z);
             }
-            Entity_CollisionWithExplosions(z, &world->explosions_vector, world);
 
             moveEntity(z, z->movementC->dx, z->movementC->dy);
         }
@@ -469,6 +468,6 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
         corpse_type = Decal_Corpse_Destroyer;
         break;
     }
-    Vector_Push(decals_vector, Decal_Create(zombie, corpse_type));
+    Vector_Push(decals_vector, Decal_Create(corpse_type, zombie->x, zombie->y, zombie->angle));
 
 }

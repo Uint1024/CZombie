@@ -50,8 +50,18 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
                    Entity_Create(category, obj_type,
                                  mousePositionInWorldX,
                                  mousePositionInWorldY,
-                                 0));
-                                 printf("lollol");
+                                 angle));
+
+        building_time = SDL_GetTicks();
+    }
+    else if(category == Cat_Decal &&
+       (SDL_GetTicks() - building_time > 150 || unlimited))
+    {
+        Vector_Push(&world->decals_vector,
+                   Entity_Create(category, obj_type,
+                                 mousePositionInWorldX,
+                                 mousePositionInWorldY,
+                                 angle));
 
         building_time = SDL_GetTicks();
     }

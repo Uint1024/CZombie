@@ -1,5 +1,6 @@
 #include "prop.h"
 #include "entity.h"
+#include "boundingBox.h"
 
 Entity* Prop_Create(Bonus_type type, float x, float y, float angle)
 {
@@ -10,15 +11,55 @@ Entity* Prop_Create(Bonus_type type, float x, float y, float angle)
     prop->t = Cat_Prop;
     prop->sub_category = type;
     prop->angle = angle;
+    prop->hp = 10;
 
-    if(type == Prop_Bed)
+    //bbox value, change depending on the angle
+    int true_x, true_y, true_width, true_height;
+
+    switch(type)
     {
-        BoundingBox_Create(prop, 32, 64);
+    case Prop_Bed:
+        prop->width = 32;
+        prop->height = 64;
+        break;
+    case Prop_Desk:
+        prop->width = 25;
+        prop->height = 40;
+        break;
+    case Prop_Chair:
+        prop->width = 20;
+        prop->height = 20;
+        break;
     }
-    else if(type == Prop_Desk)
+
+    true_width =  prop->width ;
+    true_height = prop->height;
+    true_x = x;
+    true_y = y;
+    int xCenter = x + prop->width / 2;
+    int yCenter = y + prop->height / 2;
+
+    if(angle > HALF_PI - 0.1 && angle < HALF_PI + 0.1)
     {
-        BoundingBox_Create(prop, 25, 40);
+        true_x = xCenter - (cos(angle) * (x - xCenter)) + (sin(angle) * (y - yCenter));
+        true_y = yCenter + sin(angle) * (x - xCenter) + cos(angle) * (y - yCenter);
+
+        true_width = prop->height;
+        true_height = prop->width;
+
     }
+    else if(angle > PI + HALF_PI - 0.1 && angle < PI + HALF_PI + 0.1)
+    {
+        true_x = xCenter + cos(angle) * (x - xCenter) - sin(angle) * (y - yCenter);
+        true_y = yCenter - sin(angle) * (x - xCenter) + cos(angle) * (y - yCenter);
+        true_width = prop->height;
+        true_height = prop->width;
+    }
+
+    prop->box = BoundingBox_CreateBetter(true_x, true_y, true_width, true_height);
+
+
+
 
     return prop;
 }
