@@ -17,7 +17,7 @@ void LevelEditor_BackToEditing(World* world);
 void LevelEditor_LoadMapToEdit(char* complete_name, World* world);
 void Level_Clear(World* world);
 void LevelEditor_CreateObject(Main_Category category, int obj_type,
-                              int x, int y, int position_in_array,int mousePositionInWorldX,
-                              int mousePositionInWorldY,
+                              int x, int y, int position_in_array,float mousePositionInWorldX,
+                              float mousePositionInWorldY,
                               World* world, bool unlimited, float angle);
 #endif // LEVELEDITOR_H

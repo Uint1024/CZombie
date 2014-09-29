@@ -257,7 +257,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         if (!prop->alive)
         {
             Entity_Destroy(prop);
-            Vector_Delete(explosions_vector, i);
+            Vector_Delete(props_vector, i);
         }
     }
 

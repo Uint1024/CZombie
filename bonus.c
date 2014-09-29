@@ -44,13 +44,13 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
 
 void Bonus_Update(Entity* bonus, Entity* player)
 {
-    if(Entity_CheckDistance(player, bonus, 150) &&
+    if(Entity_CheckDistance(player, bonus, 64) &&
        !(bonus->sub_category == Bonus_Time_Stop && player->playerC->time_stop == player->playerC->max_time_stop))
     {
         bonus->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);
 
-        //min speed is 0 when distance is 150, max speed is 0.05f when distance is 0
-        bonus->movementC->speed = -0.003f * abs(bonus->x - player->x) + 0.5;
+        //min speed is 0 when distance is 64, max speed is 0.05f when distance is 0
+        bonus->movementC->speed = -0.008f * abs(bonus->x - player->x) + 0.5;
 
         Entity_CalculateVelocity(bonus);
         moveEntity(bonus, bonus->movementC->dx , bonus->movementC->dy);

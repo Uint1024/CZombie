@@ -441,9 +441,10 @@ bool Entity_CollisionWithProps(Entity* ent, Vector* props_vector)
             Direction collision_direction = BoundingBox_CheckCollision(&ent->box, temp, &prop->box);
             if (collision_direction != None)
             {
-                if(ent->t == Cat_Zombie)
+                if(ent->t == Cat_Zombie && ent->zombieC->attack_timer >= ent->zombieC->attack_delay)
                 {
                     Structure_GetAttacked(prop, ent);
+                        ent->zombieC->attack_timer = 0;
                 }
                 collision = true;
                 collision_sides[collision_direction] = prop;
@@ -467,6 +468,64 @@ bool Entity_CollisionWithProps(Entity* ent, Vector* props_vector)
     if ((collision_sides[Left] && ent->movementC->dx < 0))
     {
         ent->movementC->dx = collision_sides[Left]->box.right - ent->box.left;
+    }
+
+    if(ent->movementC->dy == 0)
+    {
+        if(collision_sides[Right] &&
+           ent->movementC->dx > 0 &&
+           ent->box.right <= collision_sides[Right]->x)
+        {
+            if(ent->box.top < collision_sides[Right]->box.top)
+            {
+                ent->movementC->dy = -1;
+            }
+            else if(ent->box.bottom > collision_sides[Right]->box.bottom)
+            {
+                ent->movementC->dy = 1;
+            }
+        }
+        else if(collision_sides[Left] &&
+                ent->movementC->dx < 0 &&
+                ent->box.left >= collision_sides[Left]->x)
+        {
+            if(ent->box.top < collision_sides[Left]->box.top)
+            {
+                ent->movementC->dy = -1;
+            }
+            else if(ent->box.bottom > collision_sides[Left]->box.bottom)
+            {
+                ent->movementC->dy = 1;
+            }
+        }
+    }
+
+    if(ent->movementC->dx == 0)
+    {
+        if(collision_sides[Top] && ent->movementC->dy < 0
+                && ent->box.top >= collision_sides[Top]->box.bottom)
+        {
+            if(ent->box.left < collision_sides[Top]->box.left)
+            {
+                ent->movementC->dx = -1;
+            }
+            else if(ent->box.right > collision_sides[Top]->box.right)
+            {
+                ent->movementC->dx = 1;
+            }
+        }
+        else if(collision_sides[Bottom] && ent->movementC->dy > 0
+                && ent->box.bottom <= collision_sides[Bottom]->box.top)
+        {
+            if(ent->box.left < collision_sides[Bottom]->box.left)
+            {
+                ent->movementC->dx = -1;
+            }
+            else if(ent->box.right > collision_sides[Bottom]->box.right)
+            {
+                ent->movementC->dx = 1;
+            }
+        }
     }
 
     free(temp);

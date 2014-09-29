@@ -26,8 +26,8 @@ typedef struct Controls
 	int previousMouseY;
 	int mouseTileX;
 	int mouseTileY;
-	int mousePositionInWorldX;
-	int mousePositionInWorldY;
+	float mousePositionInWorldX;
+	float mousePositionInWorldY;
 	int tileInPixelsX;
 	int tileInPixelsY;
 	int mouseWheelPos;

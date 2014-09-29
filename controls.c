@@ -160,8 +160,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
             rotate_timer = 0;
         }
 
-        controls->temp_object_to_create->x = controls->mouseX;
-        controls->temp_object_to_create->y = controls->mouseY;
+        controls->temp_object_to_create->x = controls->mousePositionInWorldX;
+        controls->temp_object_to_create->y = controls->mousePositionInWorldY;
         BoundingBox_Update(controls->temp_object_to_create);
 
 
@@ -194,6 +194,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                                                                     level_editor->active_button->button_type,
                                                                     controls->mouseX, controls->mouseY,
                                                                     0);
+
+
 
                 }
             }
@@ -319,18 +321,12 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                         rectangle_selection_create = true;
                     }
 
-
-
-                        //creating single object
-                        //TODO : merge all the X_Create into one big function that calls all the others
-
-                        int x = controls->tileInPixelsX;
-                        int y = controls->tileInPixelsY;
-
-                        LevelEditor_CreateObject(category, obj_type, x, y,
+                        LevelEditor_CreateObject(category, obj_type, controls->tileInPixelsX, controls->tileInPixelsY,
                                                  position_in_array, controls->mousePositionInWorldX,
                                                  controls->mousePositionInWorldY, world, unlimited_creation,
                                                  controls->temp_object_to_create->angle);
+
+                        //printf("%d %d\n", controls->mousePositionInWorldX, controls->mousePositionInWorldY);
 
 
                 }
@@ -629,9 +625,9 @@ bool Inputs_PoolInputs(Controls* controls, PlayerC* playerC)
 	controls->mousePositionInWorldX = controls->mouseX + cameraX;
 
 	controls->mousePositionInWorldY = controls->mouseY + cameraY;
-	controls->mouseTileX = (controls->mousePositionInWorldX - controls->mousePositionInWorldX % TILE_SIZE) / TILE_SIZE;
+	controls->mouseTileX = (controls->mousePositionInWorldX - (int)controls->mousePositionInWorldX % TILE_SIZE) / TILE_SIZE;
 
-	controls->mouseTileY = (controls->mousePositionInWorldY - controls->mousePositionInWorldY % TILE_SIZE) / TILE_SIZE;
+	controls->mouseTileY = (controls->mousePositionInWorldY - (int)controls->mousePositionInWorldY % TILE_SIZE) / TILE_SIZE;
 
     controls->tileInPixelsX = controls->mouseTileX * TILE_SIZE;
     controls->tileInPixelsY = controls->mouseTileY * TILE_SIZE;

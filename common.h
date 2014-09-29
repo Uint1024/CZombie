@@ -114,6 +114,10 @@ typedef enum {
     Prop_Desk,
     Prop_Bed,
     Prop_Chair,
+    Prop_Car_Cool,
+    Prop_Bookcase,
+    Prop_BlackChest,
+    Prop_FileCabinet,
     NB_OF_PROP_TYPES
 } Prop_Type;
 

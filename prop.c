@@ -5,7 +5,7 @@
 Entity* Prop_Create(Bonus_type type, float x, float y, float angle)
 {
     Entity* prop = Entity_Spawn();
-
+    printf("%f %f\n", x, y);
     prop->x = x;
     prop->y = y;
     prop->t = Cat_Prop;
@@ -29,6 +29,23 @@ Entity* Prop_Create(Bonus_type type, float x, float y, float angle)
     case Prop_Chair:
         prop->width = 20;
         prop->height = 20;
+        break;
+    case Prop_Car_Cool:
+        prop->width = 60;
+        prop->height = 120;
+        prop->hp = 25;
+        break;
+    case Prop_Bookcase:
+        prop->width = 32;
+        prop->height = 32;
+        break;
+    case Prop_FileCabinet:
+        prop->width = 32;
+        prop->height = 32;
+        break;
+    case Prop_BlackChest:
+        prop->width = 32;
+        prop->height = 32;
         break;
     }
 

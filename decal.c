@@ -43,7 +43,7 @@ Entity* Decal_Create(Decal_Type type, float x, float y, float angle)
         break;
     }
 
-    if(type != Decal_Rug_Ancient)
+    if(type != Decal_Rug_Ancient )
     {
         decals->is_ennemy = true;
     }

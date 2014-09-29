@@ -126,6 +126,10 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Prop][Prop_Bed] = IMG_LoadTexture(renderer, "img/prop/bed.png");
     textures_g[Cat_Prop][Prop_Desk] = IMG_LoadTexture(renderer, "img/prop/desk.png");
     textures_g[Cat_Prop][Prop_Chair] = IMG_LoadTexture(renderer, "img/prop/chair.png");
+textures_g[Cat_Prop][Prop_Car_Cool] = IMG_LoadTexture(renderer, "img/prop/car.png");
+textures_g[Cat_Prop][Prop_Bookcase] = IMG_LoadTexture(renderer, "img/prop/bookcase.png");
+textures_g[Cat_Prop][Prop_FileCabinet] = IMG_LoadTexture(renderer, "img/prop/file_cabinet.png");
+textures_g[Cat_Prop][Prop_BlackChest] = IMG_LoadTexture(renderer, "img/prop/black_chest.png");
 
     textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(renderer, "cursor_aim.png");
     textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(renderer, "cursor_resize_left_right.png");
@@ -141,6 +145,7 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Decal][Decal_Corpse_Destroyer] = IMG_LoadTexture(renderer, "decal_corpse_destroyer.png");
 
     textures_g[Cat_Decal][Decal_Rug_Ancient] = IMG_LoadTexture(renderer, "img/decal/rug_ancient.png");
+
 
 
     fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
@@ -200,6 +205,26 @@ void Graphics_RenderWorld(World* world)
         }
     }
 
+     for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
+    {
+        if(Vector_Get(bonus_vector, i) != NULL)
+        {
+            Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
+
+            if(Entity_CheckNear(&world->player, bonus))
+                Graphics_RenderObject(bonus, world->player.playerC);
+        }
+    }
+
+    for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
+    {
+
+        Entity* prop = (Entity*)Vector_Get(props_vector, i);
+        if(Entity_CheckNear(&world->player, prop))
+            Graphics_RenderObject(prop, world->player.playerC);
+
+    }
+
     for(int i = 0 ; i < Vector_Count(&world->non_null_walls); i++)
     {
         Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
@@ -228,27 +253,11 @@ void Graphics_RenderWorld(World* world)
     }
 
 
- for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
-    {
-        if(Vector_Get(bonus_vector, i) != NULL)
-        {
-            Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
 
-            if(Entity_CheckNear(&world->player, bonus))
-                Graphics_RenderObject(bonus, world->player.playerC);
-        }
-    }
 
     Graphics_RenderObject(&world->player, world->player.playerC);
 
-    for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
-    {
 
-        Entity* prop = (Entity*)Vector_Get(props_vector, i);
-        if(Entity_CheckNear(&world->player, prop))
-            Graphics_RenderObject(prop, world->player.playerC);
-
-    }
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {
@@ -334,6 +343,7 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
     else if(object->angle < PI)
     {
         errorX = 1;
+
     }
     else if(object->angle < PI + HALF_PI)
     {
@@ -374,7 +384,8 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
     }
     else
     {
-        SDL_Rect rect = { object->x- cameraX, object->y- cameraY, object->width, object->height};
+        //printf("%f %f\n", object->x, cameraX);
+        SDL_Rect rect = { object->x- cameraX  - errorX, object->y- cameraY  - errorY, object->width, object->height};
         if(!object->in_dark || game_state_g == GameState_Editing_Map)
         {
             if(object->angle != 0 && object->visible)
@@ -689,7 +700,7 @@ void Graphics_RenderLevelEditorUI(World* world, Controls* controls,
 
         if(!controls->hovering_on_window)
         {
-            Graphics_RenderObject(controls->temp_object_to_create, &world->player);
+            Graphics_RenderObject(controls->temp_object_to_create, world->player.playerC);
 
         }
     }

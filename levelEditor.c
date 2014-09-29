@@ -9,16 +9,19 @@
 #include "player.h"
 #include "gameManager.h"
 #include "entity.h"
+#include "prop.h"
+
 
 
 static int building_time = 0;
 static int test = 0;
 
 void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y,
-                              int position_in_array, int mousePositionInWorldX,
-                              int mousePositionInWorldY, World* world, bool unlimited,
+                              int position_in_array, float mousePositionInWorldX,
+                              float mousePositionInWorldY, World* world, bool unlimited,
                               float angle)
 {
+
     if(category == Cat_Wall || category == Cat_Door)
     {
         free(world->map[position_in_array]);
@@ -84,7 +87,7 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
     else if(category == Cat_Bonus && (SDL_GetTicks() - building_time > 150 ||
                                        unlimited))
     {
-        Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, x, y, 0));
+        Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, mousePositionInWorldX, mousePositionInWorldY, 0));
         building_time = SDL_GetTicks();
     }
 
@@ -390,12 +393,18 @@ void Level_Save(char* file_name, World* w)
         }
 
         int num_of_zombies = Vector_Count(&w->monsters_vector);
-
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
-
         for(int i = 0 ; i < num_of_zombies ; i++)
         {
             Entity* buffer = (Entity*)Vector_Get(&w->monsters_vector, i);
+            LevelEditor_WriteEntity(save_file, buffer);
+        }
+
+        int num_of_decals = Vector_Count(&w->decals_vector);
+        fwrite(&num_of_decals, sizeof(int), 1, save_file);
+        for(int i = 0 ; i < num_of_decals ; i++)
+        {
+            Entity* buffer = (Entity*)Vector_Get(&w->decals_vector, i);
             LevelEditor_WriteEntity(save_file, buffer);
         }
 
@@ -473,8 +482,6 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);
-    printf("%d zombies\n", num_of_zombies);
-
     if(num_of_zombies != 0)
     {
         for(int i = 0 ; i < num_of_zombies ; i++)
@@ -485,6 +492,17 @@ void Level_Load(char* file_name, World* w)
 
         }
     }
+
+    int num_of_decalss = 0;
+    fread(&num_of_decalss, sizeof(int), 1, save_file);
+    for(int i = 0 ; i < num_of_decalss ; i++)
+    {
+        Entity* buffer  = Entity_Spawn();
+        LevelEditor_ReadEntity(save_file, buffer);
+        Vector_Push(&w->decals_vector, buffer);
+
+    }
+
 
     int num_of_bonus = 0;
     fread(&num_of_bonus, sizeof(int), 1, save_file);
