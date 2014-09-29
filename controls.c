@@ -326,9 +326,6 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                                                  controls->mousePositionInWorldY, world, unlimited_creation,
                                                  controls->temp_object_to_create->angle);
 
-                        //printf("%d %d\n", controls->mousePositionInWorldX, controls->mousePositionInWorldY);
-
-
                 }
                 else
                     printf("out of bound!!!");

@@ -416,8 +416,6 @@ void Zombie_BecomeAggressive(Entity* z, World* world)
             //zombie will become aggressive only if he can be seen by z
             if(Entity_CheckCanSeeEntity(z, mob, world))
             {
-
-
                 Zombie_BecomeAggressive(mob, world);
                 zombies_told++;
             }

@@ -240,17 +240,13 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         {
             if(decal->is_ennemy)
             {
-                Vector_Delete(decals_vector, 0);
+                Vector_Delete(decals_vector, i);
             }
         }
     }
 
     for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
     {
-        if(Vector_Count(props_vector) > 100)
-        {
-            Vector_Delete(props_vector, 0);
-        }
         Entity* prop = (Entity*)Vector_Get(props_vector, i);
         Entity_CalculateVisibility(prop, world);
 

@@ -207,30 +207,34 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
 
     float angle = C_AngleBetween2Points(ent1MiddleX, ent1MiddleY, ent2MiddleX, ent2MiddleY);
 
+
     float dx = cos(angle) * 20;
     float dy = sin(angle) * 20;
 
     float pointX = ent1MiddleX;
     float pointY = ent1MiddleY;
 
+           pointY, ent1MiddleY, ent2MiddleY, ent1MiddleY);
     bool collision = false;
 
-    //sooo that doesn't work if the 2 entities have the same x. that's stupid
-        while(!collision && (pointX - ent1MiddleX < ent2MiddleX - ent1MiddleX &&
-                             pointY - ent1MiddleY < ent2MiddleY - ent1MiddleY))
-        {
-            pointX += dx;
-            pointY += dy;
+    while(!collision && (pointX - ent1MiddleX <= ent2MiddleX - ent1MiddleX))
+    {
+        pointX += dx;
+        pointY += dy;
 
-            for(int i = 0 ; i < Vector_Count(&world->non_null_walls) && !collision ; i++)
+        for(int i = 0 ; i < Vector_Count(&world->non_null_walls) && !collision ; i++)
+        {
+
+            Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
+
+            if(Entity_CheckDistance(ent1, wall, 1000) &&
+               Wall_IsWall(wall) &&
+               BoundingBox_CheckPointCollision(pointX, pointY, &wall->box))
             {
-                Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
-                if(Wall_IsWall(wall) && BoundingBox_CheckPointCollision(pointX, pointY, &wall->box))
-                {
-                    collision = true;
-                }
+                collision = true;
             }
         }
+    }
 
 
     return !collision;

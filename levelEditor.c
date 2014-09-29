@@ -227,9 +227,7 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
    // printf("1111115555555547871512158745");
     free(buffer);
     buffer = Entity_Create(main_cat, sub_category, x, y, angle);
-    if(main_cat == Cat_Zombie)
-        printf("creating %d %d\n", buffer->sub_category, buffer->zombieC->shoot_delay);
-    //Entity_Destroy(buffer);
+
 
 
 
@@ -583,6 +581,7 @@ void Level_Clear(World* w)
     Vector_Clear(&w->bullets_vector);
     Vector_Clear(&w->explosions_vector);
     Vector_Clear(&w->decals_vector);
+    Vector_Clear(&w->props_vector);
 
     for(int i = 0 ; i < w->map_size ; i++)
     {
