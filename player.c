@@ -559,7 +559,7 @@ void Player_Reset(Entity* player)
     player->movementC->speed              =   BASE_PLAYER_SPEED;
     player->hp                            =   10;
 
-    player->weaponsC                      =   WeaponsComponent_Create();
+    player->weaponsC                      =   WeaponsComponent_Create(false);
     WeaponsComponent_AddWeaponToInventory(player->weaponsC,
                                           Weapon_Create(Weapon_Handgun));
     WeaponsComponent_ChangeWeapon(player->weaponsC,
@@ -587,7 +587,7 @@ Entity Player_Create(float x, float y, int w, int h)
     p.playerC->cameraY = -screen_height_g/2 + p.y;
     Graphics_SetCamera((float)(-screen_width_g/2 + p.x), (float)(-screen_height_g/2 + p.y));
     printf("in character camera x = %f, camera y = %f", (-screen_width_g/2 + p.x), (-screen_height_g/2 + p.y));
-    p.weaponsC                      =   WeaponsComponent_Create();
+    p.weaponsC                      =   WeaponsComponent_Create(false);
     p.weaponsC->bullets[Weapon_Handgun] = 50;
     //p.weaponsC->bullets[Weapon_GrenadeLauncher] = 100;
     //BoundingBox_Create(&p, w, h);

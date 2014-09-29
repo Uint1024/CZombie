@@ -19,7 +19,7 @@ typedef struct WeaponsC
 
 } WeaponsC;
 
-WeaponsC* WeaponsComponent_Create();
+WeaponsC* WeaponsComponent_Create(bool is_monster);
 void WeaponsComponent_AddWeaponToInventory(WeaponsC* wc, Weapon* weapon);
 void WeaponsComponent_AddAmmo(WeaponsC* wc, Weapon_Type type, int quantity);
 void WeaponsComponent_ChangeWeapon(WeaponsC* wc, Weapon_Type type);

@@ -113,6 +113,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     Vector* monsters_vector = &world->monsters_vector;
     Vector* explosions_vector = &world->explosions_vector;
     Vector* decals_vector = &world->decals_vector;
+    Vector* props_vector = &world->props_vector;
 
 
     for(int i = 0 ; i < world->map_size ; i++)
@@ -240,6 +241,17 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         Entity* decal = (Entity*)Vector_Get(decals_vector, i);
         Entity_CalculateVisibility(decal, world);
     }
+
+    for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
+    {
+        if(Vector_Count(props_vector) > 100)
+        {
+            Vector_Delete(props_vector, 0);
+        }
+        Entity* prop = (Entity*)Vector_Get(props_vector, i);
+        Entity_CalculateVisibility(prop, world);
+    }
+
 
 
 

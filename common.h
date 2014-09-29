@@ -71,6 +71,7 @@ typedef enum {
     Cat_Decal,
     Cat_Explosion,
     Cat_Cursor,
+    Cat_Prop,
     NB_OF_CAT,
     Nothing
 } Main_Category;
@@ -103,9 +104,17 @@ typedef enum {
     Ground_Black,
     Ground_Yellow,
     Ground_Grey,
+    Ground_Green_Blue_Carpet,
+    Ground_Wood,
+    Ground_Bathroom,
     NB_OF_GROUND_TYPES
 } Ground_Type;
 
+typedef enum {
+    Prop_Desk,
+    Prop_Bed,
+    NB_OF_PROP_TYPES
+} Prop_Type;
 
 //Wall_Type
 typedef enum {
@@ -115,6 +124,12 @@ typedef enum {
     Wall_Reinforced,
     Wall_Good_Corner,
     Wall_Good_Center,
+
+    Wall_Grey_Corner,
+    Wall_Grey_No_Border,
+    Wall_Grey_1_Border,
+    Wall_Grey_2_Borders,
+
     NB_OF_WALL_TYPES
 } Wall_Type
 ;

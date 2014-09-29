@@ -15,6 +15,8 @@
 #include "movement_component.h"
 #include "mapEvent.h"
 #include "bonus.h"
+#include "prop.h"
+
 
 
 Entity* Entity_Spawn()
@@ -92,6 +94,9 @@ Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle
         break;
     case Cat_Bonus:
         entity = Bonus_Create(type, x, y, angle);
+        break;
+    case Cat_Prop:
+        entity = Prop_Create(type, x, y, angle);
         break;
     }
 

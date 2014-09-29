@@ -97,6 +97,10 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Wall][Wall_Reinforced] = IMG_LoadTexture(renderer, "wall_reinforced.png");
     textures_g[Cat_Wall][Wall_Good_Center] = IMG_LoadTexture(renderer, "wall_good_center.png");
     textures_g[Cat_Wall][Wall_Good_Corner] = IMG_LoadTexture(renderer, "wall_good_corner.png");
+    textures_g[Cat_Wall][Wall_Grey_No_Border] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
+    textures_g[Cat_Wall][Wall_Grey_1_Border] = IMG_LoadTexture(renderer, "img/wall/grey_1_border.png");
+    textures_g[Cat_Wall][Wall_Grey_2_Borders] = IMG_LoadTexture(renderer, "img/wall/grey_2_borders.png");
+    textures_g[Cat_Wall][Wall_Grey_Corner] = IMG_LoadTexture(renderer, "img/wall/grey_corner.png");
 
     textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(renderer, "explosion_normal.png");
 
@@ -112,9 +116,15 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Ground][Ground_Red] = IMG_LoadTexture(renderer, "ground_red.png");
     textures_g[Cat_Ground][Ground_WhiteDark] = IMG_LoadTexture(renderer, "ground_whiteDark.png");
     textures_g[Cat_Ground][Ground_Yellow] = IMG_LoadTexture(renderer, "ground_yellow.png");
+    textures_g[Cat_Ground][Ground_Green_Blue_Carpet] = IMG_LoadTexture(renderer, "img/ground/green_blue_carpet.png");
+    textures_g[Cat_Ground][Ground_Wood] = IMG_LoadTexture(renderer, "img/ground/wood.png");
+    textures_g[Cat_Ground][Ground_Bathroom] = IMG_LoadTexture(renderer, "img/ground/bathroom.png");
 
     textures_g[Cat_Door][Door_Normal] = IMG_LoadTexture(renderer, "door_normal.png");
     textures_g[Cat_Door][Door_Reinforced] = IMG_LoadTexture(renderer, "door_reinforced.png");
+
+    textures_g[Cat_Prop][Prop_Bed] = IMG_LoadTexture(renderer, "img/prop/bed.png");
+    textures_g[Cat_Prop][Prop_Desk] = IMG_LoadTexture(renderer, "img/prop/desk.png");
 
     textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(renderer, "cursor_aim.png");
     textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(renderer, "cursor_resize_left_right.png");
@@ -163,7 +173,7 @@ void Graphics_RenderWorld(World* world)
     Vector* explosions_vector = &world->explosions_vector;
     Vector* events_vector = &world->events_vector;
     Vector* decals_vector = &world->decals_vector;
-
+    Vector* props_vector = &world->props_vector;
 
     for (int i = 0; i < world->map_size; i++)
     {
@@ -227,6 +237,15 @@ void Graphics_RenderWorld(World* world)
     }
 
     Graphics_RenderObject(&world->player, world->player.playerC);
+
+    for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
+    {
+
+        Entity* prop = (Entity*)Vector_Get(props_vector, i);
+        if(Entity_CheckNear(&world->player, prop))
+            Graphics_RenderObject(prop, world->player.playerC);
+
+    }
 
     for(int i = 0 ; i < Vector_Count(bullets_vector) ; i++)
     {

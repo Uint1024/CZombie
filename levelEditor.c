@@ -43,6 +43,18 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
 
         building_time = SDL_GetTicks();
     }
+    else if(category == Cat_Prop &&
+       (SDL_GetTicks() - building_time > 150 || unlimited))
+    {
+        Vector_Push(&world->props_vector,
+                   Entity_Create(category, obj_type,
+                                 mousePositionInWorldX,
+                                 mousePositionInWorldY,
+                                 0));
+                                 printf("lollol");
+
+        building_time = SDL_GetTicks();
+    }
     else if(category == Cat_Event &&
             (SDL_GetTicks() - building_time > 150))
     {
@@ -359,6 +371,14 @@ void Level_Save(char* file_name, World* w)
             LevelEditor_WriteEntity(save_file, buffer);
         }
 
+        int num_of_props = Vector_Count(&w->props_vector);
+        fwrite(&num_of_props, sizeof(int), 1, save_file);
+        for(int i = 0 ; i < num_of_props ; i++)
+        {
+            Entity* buffer = (Entity*)Vector_Get(&w->props_vector, i);
+            LevelEditor_WriteEntity(save_file, buffer);
+        }
+
         int num_of_zombies = Vector_Count(&w->monsters_vector);
 
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
@@ -420,10 +440,7 @@ void Level_Load(char* file_name, World* w)
 
 
     int num_of_events = 0;
-
     fread(&num_of_events, sizeof(int), 1, save_file);
-
-
     for(int i = 0 ; i < num_of_events ; i++)
     {
         Entity* buffer  = Entity_Spawn();
@@ -433,6 +450,16 @@ void Level_Load(char* file_name, World* w)
 
     }
 
+    int num_of_props = 0;
+    fread(&num_of_props, sizeof(int), 1, save_file);
+    for(int i = 0 ; i < num_of_props; i++)
+    {
+        Entity* buffer  = Entity_Spawn();
+        LevelEditor_ReadEntity(save_file, buffer);
+
+        Vector_Push(&w->props_vector, buffer);
+
+    }
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);

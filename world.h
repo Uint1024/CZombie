@@ -11,6 +11,7 @@ typedef struct World
     Vector      explosions_vector;
     Vector      events_vector;
     Vector      decals_vector;
+    Vector      props_vector;
     Entity      player;
 
 

@@ -94,6 +94,12 @@ void Window_UpdateButtonsPositions(Window* w)
         buttons_nb++;
     }
 
+    for(int i = 0 ; i < NB_OF_PROP_TYPES ; i++)
+    {
+        Button_Create(Cat_Prop, i, buttons_nb, w);
+        buttons_nb++;
+    }
+
     for(int i = 0 ; i < NB_ZOMBIE_TYPES ; i++)
     {
         Button_Create(Cat_Zombie, i, buttons_nb, w);
