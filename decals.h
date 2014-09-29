@@ -36,6 +36,10 @@ Entity* Decal_Create(Entity* parent, Decal_Type type)
         width = 120;
         height = 120;
         break;
+    case Decal_Corpse_Destroyer:
+        width = 260;
+        height = 260;
+        break;
     }
 
 

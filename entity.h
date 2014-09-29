@@ -30,7 +30,7 @@ typedef struct Entity
 	Box                     box;
     int                     penetration_chance; //between 0 and 1000
     unsigned char           nb_penetrations;
-    int                     hp;//player and zombies can die, walls be destroyed
+    int                     hp;
 	bool                    alive;
     int                     alive_timer;//used by explosions, bullets
     bool                    in_dark;
@@ -38,7 +38,7 @@ typedef struct Entity
     int                     damage;//zombies, bullets, explosions
     float                   angle;
 
-    Entity*                 hit_wall;//used to calculate bullets penetration
+    Entity*                 last_zombie_hit;//used to calculate bullets penetration
     //components
     MovementC*              movementC;//movement component
     PlayerC*                playerC;//player component

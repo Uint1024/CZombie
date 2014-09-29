@@ -12,65 +12,30 @@
 #include "wall.h"
 
 
-Entity* Bullet_Create(Weapon_Type type, float x, float y,
-                      float angle, float speed, bool is_ennemy_bullet,
+Entity* Bullet_Create(float x, float y,
+                      float angle,
                       Weapon* parent)
 {
 	Entity* bullet = Entity_Spawn();
 
 	bullet->t = Cat_Bullet;
-	bullet->sub_category = type;
+	bullet->sub_category = parent->type;
 	bullet->x = x;
 	bullet->y = y;
 	bullet->movementC = MovementC_Create();
 	bullet->angle = angle;
-	bullet->movementC->speed = speed;
-    bullet->movementC->dx = cos(angle) * speed;
-    bullet->movementC->dy = sin(angle) * speed;
-	bullet->is_ennemy = is_ennemy_bullet;
-	bullet->alive_timer = (1/speed) * 1500; //die in 10 seconds
-	bullet->damage = 1;
+	bullet->movementC->speed = parent->bullet_speed;
+    bullet->movementC->dx = cos(angle) * bullet->movementC->speed;
+    bullet->movementC->dy = sin(angle) * bullet->movementC->speed;
+	bullet->is_ennemy = parent->is_monster;
+	bullet->alive_timer = (1/bullet->movementC->speed) * 1500;
+	bullet->damage = parent->bullet_damage;
 
 
     bullet->box.height = parent->bullet_height;
     bullet->box.width = parent->bullet_width;
-
-	switch(type)
-	{
-    case Weapon_Handgun:
-        bullet->penetration_chance = 400;
-        bullet->damage = 2;
-        break;
-    case Weapon_AutomaticRifle:
-        bullet->penetration_chance = 500;
-        bullet->damage = 2;
-        break;
-    case Weapon_Shotgun:
-        bullet->penetration_chance = 600;
-        bullet->damage = 1;
-        break;
-    case Weapon_Fireball:
-        bullet->penetration_chance = 0;
-        bullet->damage = 1;
-        break;
-    case Weapon_TripleFireball:
-        bullet->penetration_chance = 0;
-        bullet->damage = 1;
-        break;
-    case Weapon_TheBigGun:
-        bullet->penetration_chance = 700;
-        bullet->damage = 5;
-        break;
-    case No_Weapon:
-        printf("Error, trying to create a bullet without weapon type");
-        break;
-    case Weapon_GrenadeLauncher:
-        printf("Error, trying to create a grenade launcher bullet");
-     case NB_WEAPON_TYPES:
-        printf("Error, trying to create undefined weapon");
-        break;
-	}
-
+    bullet->penetration_chance = parent->bullet_penetration_chance;
+    bullet->last_zombie_hit = NULL;
     BoundingBox_Create(bullet, bullet->box.width, bullet->box.height);
 	return bullet;
 }
@@ -96,14 +61,16 @@ void Bullet_Update(Entity* bullet, World* world)
             for(int i = 0 ; i < Vector_Count(&world->monsters_vector) ; i++)
             {
                 Entity* mob = (struct Entity*)Vector_Get(&world->monsters_vector, i);
-                if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box))
+                if (BoundingBox_CheckSimpleCollision(&bullet->box, &mob->box) &&
+                    mob != bullet->last_zombie_hit)
                 {
+                    bullet->last_zombie_hit = mob;
                     Zombie_GetAttacked(mob, bullet->damage, world);
                     int random = rand() % 1000;
 
 
                     //modulo the address by 1000 to get a kinda random number
-                    if(bullet->nb_penetrations < 3 &&
+                    if(bullet->nb_penetrations < 4 &&
                         random < bullet->penetration_chance)
                     {
                         bullet->nb_penetrations++;
@@ -144,7 +111,7 @@ void Bullet_Update(Entity* bullet, World* world)
         {
             Entity* wall = (Entity*)Vector_Get(&world->non_null_walls, i);
 
-            if(wall != bullet->hit_wall &&
+            if(
                Entity_CheckNear(bullet, wall) &&
                wall->solid &&
                BoundingBox_CheckSimpleCollision(&bullet->box, &wall->box))

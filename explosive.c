@@ -49,7 +49,7 @@ Entity* Grenade_Create(float x, float y, float angle, float speed,
     grenade->explosiveC = ExplosiveComponent_Create(x, y, angle, speed, destinationX, destinationY);
     grenade->movementC->dx = cos(grenade->angle ) * speed;
     grenade->movementC->dy = sin(grenade->angle ) * speed;
-
+    moveEntity(grenade, grenade->movementC->dx * delta_g, grenade->movementC->dy * delta_g);
 
     return grenade;
 }

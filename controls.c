@@ -361,29 +361,30 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
             /*stopping pressing left shift stop the selection and creates the selection tile
             in the selection (only if it's a tile and not a monster/object
             */
-            if((rectangle_selection_create || rectangle_selection_delete) && !pressedKeys[SDLK_LSHIFT])
+            if((rectangle_selection_create || rectangle_selection_delete) && pressedKeys[SDLK_LSHIFT])
             {
                 rectangle_selection_endX = controls->mouseTileX;
                 rectangle_selection_endY = controls->mouseTileY;
 
-                if(rectangle_selection_endY < rectangle_selection_startY)
+                int startX = rectangle_selection_startX;
+                int endX = rectangle_selection_endX;
+                int startY = rectangle_selection_startY;
+                int endY = rectangle_selection_endY;
+
+                if(rectangle_selection_endY <= rectangle_selection_startY)
                 {
-                    int tempY = rectangle_selection_startY;
-                    rectangle_selection_startY = rectangle_selection_endY;
-                    rectangle_selection_endY = tempY;
+                    startY = rectangle_selection_endY;
+                    endY = rectangle_selection_startY;
                 }
-                if(rectangle_selection_endX < rectangle_selection_startX)
+                if(rectangle_selection_endX <= rectangle_selection_startX)
                 {
-                    int tempX = rectangle_selection_startX;
-                    rectangle_selection_startX = rectangle_selection_endX;
-                    rectangle_selection_endX = tempX;
+                    startX = rectangle_selection_endX;
+                    endX = rectangle_selection_startX;
                 }
 
-
-
-                for(int y = rectangle_selection_startY ; y <= rectangle_selection_endY ; y++)
+                for(int y = startY ; y <= endY ; y++)
                 {
-                    for(int x = rectangle_selection_startX ; x <= rectangle_selection_endX ; x++)
+                    for(int x = startX ; x <= endX ; x++)
                     {
                         position_in_array = y * world->map_width + x;
                         if(rectangle_selection_create)
@@ -402,10 +403,15 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                         }
                     }
                 }
+            }
 
+            if((rectangle_selection_create || rectangle_selection_delete) && !pressedKeys[SDLK_LSHIFT])
+            {
                 rectangle_selection_create = false;
                 rectangle_selection_delete = false;
             }
+
+
         }
 
 

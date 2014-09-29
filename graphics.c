@@ -37,10 +37,16 @@ void Graphics_MoveCamera(float dx, float dy)
 }
 void Graphics_Create(int screen_width, int screen_height)
 {
+
+
     SDL_ShowCursor(0);
 
     screen_width = screen_width;
     screen_height = screen_height;
+
+
+
+
 
     window = SDL_CreateWindow(   "C Game",
                                     SDL_WINDOWPOS_UNDEFINED,
@@ -51,11 +57,11 @@ void Graphics_Create(int screen_width, int screen_height)
                                 );
 
 
-	renderer = SDL_CreateRenderer(   window,
+
+    renderer = SDL_CreateRenderer(   window,
                                         -1,
                                         SDL_RENDERER_ACCELERATED
                                     );
-
 
     textures_g[Cat_Player][Player_Normal] = IMG_LoadTexture(renderer, "player.png");
 
@@ -66,6 +72,7 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Zombie][Zombie_Huge] = IMG_LoadTexture(renderer, "zombie_huge.png");
     textures_g[Cat_Zombie][Zombie_Raptor] = IMG_LoadTexture(renderer, "zombie_raptor.png");
     textures_g[Cat_Zombie][Zombie_Slow] = IMG_LoadTexture(renderer, "zombie_slow.png");
+    textures_g[Cat_Zombie][Zombie_Destroyer] = IMG_LoadTexture(renderer, "zombie_destroyer.png");
 
     textures_g[Cat_Bonus][Bonus_Rifle] = IMG_LoadTexture(renderer, "bonus_automaticRifle.png");
     textures_g[Cat_Bonus][Bonus_GrenadeLauncher] = IMG_LoadTexture(renderer, "bonus_grenadeLauncher.png");
@@ -120,6 +127,7 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Decal][Decal_Corpse_Huge] = IMG_LoadTexture(renderer, "decal_corpse_huge.png");
     textures_g[Cat_Decal][Decal_Corpse_Slow] = IMG_LoadTexture(renderer, "decal_corpse_slow.png");
     textures_g[Cat_Decal][Decal_Corpse_Raptor] = IMG_LoadTexture(renderer, "decal_corpse_raptor.png");
+    textures_g[Cat_Decal][Decal_Corpse_Destroyer] = IMG_LoadTexture(renderer, "decal_corpse_destroyer.png");
 
 
     fonts[Small]             =   TTF_OpenFont("cour.ttf", 12);
@@ -207,7 +215,16 @@ void Graphics_RenderWorld(World* world)
     }
 
 
+ for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
+    {
+        if(Vector_Get(bonus_vector, i) != NULL)
+        {
+            Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
 
+            if(Entity_CheckNear(&world->player, bonus))
+                Graphics_RenderObject(bonus, world->player.playerC);
+        }
+    }
 
     Graphics_RenderObject(&world->player, world->player.playerC);
 
@@ -220,16 +237,7 @@ void Graphics_RenderWorld(World* world)
 
     }
 
-    for(int i = 0 ; i < Vector_Count(bonus_vector) ; i++)
-    {
-        if(Vector_Get(bonus_vector, i) != NULL)
-        {
-            Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
 
-            if(Entity_CheckNear(&world->player, bonus))
-                Graphics_RenderObject(bonus, world->player.playerC);
-        }
-    }
 
     for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
     {
@@ -341,7 +349,7 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
 
 
 
-	if(debug_mode)
+	if(debug_mode && object->t != Cat_Ground)
     {
 
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
@@ -368,6 +376,13 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
                             true,
                             White
                                                         );
+
+        const SDL_Rect bboxrect = { object->box.left- cameraX,
+                            object->box.top- cameraY,
+                            object->box.width,
+                            object->box.height};
+        SDL_RenderDrawRect(renderer, &bboxrect);
+
     }
 
     SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);

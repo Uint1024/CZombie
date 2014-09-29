@@ -152,6 +152,7 @@ typedef enum {
     Zombie_Trooper,
     Zombie_Slow,
     Zombie_Raptor,
+    Zombie_Destroyer,
     NB_ZOMBIE_TYPES,
     Not_a_zombie,
 
@@ -168,6 +169,7 @@ typedef enum
     Decal_Corpse_Trooper,
     Decal_Corpse_Slow,
     Decal_Corpse_Raptor,
+    Decal_Corpse_Destroyer,
     NB_OF_DECALS_TYPES
 }   Decal_Type;
 

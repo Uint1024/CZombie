@@ -17,6 +17,9 @@ typedef struct Weapon
     int                 reloading_time;
     int                 bullet_height;
     int                 bullet_width;
+    bool                is_monster;
+    int                 bullet_damage;
+    int                 bullet_penetration_chance;
     float bullet_speed;
 } Weapon;
 

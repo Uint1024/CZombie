@@ -52,7 +52,6 @@ void Zombie_Update(Entity* z, World* world)
         if(!zc->idling)
         {
             bool collision = Entity_CollisionWithStuff(z, world);
-
             if(zc->paths_calculated < 3 &&
                collision && (!zc->aggressive || zc->dodging))
             {
@@ -97,7 +96,8 @@ void  Zombie_Shoot(Entity* z, World* world)
 
     if(z->sub_category != Zombie_Raptor)
     {
-        float angle = C_AngleBetween2Entities(z, &world->player);
+        float random_angle = (float)(rand() % 78 - 39) / 100;
+        float angle = C_AngleBetween2Entities(z, &world->player) + random_angle;
         WeaponsComponent_TryToShoot(z->weaponsC, originX, originY,
                                 angle, &world->bullets_vector, 0, 0);
 
@@ -123,7 +123,6 @@ void  Zombie_Shoot(Entity* z, World* world)
                 zc->pattern_direction_right = rand() % 2;
                 float start_angle_difference = zc->pattern_direction_right? -1 : +1;
                 zc->shooting_angle = C_AngleBetween2Entities(z, &world->player) - start_angle_difference;
-                printf("%d\n", zc->pattern_direction_right);
             }
             else
             {
@@ -186,8 +185,17 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     case Zombie_Slow:
         z->hp = 10;
         z->damage = 1;
-        z->movementC->normal_speed = 0.05;
-        z->movementC->running_speed = 0.1;
+        z->movementC->normal_speed = 0.02;
+        z->movementC->running_speed = 0.03;
+        break;
+    case Zombie_Destroyer:
+        width = 200;
+        height = 200;
+        z->hp = 1000;
+        z->damage = 500;
+        z->movementC->normal_speed = 0.02;
+        z->movementC->running_speed = 0.12;
+        z->zombieC->attack_delay = 50;
         break;
     case Zombie_Raptor:
         width = 80;
@@ -298,8 +306,6 @@ void Zombie_Ai(Entity* z, World* world)
         }
 
         if(zc->aggressive)
-
-
         {
 
             if(!Entity_CheckDistance(z, player, 3500))
@@ -308,7 +314,7 @@ void Zombie_Ai(Entity* z, World* world)
                 Zombie_BecomeCalm(z);
             }
 
-            if(!zc->dodging && SDL_GetTicks() - zc->dodging_timer > 1500)
+            if(!zc->dodging && z->sub_category != Zombie_Destroyer &&  SDL_GetTicks() - zc->dodging_timer > 1500)
             {
                 int dodge_chance = rand() % 100;
 
@@ -458,6 +464,9 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
         break;
     case Zombie_Raptor:
         corpse_type = Decal_Corpse_Raptor;
+        break;
+    case Zombie_Destroyer:
+        corpse_type = Decal_Corpse_Destroyer;
         break;
     }
     Vector_Push(decals_vector, Decal_Create(zombie, corpse_type));

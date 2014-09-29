@@ -131,11 +131,14 @@ void BoundingBox_UpdateNewSize(Box* box, int newW, int newH)
 Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 {
 
+   /* printf("%f >= %f && %f <= %f && %f <= %f && %f >= %f && %f <= %f\n", nextBox1->right, box2->left, nextBox1->left, box2->left,
+		currentBox1->right, box2->left,
+		nextBox1->bottom, box2->top, nextBox1->top, box2->bottom);*/
+
 	if (nextBox1->right >= box2->left && nextBox1->left <= box2->left &&
 		currentBox1->right  <= box2->left &&
 		nextBox1->bottom >= box2->top && nextBox1->top <= box2->bottom)
 	{
-
 		return Right;
 
 	}
