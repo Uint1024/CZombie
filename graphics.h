@@ -50,6 +50,7 @@ void Graphics_RenderUI(World* world, Controls* controls, float fps, Window* leve
 void Graphics_RenderGame(World* world,
                          Controls* controls, float fps, Window* level_editor, GameManager* gm);
 
+SDL_Window* Graphics_GetWindow();
 void Graphics_RenderGameUI(World* world);
 
 void Graphics_RenderLevelEditorUI(World* world, Controls* controls,Window* level_editor, GameManager* gm);

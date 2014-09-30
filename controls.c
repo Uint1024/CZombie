@@ -118,6 +118,37 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
     if(controls->temp_object_to_create != NULL)
     {
+        if(pressedKeys[SDLK_f] && !previousPressedKeys_g[SDLK_f])
+        {
+            SDL_WarpMouseInWindow(Graphics_GetWindow(),
+                                  (controls->mouseTileX * TILE_SIZE - world->player.playerC->cameraX),
+                                  controls->mouseTileY * TILE_SIZE - world->player.playerC->cameraY);
+        }
+        if(pressedKeys[SDLK_RIGHT] && !previousPressedKeys_g[SDLK_RIGHT])
+        {
+            SDL_WarpMouseInWindow(Graphics_GetWindow(),
+                                  (controls->mouseX + 1 ),
+                                  controls->mouseY);
+        }
+        if(pressedKeys[SDLK_LEFT] && !previousPressedKeys_g[SDLK_LEFT])
+        {
+            SDL_WarpMouseInWindow(Graphics_GetWindow(),
+                                  (controls->mouseX - 1 ),
+                                  controls->mouseY);
+        }
+        if(pressedKeys[SDLK_UP] && !previousPressedKeys_g[SDLK_UP])
+        {
+            SDL_WarpMouseInWindow(Graphics_GetWindow(),
+                                  (controls->mouseX ),
+                                  controls->mouseY - 1);
+        }
+        if(pressedKeys[SDLK_DOWN] && !previousPressedKeys_g[SDLK_DOWN])
+        {
+            SDL_WarpMouseInWindow(Graphics_GetWindow(),
+                                  (controls->mouseX),
+                                  controls->mouseY + 1);
+        }
+
         if(controls->mouseWheelPos < 0 && rotate_timer > 50)
         {
             if(controls->temp_object_to_create->angle == 0)
@@ -305,7 +336,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
             int obj_type = level_editor->active_button->button_type;
 
             if(!rectangle_selection_create &&
-               controls->pressedMouseButtons[SDL_BUTTON_RIGHT] == true)
+               (controls->pressedMouseButtons[SDL_BUTTON_RIGHT] ||
+                pressedKeys[SDLK_SPACE]))
             {
                 if (controls->mouseTileX < world->map_width && controls->mouseTileX > 0 &&
                     controls->mouseTileY < world->map_height && controls->mouseTileY > 0)

@@ -85,7 +85,7 @@ void GameManager_Update(GameManager* gm, World* world, Window* level_editor)
 
     Vector_Nullify(&world->non_null_walls);
 
-    //oh god
+    //oh god I don't know how to fix this horror
     for(int i = 0 ; i < world->map_size ; i++)
     {
         if(world->map[i] != NULL && world->map[i]->alive)
@@ -179,27 +179,26 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     {
         for(int i = 0 ; i < Vector_Count(monsters_vector) ; i++)
         {
-            if(Vector_Get(monsters_vector, i) != NULL)
+            Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
+
+            if(Entity_CheckDistance(mob, &world->player, 800))
             {
-                Entity* mob = (struct Entity*)Vector_Get(monsters_vector, i);
-
-                if(mob->zombieC->aggressive || Entity_CheckDistance(mob, &world->player, 800))
-                {
-
-                    Zombie_Update(mob, world);
-
-                    if (mob->alive == false)
-                    {
-                        Zombie_Die(mob, bonus_vector, decals_vector);
-                        Entity_Destroy(mob);
-                        Vector_Delete(monsters_vector, i);
-
-                    }
-                }
+                Entity_CalculateVisibility(mob, world);
             }
-            else
+
+            if(mob->zombieC->aggressive || Entity_CheckDistance(mob, &world->player, 400))
             {
-                printf("Error during update of monsters vector : monster = NULL");
+                Zombie_Update(mob, world);
+            }
+
+
+
+            if (mob->alive == false)
+            {
+                Zombie_Die(mob, bonus_vector, decals_vector);
+                Entity_Destroy(mob);
+                Vector_Delete(monsters_vector, i);
+
             }
         }
     }
@@ -213,13 +212,17 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
         {
             Entity* bonus = (Entity*)Vector_Get(bonus_vector, i);
 
-            if(!bullet_time_g)
+            if(Entity_CheckDistance(bonus, &world->player, 800))
             {
-                Bonus_Update(bonus, &world->player);
+                if(!bullet_time_g)
+                {
+                    Bonus_Update(bonus, &world->player);
+                }
+
+
+                Entity_CalculateVisibility(bonus, world);
+
             }
-
-
-            Entity_CalculateVisibility(bonus, world);
             if (bonus->alive == false)
             {
                 Entity_Destroy(bonus);
@@ -234,8 +237,14 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
 
     for(int i = 0 ; i < Vector_Count(decals_vector) ; i++)
     {
+
         Entity* decal = (Entity*)Vector_Get(decals_vector, i);
-        Entity_CalculateVisibility(decal, world);
+
+        if(Entity_CheckDistance(decal, &world->player, 800))
+        {
+            Entity_CalculateVisibility(decal, world);
+
+        }
         if(Vector_Count(decals_vector) > 200)
         {
             if(decal->is_ennemy)
@@ -243,13 +252,17 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
                 Vector_Delete(decals_vector, i);
             }
         }
+
     }
 
     for(int i = 0 ; i < Vector_Count(props_vector) ; i++)
     {
         Entity* prop = (Entity*)Vector_Get(props_vector, i);
-        Entity_CalculateVisibility(prop, world);
 
+        if(Entity_CheckDistance(prop, &world->player, 800))
+        {
+            Entity_CalculateVisibility(prop, world);
+        }
         if (!prop->alive)
         {
             Entity_Destroy(prop);

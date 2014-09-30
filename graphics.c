@@ -24,6 +24,10 @@ static int cursor_size = 21;
 static float cameraX = 0;
 static float cameraY = 0;
 
+SDL_Window* Graphics_GetWindow()
+{
+    return window;
+}
 void Graphics_SetCamera(float x, float y)
 {
     cameraX = x;
@@ -130,6 +134,12 @@ textures_g[Cat_Prop][Prop_Car_Cool] = IMG_LoadTexture(renderer, "img/prop/car.pn
 textures_g[Cat_Prop][Prop_Bookcase] = IMG_LoadTexture(renderer, "img/prop/bookcase.png");
 textures_g[Cat_Prop][Prop_FileCabinet] = IMG_LoadTexture(renderer, "img/prop/file_cabinet.png");
 textures_g[Cat_Prop][Prop_BlackChest] = IMG_LoadTexture(renderer, "img/prop/black_chest.png");
+textures_g[Cat_Prop][Prop_Refrigerator] = IMG_LoadTexture(renderer, "img/prop/refrigerator.png");
+textures_g[Cat_Prop][Prop_Couch_Blue] = IMG_LoadTexture(renderer, "img/prop/couch_blue.png");
+textures_g[Cat_Prop][Prop_Kitchen_Stove] = IMG_LoadTexture(renderer, "img/prop/kitchen_stove.png");
+textures_g[Cat_Prop][Prop_Kitchen_Table] = IMG_LoadTexture(renderer, "img/prop/kitchen_table.png");
+textures_g[Cat_Prop][Prop_Plant] = IMG_LoadTexture(renderer, "img/prop/plant.png");
+textures_g[Cat_Prop][Prop_LivingRoom_TV] = IMG_LoadTexture(renderer, "img/prop/livingroom_tv.png");
 
     textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(renderer, "cursor_aim.png");
     textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(renderer, "cursor_resize_left_right.png");

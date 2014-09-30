@@ -118,8 +118,6 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
         fwrite(&mc->speed, sizeof(float), 1, save_file);
         fwrite(&mc->dx, sizeof(float), 1, save_file);
         fwrite(&mc->dy, sizeof(float), 1, save_file);
-        fwrite(&mc->normal_speed, sizeof(float), 1, save_file);
-        fwrite(&mc->running_speed, sizeof(float), 1, save_file);
     }
     else
     {
@@ -248,8 +246,6 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&mc->speed, sizeof(float), 1, save_file);
         fread(&mc->dx, sizeof(float), 1, save_file);
         fread(&mc->dy, sizeof(float), 1, save_file);
-        fread(&mc->normal_speed, sizeof(float), 1, save_file);
-        fread(&mc->running_speed, sizeof(float), 1, save_file);
         buffer->movementC = mc;
 
 
@@ -392,6 +388,7 @@ void Level_Save(char* file_name, World* w)
 
         int num_of_zombies = Vector_Count(&w->monsters_vector);
         fwrite(&num_of_zombies, sizeof(int), 1, save_file);
+        printf("Saving %d mobs\n", num_of_zombies);
         for(int i = 0 ; i < num_of_zombies ; i++)
         {
             Entity* buffer = (Entity*)Vector_Get(&w->monsters_vector, i);
@@ -480,6 +477,8 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_zombies = 0;
     fread(&num_of_zombies, sizeof(int), 1, save_file);
+
+    printf("Loading %d mobs\n", num_of_zombies);
     if(num_of_zombies != 0)
     {
         for(int i = 0 ; i < num_of_zombies ; i++)

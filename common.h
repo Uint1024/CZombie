@@ -118,6 +118,12 @@ typedef enum {
     Prop_Bookcase,
     Prop_BlackChest,
     Prop_FileCabinet,
+    Prop_Refrigerator,
+    Prop_Couch_Blue,
+    Prop_Kitchen_Stove,
+    Prop_Kitchen_Table,
+    Prop_Plant,
+    Prop_LivingRoom_TV,
     NB_OF_PROP_TYPES
 } Prop_Type;
 
@@ -278,7 +284,7 @@ extern Uint32 bullet_time_timer;
 #define NB_OF_WEAPONS NB_WEAPON_TYPES
 
 #define BASE_PLAYER_SPEED 0.2
-#define LEVEL_EDITOR_SPEED 0.6
+#define LEVEL_EDITOR_SPEED 2
 
 #define MAP_SIZE 100
 #define PI 3.141592

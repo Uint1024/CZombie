@@ -47,6 +47,30 @@ Entity* Prop_Create(Bonus_type type, float x, float y, float angle)
         prop->width = 32;
         prop->height = 32;
         break;
+    case Prop_Refrigerator:
+        prop->width = 32;
+        prop->height = 32;
+        break;
+    case Prop_Kitchen_Stove:
+        prop->width = 32;
+        prop->height = 32;
+        break;
+    case Prop_Kitchen_Table:
+        prop->width = 32;
+        prop->height = 32;
+        break;
+    case Prop_Couch_Blue:
+        prop->width = 64;
+        prop->height = 32;
+        break;
+    case Prop_Plant:
+        prop->width = 24;
+        prop->height = 24;
+        break;
+    case Prop_LivingRoom_TV:
+        prop->width = 64;
+        prop->height = 32;
+        break;
     }
 
     true_width =  prop->width ;

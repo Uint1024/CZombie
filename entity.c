@@ -214,7 +214,7 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
     float pointX = ent1MiddleX;
     float pointY = ent1MiddleY;
 
-           pointY, ent1MiddleY, ent2MiddleY, ent1MiddleY);
+
     bool collision = false;
 
     while(!collision && (pointX - ent1MiddleX <= ent2MiddleX - ent1MiddleX))

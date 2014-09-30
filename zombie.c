@@ -33,7 +33,7 @@ ZombieC* ZombieC_Create()
 
 void Zombie_Update(Entity* z, World* world)
 {
-    Entity_CalculateVisibility(z, world);
+
 
     if(!bullet_time_g)
     {
@@ -167,7 +167,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     switch(type)
     {
     case Zombie_Normal:
-        z->hp = 5;
+        z->hp = 4;
         z->damage = 3;
         z->movementC->normal_speed =0.03;
         z->movementC->running_speed = 0.18;
@@ -179,10 +179,10 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->damage = 2;
         weapon = Weapon_Fireball;
         z->movementC->normal_speed = 0.05;
-        z->movementC->running_speed = 0.1;
+        z->movementC->running_speed = 0.05;
         break;
     case Zombie_Slow:
-        z->hp = 10;
+        z->hp = 2;
         z->damage = 1;
         z->movementC->normal_speed = 0.02;
         z->movementC->running_speed = 0.03;
@@ -212,7 +212,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
 
         break;
     case Zombie_Fast:
-        z->hp = 2;
+        z->hp = 4;
         z->damage = 3;
         z->movementC->normal_speed = 0.05;
         z->movementC->running_speed = 0.3;

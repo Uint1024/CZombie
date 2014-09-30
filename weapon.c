@@ -23,7 +23,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->delay_between_shots = 65;
         w->reloading_time = 3000;
         w->bullet_speed = 1;
-        w->bullet_damage = 2;
+        w->bullet_damage = 1;
         w->bullet_penetration_chance = 300;
     }
     else if(type == Weapon_Handgun)
@@ -36,7 +36,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->bullet_width = 20;
         w->bullet_height = 20;
         w->bullet_speed = 1;
-        w->bullet_damage = 1;
+        w->bullet_damage = 2;
         w->bullet_penetration_chance = 300;
     }
     else if(type == Weapon_Shotgun)
@@ -71,7 +71,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->bullet_width = 28;
         w->bullet_height = 28;
         w->bullet_speed = 1;
-        w->bullet_damage = 5;
+        w->bullet_damage = 4;
         w->bullet_penetration_chance = 500;
     }
     else if(type == Weapon_Fireball)
@@ -83,7 +83,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 0;
         w->bullet_width = 15;
         w->bullet_height = 15;
-        w->bullet_speed = 0.3;
+        w->bullet_speed = 0.1;
         w->bullet_damage = 1;
         w->bullet_penetration_chance = 0;
     }
@@ -109,7 +109,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 0;
         w->bullet_width = 15;
         w->bullet_height = 15;
-        w->bullet_speed = 0.3;
+        w->bullet_speed = 0.2;
         w->bullet_damage = 1;
         w->bullet_penetration_chance = 0;
     }
