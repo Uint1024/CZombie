@@ -6,6 +6,7 @@
 
 static int door_switch_timer = 0;
 
+
 Entity* Door_Create(Door_Type type, int x, int y)
 {
 	Entity* ent = Entity_Spawn();
@@ -35,7 +36,6 @@ void Door_GetAttacked(Entity* d, Entity* attacker)
 
 void Door_Die(Entity* d)
 {
-    //d->texture = all_textures_g[Cat_Door][Door_Dead];
     d->solid = false;
 }
 
@@ -53,20 +53,25 @@ void Door_Open(Entity* d)
 {
     if(d->solid)
     {
+        door_switch_timer = SDL_GetTicks();
        Sound_PlayOpenDoor();
         d->solid = false;
+        printf("opening %d\n", d->solid );
     }
 
 }
 
 void Door_Update(Entity* d, World* w)
 {
-    if(BoundingBox_CheckSimpleCollision(&d->box, &w->player.box))
+    if(SDL_GetTicks() - door_switch_timer > 350)
     {
-        Door_Open(d);
-    }
-    else
-    {
-        d->solid = true;
+        if(BoundingBox_CheckSimpleCollision(&d->box, &w->player.box))
+        {
+            Door_Open(d);
+        }
+        else
+        {
+            d->solid = true;
+        }
     }
 }
