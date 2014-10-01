@@ -242,11 +242,12 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 //printf("333333333333");
     if(has_movementC != false)
     {
-        MovementC* mc = MovementC_Create();
+        //MovementC* mc = MovementC_Create();
+        MovementC* mc = buffer->movementC;
         fread(&mc->speed, sizeof(float), 1, save_file);
         fread(&mc->dx, sizeof(float), 1, save_file);
         fread(&mc->dy, sizeof(float), 1, save_file);
-        buffer->movementC = mc;
+        //buffer->movementC = mc;
 
 
     }

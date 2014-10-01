@@ -124,6 +124,12 @@ typedef enum {
     Prop_Kitchen_Table,
     Prop_Plant,
     Prop_LivingRoom_TV,
+    Prop_Office_Desk_Computer,
+    Prop_Bathroom_Sink,
+    Prop_Bathtub,
+    Prop_WC,
+    Prop_Cupboard,
+    Prop_Dining_Room_Table_Large,
     NB_OF_PROP_TYPES
 } Prop_Type;
 
