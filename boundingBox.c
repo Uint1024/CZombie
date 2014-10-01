@@ -83,7 +83,7 @@ void BoundingBox_CreateWindow(Window* ent, int width, int height)
 }
 
 
-//return direction of exit if the box is completely outside of the screen
+/*return direction of exit if the box is completely outside of the screen*/
 Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)
 {
 
@@ -101,16 +101,47 @@ Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)
 		return None;
 }
 
-//add velocity to bounding box
+
 void BoundingBox_Update(Entity* ent)
 {
-	ent->box.left = ent->x + ent->box.offsetX;
-	ent->box.top = ent->y + ent->box.offsetY;
-	ent->box.right = ent->box.left + ent->box.width;
-	ent->box.bottom = ent->box.top + ent->box.height;
+    if(ent->box.width == ent->box.height)
+    {
+        ent->box.left = ent->x + ent->box.offsetX;
+        ent->box.top = ent->y + ent->box.offsetY;
+        ent->box.right = ent->box.left + ent->box.width;
+        ent->box.bottom = ent->box.top + ent->box.height;
+    }
+    else
+    {
+        float true_width =  ent->width;
+        float true_height = ent->height;
+        float true_x = ent->x;
+        float true_y = ent->y;
+        int xCenter = ent->x + ent->width / 2;
+        int yCenter = ent->y + ent->height / 2;
+
+        if(ent->angle > HALF_PI - 0.1 && ent->angle < HALF_PI + 0.1)
+        {
+            true_x = xCenter - cos(ent->angle) * (ent->x - xCenter) + (sin(ent->angle) * (ent->y - yCenter));
+            true_y = yCenter + sin(ent->angle) * (ent->x - xCenter) + cos(ent->angle) * (ent->y - yCenter);
+
+            true_width = ent->height;
+            true_height = ent->width;
+
+        }
+        else if(ent->angle > PI + HALF_PI - 0.1 && ent->angle < PI + HALF_PI + 0.1)
+        {
+            true_x = xCenter + cos(ent->angle) * (ent->x - xCenter) - sin(ent->angle) * (ent->y - yCenter);
+            true_y = yCenter - sin(ent->angle) * (ent->x - xCenter) + cos(ent->angle) * (ent->y - yCenter);
+            true_width = ent->height;
+            true_height = ent->width;
+        }
+
+        ent->box = BoundingBox_CreateBetter(true_x, true_y, true_width, true_height);
+    }
+
 }
 
-//add velocity to bounding box
 void BoundingBox_UpdateWindow(Box* box, int newX, int newY)
 {
 	box->left = newX;
@@ -130,11 +161,6 @@ void BoundingBox_UpdateNewSize(Box* box, int newW, int newH)
 //check collision between 2 objects, returns direction of collision
 Direction BoundingBox_CheckCollision(Box* currentBox1, Box* nextBox1, Box* box2)
 {
-
-   /* printf("%f >= %f && %f <= %f && %f <= %f && %f >= %f && %f <= %f\n", nextBox1->right, box2->left, nextBox1->left, box2->left,
-		currentBox1->right, box2->left,
-		nextBox1->bottom, box2->top, nextBox1->top, box2->bottom);*/
-
 	if (nextBox1->right >= box2->left && nextBox1->left <= box2->left &&
 		currentBox1->right  <= box2->left &&
 		nextBox1->bottom >= box2->top && nextBox1->top <= box2->bottom)

@@ -30,6 +30,7 @@ static int                     screen_width;
 static int                     screen_height;
 static SDL_Surface*            text_surface;
 static SDL_Texture*            text_texture;
+static SDL_Texture*            wall_textures[NB_OF_WALL_TYPES][NB_OF_TILES_TYPES];
 
 void Graphics_Create(  int screen_width, int screen_height);
 

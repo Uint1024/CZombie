@@ -10,7 +10,7 @@ void Level_Save(char* file_name, World* w);
 void Level_Load(char* file_name, World* w);
 
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer);
-void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer);
+void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer, World* world);
 
 void LevelEditor_QuickTry(World* world);
 void LevelEditor_BackToEditing(World* world);

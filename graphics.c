@@ -101,10 +101,31 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Wall][Wall_Reinforced] = IMG_LoadTexture(renderer, "wall_reinforced.png");
     textures_g[Cat_Wall][Wall_Good_Center] = IMG_LoadTexture(renderer, "wall_good_center.png");
     textures_g[Cat_Wall][Wall_Good_Corner] = IMG_LoadTexture(renderer, "wall_good_corner.png");
+
+    textures_g[Cat_Wall][Wall_Grey] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
     textures_g[Cat_Wall][Wall_Grey_No_Border] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
     textures_g[Cat_Wall][Wall_Grey_1_Border] = IMG_LoadTexture(renderer, "img/wall/grey_1_border.png");
     textures_g[Cat_Wall][Wall_Grey_2_Borders] = IMG_LoadTexture(renderer, "img/wall/grey_2_borders.png");
     textures_g[Cat_Wall][Wall_Grey_Corner] = IMG_LoadTexture(renderer, "img/wall/grey_corner.png");
+    textures_g[Cat_Wall][Wall_Grey_Ending] = IMG_LoadTexture(renderer, "img/wall/grey_ending.png");
+    textures_g[Cat_Wall][Wall_Grey_1_Border_1_Dot] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_1_dot.png");
+    textures_g[Cat_Wall][Wall_Grey_1_Border_2_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_2_dots.png");
+
+    wall_textures[Wall_Grey][No_Border] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
+    wall_textures[Wall_Grey][One_Border] = IMG_LoadTexture(renderer, "img/wall/grey_1_border.png");
+    wall_textures[Wall_Grey][Two_Border] = IMG_LoadTexture(renderer, "img/wall/grey_2_borders.png");
+    wall_textures[Wall_Grey][Corner] = IMG_LoadTexture(renderer, "img/wall/grey_corner.png");
+    wall_textures[Wall_Grey][Corner_Dot] = IMG_LoadTexture(renderer, "img/wall/grey_corner_1_dot.png");
+    wall_textures[Wall_Grey][Ending] = IMG_LoadTexture(renderer, "img/wall/grey_ending.png");
+    wall_textures[Wall_Grey][One_Border_1_Dot_Left] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_1_dot_left.png");
+    wall_textures[Wall_Grey][One_Border_1_Dot_Right] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_1_dot_right.png");
+    wall_textures[Wall_Grey][One_Border_2_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_2_dots.png");
+    wall_textures[Wall_Grey][One_Dot] = IMG_LoadTexture(renderer, "img/wall/grey_1_dot.png");
+    wall_textures[Wall_Grey][Two_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_2_dots.png");
+    wall_textures[Wall_Grey][Two_Opposite_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_2_opposite_dots.png");
+    wall_textures[Wall_Grey][Three_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_3_dots.png");
+    wall_textures[Wall_Grey][Four_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_4_dots.png");
+    wall_textures[Wall_Grey][Column] = IMG_LoadTexture(renderer, "img/wall/grey_column.png");
 
     textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(renderer, "explosion_normal.png");
 
@@ -373,6 +394,13 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
 
     if(object->t != Cat_Prop)
     {
+        SDL_Texture* texture = textures_g[object->t][object->sub_category];
+
+        if(object->t == Cat_Wall && object->sub_category == Wall_Grey)
+        {
+            texture = wall_textures[object->sub_category][object->tile_type];
+        }
+
         const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX - errorX,
                                 object->box.top - cameraY - object->box.offsetY - errorY,
                                 object->box.width + object->box.offsetX * 2 ,
@@ -384,23 +412,22 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
             if(object->angle != 0 && object->visible)
             {
                 SDL_RenderCopyEx(renderer,
-                                 textures_g[object->t][object->sub_category],
+                                 texture,
                                  NULL,
                                  &rect,
-                                 object->angle * 57.2957795f,//convert radian to degree
+                                 object->angle * RADIAN_TO_DEGREE,
                                  NULL,
                                  SDL_FLIP_NONE);
             }
             else if(object->angle == 0 && object->visible)
             {
-                SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
+                SDL_RenderCopy(renderer, texture,
                                NULL, &rect);
             }
         }
     }
     else
     {
-        //printf("%f %f\n", object->x, cameraX);
         SDL_Rect rect = { object->x- cameraX  - errorX, object->y- cameraY  - errorY, object->width, object->height};
         if(!object->in_dark || game_state_g == GameState_Editing_Map)
         {
@@ -410,7 +437,7 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
                                  textures_g[object->t][object->sub_category],
                                  NULL,
                                  &rect,
-                                 object->angle * 57.2957795f,//convert radian to degree
+                                 object->angle * RADIAN_TO_DEGREE,
                                  NULL,
                                  SDL_FLIP_NONE);
             }
@@ -430,9 +457,9 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
 
         char positionX_str[6];
-        snprintf(positionX_str, sizeof(positionX_str), "%d", (int)object->x);
+        snprintf(positionX_str, sizeof(positionX_str), "%d", (int)object->box.left);
         char positionY_str[6];
-        snprintf(positionY_str, sizeof(positionY_str), "%d", (int)object->y);
+        snprintf(positionY_str, sizeof(positionY_str), "%d", (int)object->box.top);
 
         Graphics_RenderText(
                             positionX_str,

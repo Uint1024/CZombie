@@ -25,14 +25,14 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
     if(category == Cat_Wall || category == Cat_Door)
     {
         free(world->map[position_in_array]);
-        world->map[position_in_array] = Entity_Create(category, obj_type, x, y, angle);
+        world->map[position_in_array] = Entity_Create(category, obj_type, x, y, angle, world);
     }
 
     else if(category == Cat_Ground)
     {
         Entity_Destroy(world->ground_map[position_in_array]);
         free(world->ground_map[position_in_array]);
-        world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, angle);
+        world->ground_map[position_in_array] = Entity_Create(category, obj_type, x, y, angle, world);
     }
 
     else if(category == Cat_Zombie &&
@@ -42,7 +42,7 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
                    Entity_Create(category, obj_type,
                                  mousePositionInWorldX,
                                  mousePositionInWorldY,
-                                 0));
+                                 0, world));
 
         building_time = SDL_GetTicks();
     }
@@ -53,7 +53,7 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
                    Entity_Create(category, obj_type,
                                  mousePositionInWorldX,
                                  mousePositionInWorldY,
-                                 angle));
+                                 angle, world));
 
         building_time = SDL_GetTicks();
     }
@@ -64,7 +64,7 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
                    Entity_Create(category, obj_type,
                                  mousePositionInWorldX,
                                  mousePositionInWorldY,
-                                 angle));
+                                 angle, world));
 
         building_time = SDL_GetTicks();
     }
@@ -81,13 +81,13 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
                 Vector_Delete(&world->events_vector, i);
             }
         }
-        Vector_Push(&world->events_vector, Entity_Create(category, obj_type, x, y, 0));
+        Vector_Push(&world->events_vector, Entity_Create(category, obj_type, x, y, 0, world));
         building_time = SDL_GetTicks();
     }
     else if(category == Cat_Bonus && (SDL_GetTicks() - building_time > 150 ||
                                        unlimited))
     {
-        Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, mousePositionInWorldX, mousePositionInWorldY, 0));
+        Vector_Push(&world->bonus_vector, Entity_Create(category, obj_type, mousePositionInWorldX, mousePositionInWorldY, 0, world));
         building_time = SDL_GetTicks();
     }
 
@@ -206,25 +206,20 @@ void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
     }
 }
 
-void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
+void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer, World* world)
 {
     Main_Category main_cat;
     int sub_category;
     float angle, x, y;
-//printf("111111111111");
+
     fread(&main_cat, sizeof(Main_Category), 1, save_file);
     fread(&sub_category, sizeof(int), 1, save_file);
     fread(&x, sizeof(float), 1, save_file);
     fread(&y, sizeof(float), 1, save_file);
     fread(&angle, sizeof(float), 1, save_file);
-    //printf("main cat = %d sub_cat = %d\n", main_cat, sub_category);
 
-    /*we create an entity an immediately free their movement, weapon and zombieC component
-    because we'll fread them*/
-
-   // printf("1111115555555547871512158745");
     free(buffer);
-    buffer = Entity_Create(main_cat, sub_category, x, y, angle);
+    buffer = Entity_Create(main_cat, sub_category, x, y, angle, world);
 
 
 
@@ -239,23 +234,18 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 
     bool has_movementC = false;
     fread(&has_movementC, sizeof(bool), 1, save_file);
-//printf("333333333333");
+
     if(has_movementC != false)
     {
-        //MovementC* mc = MovementC_Create();
         MovementC* mc = buffer->movementC;
         fread(&mc->speed, sizeof(float), 1, save_file);
         fread(&mc->dx, sizeof(float), 1, save_file);
         fread(&mc->dy, sizeof(float), 1, save_file);
-        //buffer->movementC = mc;
-
-
     }
 
 
     bool is_zombie = false;
     fread(&is_zombie, sizeof(bool), 1, save_file);
-//printf("44444444444");
     if(is_zombie != false)
     {
         ZombieC* zc = buffer->zombieC;
@@ -272,18 +262,12 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
         fread(&zc->shoots_fired_in_pattern, sizeof(int), 1, save_file);
         fread(&zc->pattern_direction_right, sizeof(bool), 1, save_file);
         fread(&zc->spot_timer, sizeof(bool), 1, save_file);
-
-
-       //buffer->zombieC = zc;
-
-
     }
-//printf("555555555555");
+
     bool has_weaponC = true;
     fread(&has_weaponC, sizeof(bool), 1, save_file);
     if(has_weaponC)
     {
-        //WeaponsC* wc = WeaponsComponent_Create();
         WeaponsC* wc = buffer->weaponsC;
         for(int i = 0 ; i < NB_WEAPON_TYPES ; i++)
         {
@@ -324,8 +308,6 @@ void LevelEditor_ReadEntity(FILE* save_file, Entity* buffer)
 
             WeaponsComponent_AddWeaponToInventory(wc, weapon);
         }
-
-        //buffer->weaponsC = wc;
     }
 
 
@@ -429,7 +411,7 @@ void Level_Load(char* file_name, World* w)
         printf("Can't open file");
 
     }
-
+    printf("gggggg");
     int nb_of_walls = 0;
     fread(&nb_of_walls, sizeof(int), 1, save_file);
 
@@ -453,24 +435,24 @@ void Level_Load(char* file_name, World* w)
         w->ground_map[position_in_array] = buffer;
     }
 
-
+    printf("mdr");
     int num_of_events = 0;
     fread(&num_of_events, sizeof(int), 1, save_file);
     for(int i = 0 ; i < num_of_events ; i++)
     {
         Entity* buffer  = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
+        LevelEditor_ReadEntity(save_file, buffer, w);
 
         Vector_Push(&w->events_vector, buffer);
 
     }
-
+printf("mdr");
     int num_of_props = 0;
     fread(&num_of_props, sizeof(int), 1, save_file);
     for(int i = 0 ; i < num_of_props; i++)
     {
         Entity* buffer  = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
+        LevelEditor_ReadEntity(save_file, buffer, w);
 
         Vector_Push(&w->props_vector, buffer);
 
@@ -485,7 +467,7 @@ void Level_Load(char* file_name, World* w)
         for(int i = 0 ; i < num_of_zombies ; i++)
         {
             Entity* buffer  = Entity_Spawn();
-            LevelEditor_ReadEntity(save_file, buffer);
+            LevelEditor_ReadEntity(save_file, buffer, w);
             Vector_Push(&w->monsters_vector, buffer);
 
         }
@@ -493,10 +475,11 @@ void Level_Load(char* file_name, World* w)
 
     int num_of_decalss = 0;
     fread(&num_of_decalss, sizeof(int), 1, save_file);
+        printf("Loading %d decals\n", num_of_decalss);
     for(int i = 0 ; i < num_of_decalss ; i++)
     {
         Entity* buffer  = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
+        LevelEditor_ReadEntity(save_file, buffer, w);
         Vector_Push(&w->decals_vector, buffer);
 
     }
@@ -507,7 +490,7 @@ void Level_Load(char* file_name, World* w)
     for(int i = 0 ; i < num_of_bonus ; i++)
     {
         Entity* buffer = Entity_Spawn();
-        LevelEditor_ReadEntity(save_file, buffer);
+        LevelEditor_ReadEntity(save_file, buffer, w);
         Vector_Push(&w->bonus_vector, buffer);
 
     }
@@ -519,7 +502,7 @@ void Level_Load(char* file_name, World* w)
 
 
 
-//pressing F7 to quickly try a level inside the level editor
+/*pressing F7 to quickly try a level inside the level editor*/
 void LevelEditor_QuickTry(World* world)
 {
     game_state_g = GameState_Map_Editor_Testing_Level;
@@ -528,7 +511,7 @@ void LevelEditor_QuickTry(World* world)
     Level_Save("saves/tempLevelEditor.sav", world);
 }
 
-//quitting the "quick try" mode : loading the temp save and returning to level editor
+/*quitting the "quick try" mode : loading the temp save and returning to level editor*/
 void LevelEditor_BackToEditing(World* world)
 {
     display_menu_g = false;
@@ -545,8 +528,6 @@ void LevelEditor_LoadMapToEdit(char* complete_name, World* world)
 
     world->player.visible = false;
     world->player.solid = false;
-    //mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
-
 
     Level_Load(complete_name, world);
 }

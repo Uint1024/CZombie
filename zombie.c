@@ -9,6 +9,7 @@
 #include "movement_component.h"
 #include "decals.h"
 
+/*create a default zombie component*/
 ZombieC* ZombieC_Create()
 {
     ZombieC* zc = (ZombieC*)malloc(sizeof(ZombieC));
@@ -22,10 +23,10 @@ ZombieC* ZombieC_Create()
     zc->ai_timer = rand() % 500;
     zc->dodging = false;
     zc->dodging_timer = 0;
-    //if the zombies calculates more than 2 paths between each AI update, he stops looking
+    zc->spot_timer = 0;
     zc->paths_calculated = 0;
-    zc->attack_delay = 500; //can attack every 500ms
-    zc->attack_timer = 0;//when this reaches attack_delay it can reattack
+    zc->attack_delay = 500;
+    zc->attack_timer = 0;
     return zc;
 }
 
@@ -33,8 +34,6 @@ ZombieC* ZombieC_Create()
 
 void Zombie_Update(Entity* z, World* world)
 {
-
-
     if(!bullet_time_g)
     {
         Entity_CalculateVelocity(z);
@@ -42,11 +41,8 @@ void Zombie_Update(Entity* z, World* world)
         z->zombieC->ai_timer += delta_g;
         z->zombieC->rand_move_timer += delta_g;
         z->zombieC->attack_timer += delta_g;
-            z->zombieC->dodging_timer += z->zombieC->ai_timer;
+        z->zombieC->dodging_timer += z->zombieC->ai_timer;
         Zombie_Ai(z, world);
-
-
-
 
         ZombieC* zc = z->zombieC;
         if(!zc->idling)
@@ -78,8 +74,6 @@ void Zombie_GetAttacked(Entity* z, int damage, World* world)
     {
         Zombie_BecomeAggressive(z, world);
     }
-
-
 
     Entity_LoseHealth(z, damage);
 }
@@ -145,25 +139,26 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
 {
 	Entity* z = Entity_Spawn();
 
-	z->t                        = Cat_Zombie;
-    z->x                        = x;
-	z->y                        = y;
-	z->sub_category = type;
-    z->zombieC                  = ZombieC_Create(type);
-    z->zombieC->zombie_type     = type;
-    z->zombieC->reaction_time = 1000;
-    z->zombieC->spot_timer = 0;
-    z->zombieC->dodging_timer = 0;
-    z->zombieC->can_dodge_every = 1000;
-    z->movementC                = MovementC_Create();
-    z->angle         = C_GenerateRandomAngle();
-    z->zombieC->shoot_timer = 0;
+	z->t                                = Cat_Zombie;
+    z->x                                = x;
+	z->y                                = y;
+	z->sub_category                     = type;
+
+    z->zombieC                          = ZombieC_Create(type);
+    z->zombieC->zombie_type             = type;
+    z->zombieC->reaction_time           = 1000;
+    z->zombieC->can_dodge_every         = 1000;
+
+    z->movementC                        = MovementC_Create();
+    z->angle                            = C_GenerateRandomAngle();
+    z->zombieC->shoot_timer             = 0;
     z->zombieC->shoots_fired_in_pattern = 0;
     z->zombieC->pattern_direction_right = false;
 
     int width = 20;
     int height = 20;
     Weapon_Type weapon = No_Weapon;
+
     switch(type)
     {
     case Zombie_Normal:
@@ -208,8 +203,6 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         z->zombieC->pattern_timer = 0;
         z->zombieC->shooting_angle = 0;
         z->zombieC->shoot_delay = 120;
-
-
         break;
     case Zombie_Fast:
         z->hp = 4;
@@ -238,6 +231,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     }
 
     z->movementC->speed = z->movementC->normal_speed;
+
     if(weapon != No_Weapon)
     {
         z->weaponsC = WeaponsComponent_Create(true);
@@ -247,10 +241,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
         WeaponsComponent_ChangeWeapon(z->weaponsC, weapon);
     }
 
-
     BoundingBox_Create(z, width, height);
-
-
 
 	return z;
 }
@@ -272,12 +263,12 @@ void Zombie_Ai(Entity* z, World* world)
             {
                 float angle_to_player = C_AngleBetween2Entities(z, player);
 
-                //convert angle to 2pi circle and compare them
+                /*convert angle to [0;2pi] format and compare them*/
                 float diff = C_DifferenceBetweenAngles(z->angle, angle_to_player);
 
-                //check if player is in field of view, or if the player is too close
-                if((diff > -1.2f && diff < 1.2f)
-                      || Entity_CheckDistance(z, player, 70))
+                /*check if player is in field of view, or if the player is too close*/
+                if((diff > -1.2f && diff < 1.2f) ||
+                    Entity_CheckDistance(z, player, 70))
                 {
                     bool can_see = Entity_CheckCanSeeEntity(z, player, world);
                     if(can_see)
@@ -313,30 +304,27 @@ void Zombie_Ai(Entity* z, World* world)
                 Zombie_BecomeCalm(z);
             }
 
+            /*calculate the dodge chance*/
             if(!zc->dodging && z->sub_category != Zombie_Destroyer &&  SDL_GetTicks() - zc->dodging_timer > 1500)
             {
                 int dodge_chance = rand() % 100;
 
-                //the zombie tries to dodge
                 if(dodge_chance < 35)
                 {
-                    //convert angle in range -3.14;3.14 to range 0;6.28
+                    /*convert angle in range [-pi;pi] to range [0;2pi]*/
                     float temp_angle = C_ConvertAngle2PiCirlce(C_AngleBetween2Points(z->x, z->y,
                                                                                      world->player.x,
                                                                                      world->player.y));
 
-                    //generate new angle between pi/3 ;  pi/6
-                    //and add it, or its opposite, to temp_angle
-                    short sign = rand() % 2;
-
-                    //is between pi/2 ;  half_pi/3 : 1.047 and + 1.047
+                    /*generate new angle in range [pi/3;pi/6]
+                    and add it, or its opposite, to temp_angle*/
                     float rand_angle = (float)(((rand() % 1047) + 523.0f) / 1000.0f);
 
+                    short sign = rand() % 2;
                     if(sign == 0) temp_angle -= rand_angle;
                     else temp_angle += rand_angle;
 
                     z->angle = temp_angle;
-                    //zombie will run in this direction for a little while
                     zc->dodging_timer = SDL_GetTicks();
                     zc->dodging = true;
                 }
@@ -345,10 +333,8 @@ void Zombie_Ai(Entity* z, World* world)
 
             if(!zc->dodging)
             {
-
                 z->angle = C_AngleBetween2Points(z->x, z->y,
                                                             world->player.x, world->player.y);
-
             }
 
         }
@@ -367,21 +353,20 @@ void Zombie_Ai(Entity* z, World* world)
 
 void Zombie_BecomeCalm(Entity* z)
 {
-
     z->zombieC->aggressive = false;
     z->movementC->speed = z->movementC->normal_speed;
     z->zombieC->spot_timer = 0;
 }
 
-//when there's a collision, this generate a new angle in the opposite direction
+/*generated a new angle in the opposite direction of the last collision*/
 void Zombie_NewTrajectory(Entity* z)
 {
     z->angle = C_GenerateAngleInOppositeDirection(z->collision_direction);
 }
 
+/*generates a random angle and movement duration*/
 void Zombie_CalculateRandomPath(Entity* z)
 {
-
     if(z->zombieC->rand_move_timer >= z->zombieC->rand_move_every)
     {
         z->zombieC->idling = z->zombieC->idling ? false : true;
@@ -395,6 +380,7 @@ void Zombie_CalculateRandomPath(Entity* z)
     }
 }
 
+/*zombie becomes aggressive and tells the closest zombies that he's spotted the player*/
 void Zombie_BecomeAggressive(Entity* z, World* world)
 {
     ZombieC* zc = z->zombieC;
@@ -406,14 +392,12 @@ void Zombie_BecomeAggressive(Entity* z, World* world)
 
     unsigned char zombies_told = 0;
 
-    //the zombie tells the closest zombies that he's spotted the player
+
     for(int i = 0 ; i < Vector_Count(monsters) && zombies_told < 3 ; i++)
     {
-
         Entity* mob = (Entity*)Vector_Get(monsters, i);
         if(Entity_CheckDistance(z, mob, 300) && !mob->zombieC->aggressive)
         {
-            //zombie will become aggressive only if he can be seen by z
             if(Entity_CheckCanSeeEntity(z, mob, world))
             {
                 Zombie_BecomeAggressive(mob, world);
@@ -427,7 +411,7 @@ void Zombie_BecomeAggressive(Entity* z, World* world)
 
 }
 
-
+/*generate corpse and item drops*/
 void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
 {
     int random = rand() % 100;
@@ -467,5 +451,4 @@ void Zombie_Die(Entity* zombie, Vector* bonus_vector, Vector* decals_vector)
         break;
     }
     Vector_Push(decals_vector, Decal_Create(corpse_type, zombie->x, zombie->y, zombie->angle));
-
 }

@@ -49,7 +49,7 @@ void Bonus_Update(Entity* bonus, Entity* player)
     {
         bonus->angle = C_AngleBetween2Points(bonus->x, bonus->y, player->x, player->y);
 
-        //min speed is 0 when distance is 64, max speed is 0.05f when distance is 0
+        /*min speed is 0 when distance is 64, max speed is 0.05f when distance is 0*/
         bonus->movementC->speed = -0.008f * abs(bonus->x - player->x) + 0.5;
 
         Entity_CalculateVelocity(bonus);

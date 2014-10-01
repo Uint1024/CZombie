@@ -146,10 +146,32 @@ typedef enum {
     Wall_Grey_No_Border,
     Wall_Grey_1_Border,
     Wall_Grey_2_Borders,
+    Wall_Grey_1_Border_1_Dot,
 
+    Wall_Grey_1_Border_2_Dots,
+    Wall_Grey_Ending,
+    Wall_Grey,
     NB_OF_WALL_TYPES
-} Wall_Type
-;
+} Wall_Type;
+
+typedef enum {
+    No_Border,
+    Column,
+    Corner,
+    Corner_Dot,
+    One_Border,
+    Two_Border,
+    One_Border_1_Dot_Left,
+    One_Border_1_Dot_Right,
+    One_Border_2_Dots,
+    One_Dot,
+    Two_Dots,
+    Two_Opposite_Dots,
+    Three_Dots,
+    Four_Dots,
+    Ending,
+    NB_OF_TILES_TYPES
+} Tile_Type;
 
 //Door_Type
 typedef enum {
@@ -293,8 +315,9 @@ extern Uint32 bullet_time_timer;
 #define LEVEL_EDITOR_SPEED 2
 
 #define MAP_SIZE 100
-#define PI 3.141592
-#define HALF_PI 1.570796
+#define PI 3.141592f
+#define HALF_PI 1.570796f
+#define RADIAN_TO_DEGREE 57.2957795f
 
 enum {
     BUTTON_UP,

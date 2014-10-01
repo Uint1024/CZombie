@@ -4,100 +4,99 @@
 
 Entity* Prop_Create(Bonus_type type, float x, float y, float angle)
 {
-    Entity* prop = Entity_Spawn();
-    printf("%f %f\n", x, y);
-    prop->x = x;
-    prop->y = y;
-    prop->t = Cat_Prop;
-    prop->sub_category = type;
-    prop->angle = angle;
-    prop->hp = 10;
+    Entity* prop        = Entity_Spawn();
+    prop->x             = x;
+    prop->y             = y;
+    prop->t             = Cat_Prop;
+    prop->sub_category  = type;
+    prop->angle         = angle;
+    prop->hp            = 10;
 
-    //bbox value, change depending on the angle
+    /*bbox changes depending on the angle*/
     int true_x, true_y, true_width, true_height;
 
     switch(type)
     {
     case Prop_Bed:
-        prop->width = 32;
-        prop->height = 64;
+        prop->width     = 32;
+        prop->height    = 64;
         break;
     case Prop_Desk:
-        prop->width = 25;
-        prop->height = 40;
+        prop->width     = 25;
+        prop->height    = 40;
         break;
     case Prop_Chair:
-        prop->width = 20;
-        prop->height = 20;
+        prop->width     = 20;
+        prop->height    = 20;
         break;
     case Prop_Car_Cool:
-        prop->width = 60;
-        prop->height = 120;
-        prop->hp = 25;
+        prop->width     = 60;
+        prop->height    = 120;
+        prop->hp        = 25;
         break;
     case Prop_Bookcase:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_FileCabinet:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_BlackChest:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_Refrigerator:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_Kitchen_Stove:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_Kitchen_Table:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_Couch_Blue:
-        prop->width = 64;
-        prop->height = 32;
+        prop->width     = 64;
+        prop->height    = 32;
         break;
     case Prop_Plant:
-        prop->width = 24;
-        prop->height = 24;
+        prop->width     = 24;
+        prop->height    = 24;
         break;
     case Prop_LivingRoom_TV:
-        prop->width = 64;
-        prop->height = 32;
+        prop->width     = 64;
+        prop->height    = 32;
         break;
     case Prop_Office_Desk_Computer:
-        prop->width = 64;
-        prop->height = 26;
+        prop->width     = 64;
+        prop->height    = 26;
         break;
     case Prop_Bathroom_Sink:
-        prop->width = 64;
-        prop->height = 26;
+        prop->width     = 32;
+        prop->height    = 26;
         break;
     case Prop_Bathtub:
-        prop->width = 64;
-        prop->height = 32;
+        prop->width     = 64;
+        prop->height    = 32;
         break;
     case Prop_WC:
-        prop->width = 32;
-        prop->height = 32;
+        prop->width     = 32;
+        prop->height    = 32;
         break;
     case Prop_Cupboard:
-        prop->width = 64;
-        prop->height = 32;
+        prop->width     = 64;
+        prop->height    = 32;
         break;
     case Prop_Dining_Room_Table_Large:
-        prop->width = 64;
-        prop->height = 96;
+        prop->width     = 64;
+        prop->height    = 96;
         break;
     }
 
-    true_width =  prop->width ;
+    true_width =  prop->width;
     true_height = prop->height;
     true_x = x;
     true_y = y;

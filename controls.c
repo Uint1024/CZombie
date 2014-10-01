@@ -224,7 +224,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                     controls->temp_object_to_create = Entity_Create(level_editor->active_button->main_category,
                                                                     level_editor->active_button->button_type,
                                                                     controls->mouseX, controls->mouseY,
-                                                                    0);
+                                                                    0, world);
 
 
 

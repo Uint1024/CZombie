@@ -56,7 +56,6 @@ void Door_Open(Entity* d)
         door_switch_timer = SDL_GetTicks();
        Sound_PlayOpenDoor();
         d->solid = false;
-        printf("opening %d\n", d->solid );
     }
 
 }

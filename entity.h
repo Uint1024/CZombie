@@ -38,7 +38,7 @@ typedef struct Entity
     int                     damage;//zombies, bullets, explosions
     float                   angle;
 
-
+    Tile_Type              tile_type;
     int width;
     int height;
 
@@ -86,7 +86,7 @@ float Entity_GetMiddleX(Entity* ent);
 void Entity_Destroy(Entity* ent);
 void Entity_MoveToPosition(Entity* ent, float x, float y);
 void Entity_CalculateVisibility(Entity* ent, World* world);
-Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle);
+Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle, World* world);
 
 bool Entity_CheckVeryClose(Entity* ent1, Entity* ent2);
 #endif

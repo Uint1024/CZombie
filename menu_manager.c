@@ -68,6 +68,15 @@ void MenuManager_Update(MenuManager* mm,
                         bool* running,
                         World* world)
 {
+    World_Reset(world, MAP_SIZE,MAP_SIZE);
+                        mm->previous_active_menu = mm->active_menu;
+                        mm->active_menu = mm->sub_menus[LevelEditorEditing_menu];
+
+                        display_menu_g = false;
+                        world->player.visible = false;
+                        world->player.solid = false;
+                        game_state_g = GameState_Editing_Map;
+
     Menu* menu = mm->active_menu;
     mm->click_timer -= delta_g;
     bool* pressedKeys = Inputs_GetPressedKeys();

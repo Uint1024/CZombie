@@ -35,6 +35,7 @@ Entity* Entity_Spawn()
 	ent->box.height                 = 0;
 	ent->box.right                  = 0;
 	ent->box.bottom                 = 0;
+	ent->tile_type = No_Border;
     ent->solid                      = true;
     ent->angle = 0;
     ent->visible                    = true;
@@ -73,13 +74,13 @@ void Entity_Destroy(Entity* ent)
     free(ent->playerC);
 }
 
-Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle)
+Entity* Entity_Create(Main_Category cat, int type, float x, float y, float angle, World* world)
 {
     Entity* entity;
     switch(cat)
     {
     case Cat_Wall:
-        entity = Wall_Create(type, x, y);
+        entity = Wall_Create(type, x, y, world);
         break;
     case Cat_Door:
         entity = Door_Create(type, x, y);
