@@ -3,6 +3,7 @@
 #include "wall.h"
 #include "world.h"
 #include "entity.h"
+#include "levelEditor.h"
 
 
 Entity* Wall_CreateEmpty()
@@ -57,8 +58,17 @@ void Wall_Update_Tile_Type(Entity* wall, World* world)
                 }
                 else
                 {
-                    wall->tile_type = Corner;
-                    wall->angle = 0;
+                    if(map_left_down == NULL)
+                    {
+                        wall->tile_type = Corner_Dot;
+                        wall->angle = 0;
+                    }
+                    else
+                    {
+                        wall->tile_type = Corner;
+                        wall->angle = 0;
+                    }
+
                 }
             }
             else
@@ -343,8 +353,17 @@ void Wall_Update_Tile_Type(Entity* wall, World* world)
                 }
                 else
                 {
-                    wall->tile_type = Corner;
-                    wall->angle = 3* HALF_PI;
+                    if(map_right_down == NULL)
+                    {
+                        wall->tile_type = Corner_Dot;
+                        wall->angle = 3* HALF_PI;
+                    }
+                    else
+                    {
+                        wall->tile_type = Corner;
+                        wall->angle = 3* HALF_PI;
+                    }
+
                 }
             }
         }
@@ -436,45 +455,12 @@ Entity* Wall_Create(Wall_Type type, int x_, int y_, World* world)
         break;
     }
 
-    Entity** map = world->map;
-
-    int map_position = (wall->y/TILE_SIZE) * world->map_width + wall->x/TILE_SIZE;
-
-
-    Entity* map_left = map[map_position - 1];
-    Entity* map_left_left = map[map_position - 2];
-    Entity* map_left_up = map[map_position - 1 - world->map_width];
-    Entity* map_left_down = map[map_position - 1 + world->map_width];
-
-
-    Entity* map_right = map[map_position + 1];
-    Entity* map_right_up = map[map_position + 1  - world->map_width];
-    Entity* map_right_down = map[map_position + 1 + world->map_width];
-
-    Entity* map_up = map[map_position - world->map_width];
-    Entity* map_up_up = map[map_position - 2 * world->map_width];
-    Entity* map_down = map[map_position + world->map_width];
-    Entity* map_down_down = map[map_position + 2 * world->map_width];
-
 
     Wall_Update_Tile_Type(wall, world);
 
-    if(map_left != NULL)
-    Wall_Update_Tile_Type(map_left, world);
-    if(map_left_up != NULL)
-    Wall_Update_Tile_Type(map_left_up, world);
-    if(map_left_down != NULL)
-    Wall_Update_Tile_Type(map_left_down, world);
-    if(map_right != NULL)
-    Wall_Update_Tile_Type(map_right, world);
-    if(map_right_up != NULL)
-    Wall_Update_Tile_Type(map_right_up, world);
-    if(map_right_down != NULL)
-    Wall_Update_Tile_Type(map_right_down, world);
-    if(map_up != NULL)
-    Wall_Update_Tile_Type(map_up, world);
-    if(map_down != NULL)
-    Wall_Update_Tile_Type(map_down, world);
+    int map_position = (wall->y/TILE_SIZE) * world->map_width + wall->x/TILE_SIZE;
+
+    LevelEditor_UpdateWallsCorners(map_position, world);
 
 
 	return wall;

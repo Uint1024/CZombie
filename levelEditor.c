@@ -92,6 +92,51 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type, int x, int y
     }
 
 }
+
+/*update the walls corner around a wall*/
+void LevelEditor_UpdateWallsCorners(int map_position, World* world)
+{
+
+    Entity** map = world->map;
+
+   // int map_position = (wall->y/TILE_SIZE) * world->map_width + wall->x/TILE_SIZE;
+
+
+    Entity* map_left = map[map_position - 1];
+    Entity* map_left_left = map[map_position - 2];
+    Entity* map_left_up = map[map_position - 1 - world->map_width];
+    Entity* map_left_down = map[map_position - 1 + world->map_width];
+
+
+    Entity* map_right = map[map_position + 1];
+    Entity* map_right_up = map[map_position + 1  - world->map_width];
+    Entity* map_right_down = map[map_position + 1 + world->map_width];
+
+    Entity* map_up = map[map_position - world->map_width];
+    Entity* map_up_up = map[map_position - 2 * world->map_width];
+    Entity* map_down = map[map_position + world->map_width];
+    Entity* map_down_down = map[map_position + 2 * world->map_width];
+
+
+
+    if(map_left != NULL)
+    Wall_Update_Tile_Type(map_left, world);
+    if(map_left_up != NULL)
+    Wall_Update_Tile_Type(map_left_up, world);
+    if(map_left_down != NULL)
+    Wall_Update_Tile_Type(map_left_down, world);
+    if(map_right != NULL)
+    Wall_Update_Tile_Type(map_right, world);
+    if(map_right_up != NULL)
+    Wall_Update_Tile_Type(map_right_up, world);
+    if(map_right_down != NULL)
+    Wall_Update_Tile_Type(map_right_down, world);
+    if(map_up != NULL)
+    Wall_Update_Tile_Type(map_up, world);
+    if(map_down != NULL)
+    Wall_Update_Tile_Type(map_down, world);
+
+}
 void LevelEditor_WriteEntity(FILE* save_file, Entity* buffer)
 {
     fwrite(&buffer->t, sizeof(Main_Category), 1, save_file);

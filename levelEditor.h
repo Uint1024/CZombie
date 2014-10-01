@@ -20,4 +20,5 @@ void LevelEditor_CreateObject(Main_Category category, int obj_type,
                               int x, int y, int position_in_array,float mousePositionInWorldX,
                               float mousePositionInWorldY,
                               World* world, bool unlimited, float angle);
+void LevelEditor_UpdateWallsCorners(int map_position, World* world);
 #endif // LEVELEDITOR_H

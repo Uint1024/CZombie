@@ -382,7 +382,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                 }
                 if(!rectangle_selection_delete)
                 {
-                     free(world->map[position_in_array]);
+                    LevelEditor_UpdateWallsCorners(position_in_array, world);
+                    free(world->map[position_in_array]);
                     world->map[position_in_array] = NULL;
                 }
 
@@ -483,6 +484,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
                         }
                         else if(rectangle_selection_delete)
                         {
+                            LevelEditor_UpdateWallsCorners(position_in_array, world);
                             free(world->map[position_in_array]);
                             world->map[position_in_array] = NULL;
 
