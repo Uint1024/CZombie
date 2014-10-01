@@ -198,6 +198,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
     }
 
+
     Vector* monsters_vector = &world->monsters_vector;
     if(BoundingBox_CheckPointCollision(controls->mouseX, controls->mouseY, &level_editor->box))
     {
@@ -332,6 +333,7 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
     {
         if (level_editor->active_button != NULL)
         {
+
             Main_Category category = level_editor->active_button->main_category;
             int obj_type = level_editor->active_button->button_type;
 
@@ -561,7 +563,6 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
 
 
 
-
         //deleting every monster
         if(pressedKeys[SDLK_u])
         {
@@ -594,6 +595,8 @@ void Inputs_ApplyInputsLevelEditor(Controls* controls,
             controls->last_ai_switch = SDL_GetTicks();
         }
     }
+
+
 }
 
 

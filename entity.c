@@ -218,7 +218,8 @@ bool Entity_CheckCanSeeEntity(Entity* ent1, Entity* ent2, World* world)
 
     bool collision = false;
 
-    while(!collision && (pointX - ent1MiddleX <= ent2MiddleX - ent1MiddleX))
+    while(!collision && ((pointX - ent1MiddleX <= ent2MiddleX - ent1MiddleX) &&
+                         (abs(pointY - ent1MiddleY) <= abs(ent2MiddleY - ent1MiddleY))))
     {
         pointX += dx;
         pointY += dy;
@@ -340,7 +341,6 @@ bool Entity_CollisionWithWalls(Entity* ent, World* world)
            ent->movementC->dx > 0 &&
            ent->box.right <= collision_sides[Right]->box.left)
         {
-            printf("loool");
             if(ent->box.top < collision_sides[Right]->box.top)
             {
                 ent->movementC->dy = -1;

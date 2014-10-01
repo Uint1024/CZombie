@@ -104,7 +104,7 @@ Direction BoundingBox_CheckOutOfScreen(Box* box, Entity* camera)
 
 void BoundingBox_Update(Entity* ent)
 {
-    if(ent->box.width == ent->box.height)
+    if(ent->t != Cat_Prop)
     {
         ent->box.left = ent->x + ent->box.offsetX;
         ent->box.top = ent->y + ent->box.offsetY;

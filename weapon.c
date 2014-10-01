@@ -83,7 +83,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->reloading_time = 0;
         w->bullet_width = 15;
         w->bullet_height = 15;
-        w->bullet_speed = 0.1;
+        w->bullet_speed = 0.2;
         w->bullet_damage = 1;
         w->bullet_penetration_chance = 0;
     }

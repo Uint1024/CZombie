@@ -185,7 +185,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     case Zombie_Destroyer:
         width = 200;
         height = 200;
-        z->hp = 1000;
+        z->hp = 500;
         z->damage = 500;
         z->movementC->normal_speed = 0.02;
         z->movementC->running_speed = 0.12;

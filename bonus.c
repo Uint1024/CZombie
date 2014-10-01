@@ -34,9 +34,9 @@ Entity* Bonus_Create(Bonus_type bonus_type, float x, float y, float angle)
     }
     else
     {
+
         BoundingBox_Create(bonus, 30, 15);
     }
-
 
     return bonus;
 }

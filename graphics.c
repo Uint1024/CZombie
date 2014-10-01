@@ -392,6 +392,8 @@ void Graphics_RenderObject(Entity* object, PlayerC* playerC)
         errorY = 1;
     }
 
+
+
     if(object->t != Cat_Prop)
     {
         SDL_Texture* texture = textures_g[object->t][object->sub_category];
