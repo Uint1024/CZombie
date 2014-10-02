@@ -68,88 +68,66 @@ void Graphics_Create(int screen_width, int screen_height)
                                         SDL_RENDERER_ACCELERATED
                                     );
 
-    textures_g[Cat_Player][Player_Normal] = IMG_LoadTexture(renderer, "player.png");
+    textures_g[Cat_Player][Player_Normal] = IMG_LoadTexture(renderer, "img/player/player.png");
 
-    textures_g[Cat_Zombie][Zombie_Normal] = IMG_LoadTexture(renderer, "zombie_normal.png");
-    textures_g[Cat_Zombie][Zombie_Fast] = IMG_LoadTexture(renderer, "zombie_fast.png");
-    textures_g[Cat_Zombie][Zombie_Heavy] = IMG_LoadTexture(renderer, "zombie_heavy.png");
-    textures_g[Cat_Zombie][Zombie_Trooper] = IMG_LoadTexture(renderer, "zombie_trooper.png");
-    textures_g[Cat_Zombie][Zombie_Huge] = IMG_LoadTexture(renderer, "zombie_huge.png");
-    textures_g[Cat_Zombie][Zombie_Raptor] = IMG_LoadTexture(renderer, "zombie_raptor.png");
-    textures_g[Cat_Zombie][Zombie_Slow] = IMG_LoadTexture(renderer, "zombie_slow.png");
-    textures_g[Cat_Zombie][Zombie_Destroyer] = IMG_LoadTexture(renderer, "zombie_destroyer.png");
+    textures_g[Cat_Zombie][Zombie_Normal] = IMG_LoadTexture(renderer, "img/zombie/zombie_normal.png");
+    textures_g[Cat_Zombie][Zombie_Fast] = IMG_LoadTexture(renderer, "img/zombie/zombie_fast.png");
+    textures_g[Cat_Zombie][Zombie_Heavy] = IMG_LoadTexture(renderer, "img/zombie/zombie_heavy.png");
+    textures_g[Cat_Zombie][Zombie_Trooper] = IMG_LoadTexture(renderer, "img/zombie/zombie_trooper.png");
+    textures_g[Cat_Zombie][Zombie_Huge] = IMG_LoadTexture(renderer, "img/zombie/zombie_huge.png");
+    textures_g[Cat_Zombie][Zombie_Raptor] = IMG_LoadTexture(renderer, "img/zombie/zombie_raptor.png");
+    textures_g[Cat_Zombie][Zombie_Slow] = IMG_LoadTexture(renderer, "img/zombie/zombie_slow.png");
+    textures_g[Cat_Zombie][Zombie_Destroyer] = IMG_LoadTexture(renderer, "img/zombie/zombie_destroyer.png");
 
-    textures_g[Cat_Bonus][Bonus_Rifle] = IMG_LoadTexture(renderer, "bonus_automaticRifle.png");
-    textures_g[Cat_Bonus][Bonus_GrenadeLauncher] = IMG_LoadTexture(renderer, "bonus_grenadeLauncher.png");
-    textures_g[Cat_Bonus][Bonus_Shotgun] = IMG_LoadTexture(renderer, "bonus_shotgun.png");
-    textures_g[Cat_Bonus][Bonus_TheBigGun] = IMG_LoadTexture(renderer, "bonus_biggun.png");
-    textures_g[Cat_Bonus][Bonus_Handgun] = IMG_LoadTexture(renderer, "bonus_handgun.png");
-    textures_g[Cat_Bonus][Bonus_Time_Stop] = IMG_LoadTexture(renderer, "bonus_timeStop.png");
+    textures_g[Cat_Bonus][Bonus_Rifle] = IMG_LoadTexture(renderer, "img/bonus/bonus_automaticRifle.png");
+    textures_g[Cat_Bonus][Bonus_GrenadeLauncher] = IMG_LoadTexture(renderer, "img/bonus/bonus_grenadeLauncher.png");
+    textures_g[Cat_Bonus][Bonus_Shotgun] = IMG_LoadTexture(renderer, "img/bonus/bonus_shotgun.png");
+    textures_g[Cat_Bonus][Bonus_TheBigGun] = IMG_LoadTexture(renderer, "img/bonus/bonus_biggun.png");
+    textures_g[Cat_Bonus][Bonus_Handgun] = IMG_LoadTexture(renderer, "img/bonus/bonus_handgun.png");
+    textures_g[Cat_Bonus][Bonus_Time_Stop] = IMG_LoadTexture(renderer, "img/bonus/bonus_timeStop.png");
 
-    textures_g[Cat_Bullet][Weapon_Handgun] = IMG_LoadTexture(renderer, "bullet_normal.png");
-    textures_g[Cat_Bullet][Weapon_AutomaticRifle] = IMG_LoadTexture(renderer, "bullet_normal.png");
-    textures_g[Cat_Bullet][Weapon_TheBigGun] = IMG_LoadTexture(renderer, "bullet_normal.png");
-    textures_g[Cat_Bullet][Weapon_Shotgun] = IMG_LoadTexture(renderer, "bullet_normal.png");
-    textures_g[Cat_Bullet][Weapon_TripleFireball] = IMG_LoadTexture(renderer, "bullet_fireball.png");
-    textures_g[Cat_Bullet][Weapon_FireballMachineGun] = IMG_LoadTexture(renderer, "bullet_fireball.png");
-    textures_g[Cat_Bullet][Weapon_Fireball] = IMG_LoadTexture(renderer, "bullet_fireball.png");
+    textures_g[Cat_Bullet][Weapon_Handgun] = IMG_LoadTexture(renderer, "img/bullet/bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_AutomaticRifle] = IMG_LoadTexture(renderer, "img/bullet/bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_TheBigGun] = IMG_LoadTexture(renderer, "img/bullet/bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_Shotgun] = IMG_LoadTexture(renderer, "img/bullet/bullet_normal.png");
+    textures_g[Cat_Bullet][Weapon_TripleFireball] = IMG_LoadTexture(renderer, "img/bullet/bullet_fireball.png");
+    textures_g[Cat_Bullet][Weapon_FireballMachineGun] = IMG_LoadTexture(renderer, "img/bullet/bullet_fireball.png");
+    textures_g[Cat_Bullet][Weapon_Fireball] = IMG_LoadTexture(renderer, "img/bullet/bullet_fireball.png");
 
-    textures_g[Cat_Grenade][Grenade_Normal] = IMG_LoadTexture(renderer, "bullet_normal.png");
+    textures_g[Cat_Grenade][Grenade_Normal] = IMG_LoadTexture(renderer, "img/bullet/bullet_normal.png");
 
-    textures_g[Cat_Wall][Wall_Normal] = IMG_LoadTexture(renderer, "wall_normal.png");
-    textures_g[Cat_Wall][Wall_Cool] = IMG_LoadTexture(renderer, "wall_cool.png");
-    textures_g[Cat_Wall][Wall_Glass] = IMG_LoadTexture(renderer, "wall_glass.png");
-    textures_g[Cat_Wall][Wall_Reinforced] = IMG_LoadTexture(renderer, "wall_reinforced.png");
-    textures_g[Cat_Wall][Wall_Good_Center] = IMG_LoadTexture(renderer, "wall_good_center.png");
-    textures_g[Cat_Wall][Wall_Good_Corner] = IMG_LoadTexture(renderer, "wall_good_corner.png");
+    textures_g[Cat_Wall][Wall_Normal] = IMG_LoadTexture(renderer, "img/wall/wall_normal.png");
+    textures_g[Cat_Wall][Wall_Cool] = IMG_LoadTexture(renderer, "img/wall/wall_cool.png");
+    textures_g[Cat_Wall][Wall_Glass] = IMG_LoadTexture(renderer, "img/wall/wall_glass.png");
+    textures_g[Cat_Wall][Wall_Reinforced] = IMG_LoadTexture(renderer, "img/wall/wall_reinforced.png");
+
 
     textures_g[Cat_Wall][Wall_Grey] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
-    textures_g[Cat_Wall][Wall_Grey_No_Border] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
-    textures_g[Cat_Wall][Wall_Grey_1_Border] = IMG_LoadTexture(renderer, "img/wall/grey_1_border.png");
-    textures_g[Cat_Wall][Wall_Grey_2_Borders] = IMG_LoadTexture(renderer, "img/wall/grey_2_borders.png");
-    textures_g[Cat_Wall][Wall_Grey_Corner] = IMG_LoadTexture(renderer, "img/wall/grey_corner.png");
-    textures_g[Cat_Wall][Wall_Grey_Ending] = IMG_LoadTexture(renderer, "img/wall/grey_ending.png");
-    textures_g[Cat_Wall][Wall_Grey_1_Border_1_Dot] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_1_dot.png");
-    textures_g[Cat_Wall][Wall_Grey_1_Border_2_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_2_dots.png");
+    textures_g[Cat_Wall][Wall_Red_Bricks] = IMG_LoadTexture(renderer, "img/wall/red.png");
 
-    wall_textures[Wall_Grey][No_Border] = IMG_LoadTexture(renderer, "img/wall/grey_no_border.png");
-    wall_textures[Wall_Grey][One_Border] = IMG_LoadTexture(renderer, "img/wall/grey_1_border.png");
-    wall_textures[Wall_Grey][Two_Border] = IMG_LoadTexture(renderer, "img/wall/grey_2_borders.png");
-    wall_textures[Wall_Grey][Corner] = IMG_LoadTexture(renderer, "img/wall/grey_corner.png");
-    wall_textures[Wall_Grey][Corner_Dot] = IMG_LoadTexture(renderer, "img/wall/grey_corner_1_dot.png");
-    wall_textures[Wall_Grey][Ending] = IMG_LoadTexture(renderer, "img/wall/grey_ending.png");
-    wall_textures[Wall_Grey][One_Border_1_Dot_Left] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_1_dot_left.png");
-    wall_textures[Wall_Grey][One_Border_1_Dot_Right] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_1_dot_right.png");
-    wall_textures[Wall_Grey][One_Border_2_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_1_border_2_dots.png");
-    wall_textures[Wall_Grey][One_Dot] = IMG_LoadTexture(renderer, "img/wall/grey_1_dot.png");
-    wall_textures[Wall_Grey][Two_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_2_dots.png");
-    wall_textures[Wall_Grey][Two_Opposite_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_2_opposite_dots.png");
-    wall_textures[Wall_Grey][Three_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_3_dots.png");
-    wall_textures[Wall_Grey][Four_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_4_dots.png");
-    wall_textures[Wall_Grey][Column] = IMG_LoadTexture(renderer, "img/wall/grey_column.png");
 
     walls_spritesheet = IMG_LoadTexture(renderer, "img/wall/walls_spritesheet.png");
 
-    textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(renderer, "explosion_normal.png");
+    textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(renderer, "img/explosion/explosion_normal.png");
 
-    textures_g[Cat_Event][Event_Teleport_To_Other_Map] = IMG_LoadTexture(renderer, "event_mapchange.png");
-    textures_g[Cat_Event][Event_End_Level] = IMG_LoadTexture(renderer, "event_mapend.png");
-    textures_g[Cat_Event][Event_Player_Start] = IMG_LoadTexture(renderer, "event_playerstart.png");
+    textures_g[Cat_Event][Event_Teleport_To_Other_Map] = IMG_LoadTexture(renderer, "img/event/event_mapchange.png");
+    textures_g[Cat_Event][Event_End_Level] = IMG_LoadTexture(renderer, "img/event/event_mapend.png");
+    textures_g[Cat_Event][Event_Player_Start] = IMG_LoadTexture(renderer, "img/event/event_playerstart.png");
 
-    textures_g[Cat_Ground][Ground_Black] = IMG_LoadTexture(renderer, "ground_black.png");
-    textures_g[Cat_Ground][Ground_Dirt] = IMG_LoadTexture(renderer, "ground_dirt.png");
-    textures_g[Cat_Ground][Ground_Grass] = IMG_LoadTexture(renderer, "ground_grass.png");
-    textures_g[Cat_Ground][Ground_Grey] = IMG_LoadTexture(renderer, "ground_grey.png");
-    textures_g[Cat_Ground][Ground_MaroonLight] = IMG_LoadTexture(renderer, "ground_maroonLight.png");
-    textures_g[Cat_Ground][Ground_Red] = IMG_LoadTexture(renderer, "ground_red.png");
-    textures_g[Cat_Ground][Ground_WhiteDark] = IMG_LoadTexture(renderer, "ground_whiteDark.png");
-    textures_g[Cat_Ground][Ground_Yellow] = IMG_LoadTexture(renderer, "ground_yellow.png");
+    textures_g[Cat_Ground][Ground_Black] = IMG_LoadTexture(renderer, "img/ground/ground_black.png");
+    textures_g[Cat_Ground][Ground_Dirt] = IMG_LoadTexture(renderer, "img/ground/ground_dirt.png");
+    textures_g[Cat_Ground][Ground_Grass] = IMG_LoadTexture(renderer, "img/ground/ground_grass.png");
+    textures_g[Cat_Ground][Ground_Grey] = IMG_LoadTexture(renderer, "img/ground/ground_grey.png");
+    textures_g[Cat_Ground][Ground_MaroonLight] = IMG_LoadTexture(renderer, "img/ground/ground_maroonLight.png");
+    textures_g[Cat_Ground][Ground_Red] = IMG_LoadTexture(renderer, "img/ground/ground_red.png");
+    textures_g[Cat_Ground][Ground_WhiteDark] = IMG_LoadTexture(renderer, "img/ground/ground_whiteDark.png");
+    textures_g[Cat_Ground][Ground_Yellow] = IMG_LoadTexture(renderer, "img/ground/ground_yellow.png");
     textures_g[Cat_Ground][Ground_Green_Blue_Carpet] = IMG_LoadTexture(renderer, "img/ground/green_blue_carpet.png");
     textures_g[Cat_Ground][Ground_Wood] = IMG_LoadTexture(renderer, "img/ground/wood.png");
     textures_g[Cat_Ground][Ground_Bathroom] = IMG_LoadTexture(renderer, "img/ground/bathroom.png");
 
-    textures_g[Cat_Door][Door_Normal] = IMG_LoadTexture(renderer, "door_normal.png");
-    textures_g[Cat_Door][Door_Reinforced] = IMG_LoadTexture(renderer, "door_reinforced.png");
+    textures_g[Cat_Door][Door_Normal] = IMG_LoadTexture(renderer, "img/door/door_normal.png");
+    textures_g[Cat_Door][Door_Reinforced] = IMG_LoadTexture(renderer, "img/door/door_reinforced.png");
 
     textures_g[Cat_Prop][Prop_Bed] = IMG_LoadTexture(renderer, "img/prop/bed.png");
     textures_g[Cat_Prop][Prop_Desk] = IMG_LoadTexture(renderer, "img/prop/desk.png");
@@ -171,18 +149,18 @@ void Graphics_Create(int screen_width, int screen_height)
     textures_g[Cat_Prop][Prop_Cupboard] = IMG_LoadTexture(renderer, "img/prop/cupboard.png");
     textures_g[Cat_Prop][Prop_Dining_Room_Table_Large] = IMG_LoadTexture(renderer, "img/prop/dining_room_table_large.png");
 
-    textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(renderer, "cursor_aim.png");
-    textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(renderer, "cursor_resize_left_right.png");
-    textures_g[Cat_Cursor][Cursor_Resize_Up_Down] = IMG_LoadTexture(renderer, "cursor_resize_up_down.png");
+    textures_g[Cat_Cursor][Cursor_Aim] = IMG_LoadTexture(renderer, "img/cursor/cursor_aim.png");
+    textures_g[Cat_Cursor][Cursor_Resize_Left_Right] = IMG_LoadTexture(renderer, "img/cursor/cursor_resize_left_right.png");
+    textures_g[Cat_Cursor][Cursor_Resize_Up_Down] = IMG_LoadTexture(renderer, "img/cursor/cursor_resize_up_down.png");
 
-    textures_g[Cat_Decal][Decal_Corpse_Normal] = IMG_LoadTexture(renderer, "decal_corpse_normal.png");
-    textures_g[Cat_Decal][Decal_Corpse_Fast] = IMG_LoadTexture(renderer, "decal_corpse_fast.png");
-    textures_g[Cat_Decal][Decal_Corpse_Heavy] = IMG_LoadTexture(renderer, "decal_corpse_heavy.png");
-    textures_g[Cat_Decal][Decal_Corpse_Trooper] = IMG_LoadTexture(renderer, "decal_corpse_trooper.png");
-    textures_g[Cat_Decal][Decal_Corpse_Huge] = IMG_LoadTexture(renderer, "decal_corpse_huge.png");
-    textures_g[Cat_Decal][Decal_Corpse_Slow] = IMG_LoadTexture(renderer, "decal_corpse_slow.png");
-    textures_g[Cat_Decal][Decal_Corpse_Raptor] = IMG_LoadTexture(renderer, "decal_corpse_raptor.png");
-    textures_g[Cat_Decal][Decal_Corpse_Destroyer] = IMG_LoadTexture(renderer, "decal_corpse_destroyer.png");
+    textures_g[Cat_Decal][Decal_Corpse_Normal] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_normal.png");
+    textures_g[Cat_Decal][Decal_Corpse_Fast] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_fast.png");
+    textures_g[Cat_Decal][Decal_Corpse_Heavy] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_heavy.png");
+    textures_g[Cat_Decal][Decal_Corpse_Trooper] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_trooper.png");
+    textures_g[Cat_Decal][Decal_Corpse_Huge] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_huge.png");
+    textures_g[Cat_Decal][Decal_Corpse_Slow] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_slow.png");
+    textures_g[Cat_Decal][Decal_Corpse_Raptor] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_raptor.png");
+    textures_g[Cat_Decal][Decal_Corpse_Destroyer] = IMG_LoadTexture(renderer, "img/decal/decal_corpse_destroyer.png");
 
     textures_g[Cat_Decal][Decal_Rug_Ancient] = IMG_LoadTexture(renderer, "img/decal/rug_ancient.png");
 

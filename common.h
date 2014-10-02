@@ -139,17 +139,6 @@ typedef enum {
     Wall_Cool,
     Wall_Glass,
     Wall_Reinforced,
-    Wall_Good_Corner,
-    Wall_Good_Center,
-
-    Wall_Grey_Corner,
-    Wall_Grey_No_Border,
-    Wall_Grey_1_Border,
-    Wall_Grey_2_Borders,
-    Wall_Grey_1_Border_1_Dot,
-
-    Wall_Grey_1_Border_2_Dots,
-    Wall_Grey_Ending,
     Wall_Grey,
     Wall_Red_Bricks,
     NB_OF_WALL_TYPES
