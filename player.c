@@ -484,6 +484,17 @@ void Player_Update(World* world)
     Entity* p = &world->player;
 
 
+    if(SDL_GetTicks() -  p->weaponsC->current_weapon->last_shot > 250)
+    {
+        p->weaponsC->recoil -= 0.5f * delta_g;
+    }
+
+    if(p->weaponsC->recoil < 0)
+    {
+        p->weaponsC->recoil = 0;
+    }
+
+
     if(bullet_time_g)
     {
         p->playerC->time_stop -= 0.01 * delta_g;

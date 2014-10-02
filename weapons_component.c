@@ -20,7 +20,7 @@ WeaponsC* WeaponsComponent_Create(bool is_monster)
     wc->last_reload = 0;
     wc->reloading = false;
     wc->is_monster = is_monster;
-
+    wc->recoil = 0;
     return wc;
 }
 
@@ -131,9 +131,10 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
 
         if(weapon->type == Weapon_Shotgun)
         {
-            for(float i = -0.7 ; i <= 0.7 ; i += 0.1)
+            for(float i = -0.3 ; i <= 0.3 ; i += 0.05)
             {
-                Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle + i, weapon));
+                float random_pattern = (float)(rand() % 200 - 100)/1000.f;
+                Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle + i + random_pattern, weapon));
             }
         }
         else if(weapon->type == Weapon_GrenadeLauncher)
@@ -149,7 +150,12 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
         }
         else
         {
-            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle, weapon));
+            float recoil = 0;
+            if(wc->recoil > 0)
+                recoil = (float)(rand() % (2 * (int)wc->recoil) - wc->recoil)/1000.f;
+
+            printf("%f recoil\n", recoil);
+            Vector_Push(bullets_vector, Bullet_Create(originX,  originY, angle + recoil, weapon));
         }
 
         Sound_PlayShot(weapon->type);
@@ -164,6 +170,13 @@ void WeaponsComponent_TryToShoot(WeaponsC* wc, float originX, float originY, flo
         }
 
         weapon->last_shot = SDL_GetTicks();
+
+        wc->recoil += 5.0f;
+
+        if(wc->recoil > 150.0f)
+        {
+            wc->recoil = 150.0f;
+        }
     }
     else if(weapon->magazine_bullets <= 0 && reloading_g)
     {

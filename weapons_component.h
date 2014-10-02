@@ -12,7 +12,7 @@ typedef struct WeaponsC
 	bool reloading;
     int bullets[NB_OF_WEAPONS];
     int reload_timer;
-
+    float recoil;
     //monsters have infinite bullets
     //their bullets can't harm other mobs
     bool is_monster;
