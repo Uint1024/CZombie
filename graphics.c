@@ -23,6 +23,7 @@ static SDL_Texture* textures_g[NB_OF_CAT][100];
 static int cursor_size = 21;
 static float cameraX = 0;
 static float cameraY = 0;
+static SDL_Texture* walls_spritesheet;
 
 SDL_Window* Graphics_GetWindow()
 {
@@ -127,6 +128,8 @@ void Graphics_Create(int screen_width, int screen_height)
     wall_textures[Wall_Grey][Four_Dots] = IMG_LoadTexture(renderer, "img/wall/grey_4_dots.png");
     wall_textures[Wall_Grey][Column] = IMG_LoadTexture(renderer, "img/wall/grey_column.png");
 
+    walls_spritesheet = IMG_LoadTexture(renderer, "img/wall/walls_spritesheet.png");
+
     textures_g[Cat_Explosion][Explosion_Normal] = IMG_LoadTexture(renderer, "explosion_normal.png");
 
     textures_g[Cat_Event][Event_Teleport_To_Other_Map] = IMG_LoadTexture(renderer, "event_mapchange.png");
@@ -226,6 +229,7 @@ void Graphics_RenderWorld(World* world)
         {
             if(Entity_CheckNear(&world->player, world->ground_map[i]))
             {
+
                 Graphics_RenderObject(world->ground_map[i], world->player.playerC);
             }
         }
@@ -278,14 +282,11 @@ void Graphics_RenderWorld(World* world)
 
     for(int i = 0 ; i < Vector_Count(events_vector) ; i++)
     {
-
         Entity* event = (Entity*)Vector_Get(events_vector, i);
 
         if(Entity_CheckNear(&world->player, event))
         {
-
             Graphics_RenderObject(event, world->player.playerC);
-
         }
     }
 
@@ -331,126 +332,152 @@ void Graphics_RenderWorld(World* world)
 
 void Graphics_RenderObject(Entity* object, PlayerC* playerC)
 {
-    float cameraX = playerC->cameraX;
-    float cameraY = playerC->cameraY;
-    if(object->t == Cat_Player)
+    if((object->visible && !object->in_dark) || game_state_g == GameState_Editing_Map)
     {
-        int alpha_value = 255;
-
-
-        if(object->playerC->invulnerability_timer > 0)
+        float cameraX = playerC->cameraX;
+        float cameraY = playerC->cameraY;
+        if(object->t == Cat_Player)
         {
-            if(object->playerC->invulnerability_timer > 1500)
-            {
-                alpha_value = 100;
-            }
-            else if(object->playerC->invulnerability_timer > 1000)
-            {
-                alpha_value = 255;
-            }
-            else if(object->playerC->invulnerability_timer > 500)
-            {
-                alpha_value = 100;
-            }
-            else if(object->playerC->invulnerability_timer > 0)
-            {
-                alpha_value = 255;
-            }
+            int alpha_value = 255;
 
+
+            if(object->playerC->invulnerability_timer > 0)
+            {
+                if(object->playerC->invulnerability_timer > 1500)
+                {
+                    alpha_value = 100;
+                }
+                else if(object->playerC->invulnerability_timer > 1000)
+                {
+                    alpha_value = 255;
+                }
+                else if(object->playerC->invulnerability_timer > 500)
+                {
+                    alpha_value = 100;
+                }
+                else if(object->playerC->invulnerability_timer > 0)
+                {
+                    alpha_value = 255;
+                }
+
+                SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
+                SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], alpha_value);
+            }
+        }
+
+        if(object->t == Cat_Door && !object->solid)
+        {
             SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
-            SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], alpha_value);
-        }
-    }
-
-    if(object->t == Cat_Door && !object->solid)
-    {
-        SDL_SetTextureBlendMode(textures_g[object->t][object->sub_category], SDL_BLENDMODE_BLEND);
-        SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 50);
-    }
-
-    /*because of some rounding of the position
-      in SDL, I have to correct the object position*/
-    int errorX = 0;
-    int errorY = 0;
-
-    if(object->angle < HALF_PI)
-    {
-        //errorX and errorY = 0
-    }
-    else if(object->angle < PI)
-    {
-        errorX = 1;
-
-    }
-    else if(object->angle < PI + HALF_PI)
-    {
-        errorX = 1;
-        errorY = 1;
-    }
-    else if(object->angle < 2 * PI)
-    {
-        errorY = 1;
-    }
-
-
-
-    if(object->t != Cat_Prop)
-    {
-        SDL_Texture* texture = textures_g[object->t][object->sub_category];
-
-        if(object->t == Cat_Wall && object->sub_category == Wall_Grey)
-        {
-            texture = wall_textures[object->sub_category][object->tile_type];
+            SDL_SetTextureAlphaMod(textures_g[object->t][object->sub_category], 50);
         }
 
-        const SDL_Rect rect = { object->box.left - cameraX - object->box.offsetX - errorX,
-                                object->box.top - cameraY - object->box.offsetY - errorY,
-                                object->box.width + object->box.offsetX * 2 ,
-                                object->box.height + object->box.offsetY * 2};
+        /*because of some rounding of the position
+          in SDL, I have to correct the object position*/
+        int errorX = 0;
+        int errorY = 0;
 
-
-        if(!object->in_dark || game_state_g == GameState_Editing_Map)
+        if(object->angle < HALF_PI)
         {
-            if(object->angle != 0 && object->visible)
+            //errorX and errorY = 0
+        }
+        else if(object->angle < PI)
+        {
+            errorX = 1;
+
+        }
+        else if(object->angle < PI + HALF_PI)
+        {
+            errorX = 1;
+            errorY = 1;
+        }
+        else if(object->angle < 2 * PI)
+        {
+            errorY = 1;
+        }
+
+
+
+        if(object->t != Cat_Prop)
+        {
+            const SDL_Rect dest_rect = { object->box.left - cameraX - object->box.offsetX - errorX,
+                            object->box.top - cameraY - object->box.offsetY - errorY,
+                            object->box.width + object->box.offsetX * 2 ,
+                            object->box.height + object->box.offsetY * 2};
+
+            SDL_Texture* texture = textures_g[object->t][object->sub_category];
+
+            if(object->t == Cat_Wall &&
+               (object->sub_category == Wall_Grey ||
+                object->sub_category == Wall_Red_Bricks) )
             {
+                int spritesheet_line = 0;
+                //int spritesheet_column = 0;
+                switch(object->sub_category)
+                {
+                    case Wall_Grey:
+                        spritesheet_line = 0;
+                        break;
+                    case Wall_Red_Bricks:
+                        spritesheet_line = 1;
+                        break;
+                }
+
+                //texture = wall_textures[object->sub_category][object->tile_type];
+
+                SDL_Rect src_rect = { object->tile_type * TILE_SIZE, spritesheet_line * TILE_SIZE,
+                                    TILE_SIZE, TILE_SIZE };
+
                 SDL_RenderCopyEx(renderer,
-                                 texture,
-                                 NULL,
-                                 &rect,
+                                 walls_spritesheet,
+                                 &src_rect,
+                                 &dest_rect,
                                  object->angle * RADIAN_TO_DEGREE,
                                  NULL,
                                  SDL_FLIP_NONE);
             }
-            else if(object->angle == 0 && object->visible)
+            else
             {
-                SDL_RenderCopy(renderer, texture,
-                               NULL, &rect);
-            }
-        }
-    }
-    else
-    {
-        SDL_Rect rect = { object->x- cameraX  - errorX, object->y- cameraY  - errorY, object->width, object->height};
-        if(!object->in_dark || game_state_g == GameState_Editing_Map)
-        {
-            if(object->angle != 0 && object->visible)
-            {
-                SDL_RenderCopyEx(renderer,
-                                 textures_g[object->t][object->sub_category],
-                                 NULL,
-                                 &rect,
-                                 object->angle * RADIAN_TO_DEGREE,
-                                 NULL,
-                                 SDL_FLIP_NONE);
-            }
-            else if(object->angle == 0 && object->visible)
-            {
-                SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
-                               NULL, &rect);
-            }
-        }
-    }
+                if(object->angle != 0)
+                {
+                    SDL_RenderCopyEx(renderer,
+                                     texture,
+                                     NULL,
+                                     &dest_rect,
+                                     object->angle * RADIAN_TO_DEGREE,
+                                     NULL,
+                                     SDL_FLIP_NONE);
+                }
+                else if(object->angle == 0)
+                {
+                    SDL_RenderCopy(renderer, texture,
+                                   NULL, &dest_rect);
+                }
 
+            }
+        }
+        else
+        {
+            SDL_Rect rect = { object->x- cameraX  - errorX, object->y- cameraY  - errorY, object->width, object->height};
+            if(!object->in_dark || game_state_g == GameState_Editing_Map)
+            {
+                if(object->angle != 0)
+                {
+                    SDL_RenderCopyEx(renderer,
+                                     textures_g[object->t][object->sub_category],
+                                     NULL,
+                                     &rect,
+                                     object->angle * RADIAN_TO_DEGREE,
+                                     NULL,
+                                     SDL_FLIP_NONE);
+                }
+                else if(object->angle == 0)
+                {
+                    SDL_RenderCopy(renderer, textures_g[object->t][object->sub_category],
+                                   NULL, &rect);
+                }
+            }
+        }
+    }
 
 
 	if(debug_mode && object->t != Cat_Ground)

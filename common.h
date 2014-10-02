@@ -151,6 +151,7 @@ typedef enum {
     Wall_Grey_1_Border_2_Dots,
     Wall_Grey_Ending,
     Wall_Grey,
+    Wall_Red_Bricks,
     NB_OF_WALL_TYPES
 } Wall_Type;
 

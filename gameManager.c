@@ -120,6 +120,7 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     {
         if(world->map[i] != NULL)
         {
+           // Entity_CalculateVisibility(world->map[i], world);
             if(world->map[i]->t == Cat_Door)
             {
                 Door_Update(world->map[i], world);
@@ -139,7 +140,6 @@ void GameManage_UpdateWorldEntities(GameManager* gm, World* world)
     {
         if(Vector_Get(bullets_vector, i) != NULL)
         {
-
             Entity* projectile = (Entity*)Vector_Get(bullets_vector, i);
             Entity_CalculateVisibility(projectile, world);
 

@@ -194,7 +194,7 @@ Entity* CreateZombie(Zombie_Type type, float x, float y)
     case Zombie_Raptor:
         width = 80;
         height = 80;
-        z->hp = 200;
+        z->hp = 100;
         z->damage = 15;
         weapon = Weapon_FireballMachineGun;
         z->movementC->normal_speed = 0.02;

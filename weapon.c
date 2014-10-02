@@ -79,7 +79,7 @@ Weapon* Weapon_Create(Weapon_Type type)
         w->name = "Fireball";
         w->magazine_max_bullets = 1;
         w->magazine_bullets = 1;
-        w->delay_between_shots = 200;
+        w->delay_between_shots = 600;
         w->reloading_time = 0;
         w->bullet_width = 15;
         w->bullet_height = 15;
